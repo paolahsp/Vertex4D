@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Vertex 4D by Srsly Labs</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: "#F4EBDC",
+                        ink: "#181810",
+                        cobalt: "#1946D1",
+                        coral: "#E74530",
+                        olive: "#A4A760"
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "Arial", "sans-serif"],
+                        serif: ["Source Serif 4", "Georgia", "serif"],
+                        mono: ["Space Mono", "Courier New", "monospace"]
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="/static/css/vertex4d.css">
+</head>
+
+<body class="bg-paper text-ink">
+    <div class="site-shell">
+        <header class="site-nav">
+            <a class="brand-lockup" href="/">
+                <span class="brand-mark">SL</span>
+                <span class="brand-wordmark">Srsly Labs</span>
+                <span class="vertex-product-label">Vertex 4D</span>
+            </a>
+            <nav class="site-links" aria-label="Primary">
+                <a href="#method">Method</a>
+                <a href="#tools">Tools</a>
+                <a href="#services">Services</a>
+            </nav>
+            <div class="site-actions">
+                <a class="button ghost-button" href="/register">Create Profile</a>
+                <a class="button primary-button" href="/login">Client Login</a>
+            </div>
+        </header>
+
+        <main>
+            <section class="editorial-hero">
+                <div class="hero-copy">
+                    <p class="vertex-kicker">Private 4D workspace</p>
+                    <h1>Vertex 4D</h1>
+                    <p class="hero-lede">A strategy lab for mapping emotional, contextual, systemic, and framing signals before a decision becomes expensive.</p>
+                    <div class="hero-actions">
+                        <a class="button primary-button" href="/login">Access Profile</a>
+                        <a class="button ghost-button" href="/register">Create Profile</a>
+                    </div>
+                </div>
+
+                <div class="glass-map" aria-hidden="true">
+                    <div class="map-rail rail-a"></div>
+                    <div class="map-rail rail-b"></div>
+                    <div class="map-rail rail-c"></div>
+                    <div class="map-node node-1">
+                        <span>01</span>
+                        Emotional
+                    </div>
+                    <div class="map-node node-2">
+                        <span>02</span>
+                        Contextual
+                    </div>
+                    <div class="map-node node-3">
+                        <span>03</span>
+                        Systemic
+                    </div>
+                    <div class="map-node node-4">
+                        <span>04</span>
+                        Framing
+                    </div>
+                    <div class="map-core">
+                        <span>Signal Stack</span>
+                        <strong>4D</strong>
+                    </div>
+                    <p class="map-note note-a">COBALT GRID / EVIDENCE</p>
+                    <p class="map-note note-b">CORAL MARK / FOCUS</p>
+                </div>
+            </section>
+
+            <section id="method" class="content-band">
+                <div class="section-head">
+                    <p class="vertex-kicker">Four dimensions</p>
+                    <h2>The method stays clear, the system stays visible.</h2>
+                </div>
+                <div class="dimension-grid">
+                    <article class="glass-card">
+                        <img src="/static/brand/dimensions/emotional.svg" alt="">
+                        <p class="eyebrow">01</p>
+                        <h3>Emotional</h3>
+                        <p>Trust, friction, need, hesitation, and motivation.</p>
+                    </article>
+                    <article class="glass-card">
+                        <img src="/static/brand/dimensions/contextual.svg" alt="">
+                        <p class="eyebrow">02</p>
+                        <h3>Contextual</h3>
+                        <p>Culture, constraints, territory, history, and timing.</p>
+                    </article>
+                    <article class="glass-card">
+                        <img src="/static/brand/dimensions/systemic.svg" alt="">
+                        <p class="eyebrow">03</p>
+                        <h3>Systemic</h3>
+                        <p>Actors, dependencies, incentives, flows, and risk.</p>
+                    </article>
+                    <article class="glass-card">
+                        <img src="/static/brand/dimensions/problem-framing.svg" alt="">
+                        <p class="eyebrow">04</p>
+                        <h3>Problem Framing</h3>
+                        <p>The right question before the resource commitment.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section id="tools" class="content-band tool-band">
+                <div class="section-head">
+                    <p class="vertex-kicker">Workspace stack</p>
+                    <h2>Three tools, one decision surface.</h2>
+                </div>
+                <div class="tool-grid">
+                    <article class="tool-row">
+                        <div class="tool-visual">
+                            <img src="/static/brand/section-illustrations/research.svg" alt="">
+                        </div>
+                        <div>
+                            <p class="eyebrow">Map</p>
+                            <h3>SynapMap</h3>
+                            <p>Complex ideas and evidence landscapes, organized into a readable system.</p>
+                        </div>
+                    </article>
+                    <article class="tool-row">
+                        <div class="tool-visual">
+                            <img src="/static/brand/section-illustrations/consulting.svg" alt="">
+                        </div>
+                        <div>
+                            <p class="eyebrow">Structure</p>
+                            <h3>Alex</h3>
+                            <p>Operational clarity, data interpretation, and next-step logic.</p>
+                        </div>
+                    </article>
+                    <article class="tool-row">
+                        <div class="tool-visual">
+                            <img src="/static/brand/section-illustrations/design.svg" alt="">
+                        </div>
+                        <div>
+                            <p class="eyebrow">Create</p>
+                            <h3>Billie</h3>
+                            <p>Brand, content, and narrative direction shaped from the strategy layer.</p>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <section id="services" class="content-band service-band">
+                <div class="section-head">
+                    <p class="vertex-kicker">Srsly Labs services</p>
+                    <h2>Human judgment when the map needs a sharper read.</h2>
+                </div>
+                <div class="service-list">
+                    <a href="/login">
+                        <span>01</span>
+                        <strong>1:1 Strategy Sessions</strong>
+                        <small>Problem frame, evidence gaps, decision criteria, and next experiments.</small>
+                    </a>
+                    <a href="/login">
+                        <span>02</span>
+                        <strong>Process Optimization</strong>
+                        <small>Workflows, AI integration, automation, and operational lift.</small>
+                    </a>
+                    <a href="/login">
+                        <span>03</span>
+                        <strong>Custom Agent Building</strong>
+                        <small>Specialized 4D tools tailored to a specific business challenge.</small>
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <footer class="site-footer">
+            <div>
+                <p class="vertex-kicker">Vertex 4D</p>
+                <h2>Ready to see the problem clearly?</h2>
+            </div>
+            <a class="button primary-button" href="/login">Access Profile</a>
+            <p class="copyright">(c) 2026 Vertex 4D by Srsly Labs. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+
+</html>

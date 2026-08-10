@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SynapMap Test | Vertex 4D</title>
+    <link rel="stylesheet" href="/static/css/vertex4d.css">
+</head>
+
+<body style="padding: 32px;">
+    <h1>SynapMap API Test</h1>
+    <textarea id="input" rows="5" cols="50" placeholder="Describe your project..."></textarea>
+    <br>
+    <button class="app-button" style="margin-top: 12px; padding: 10px 16px;" onclick="testAPI()">Test API</button>
+    <div id="result" style="margin-top: 24px;"></div>
+
+    <script>
+        async function testAPI() {
+            const input = document.getElementById('input').value;
+            const resultDiv = document.getElementById('result');
+
+            resultDiv.innerHTML = 'Loading...';
+
+            try {
+                const response = await fetch('/api/openai/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        model: 'gpt-4o',
+                        response_format: { type: "json_object" },
+                        messages: [
+                            { role: 'system', content: 'Respond only with valid JSON: {"message": "your response"}' },
+                            { role: 'user', content: input }
+                        ]
+                    })
+                });
+
+                const data = await response.json();
+                resultDiv.innerHTML = '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+            } catch (error) {
+                resultDiv.innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+
+</html>

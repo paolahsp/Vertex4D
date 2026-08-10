@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Create Profile | Vertex 4D</title>
+    <link rel="icon" href="/favicon.ico">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+    <style type="text/tailwindcss">
+        @import url('https://api.fontshare.com/v2/css?f[]=clash-display@700&display=swap');
+        
+        .noise-texture {
+            position: relative;
+        }
+        .noise-texture::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("/static/brand/textures/paper-grain-overlay.png");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .card-3d {
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-3d:hover {
+            border-color: #1946D1;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1946D1",
+                        "cyber-lavender": "#E74530",
+                        "electric-mint": "#A4A760",
+                        "background-dark": "#181810",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "sans-serif"],
+                        "heading": ["Libre Baskerville", "Georgia", "serif"],
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="/static/css/vertex4d.css">
+</head>
+
+<body
+    class="auth-shell font-display bg-gray-50 text-gray-900 noise-texture min-h-screen flex items-center justify-center relative overflow-x-hidden py-12">
+
+    <div class="relative z-10 w-full max-w-2xl px-4">
+        <div class="text-center mb-8">
+            <a href="/" class="inline-flex flex-col items-center gap-3 group">
+                <span class="auth-logo brand-lockup">
+                    <span class="brand-mark">SL</span>
+                    <span class="brand-wordmark">Srsly Labs</span>
+                </span>
+                <span class="vertex-product-label">Vertex 4D</span>
+            </a>
+            <h2 class="mt-6 text-2xl font-bold tracking-tight text-gray-900">Create your profile.</h2>
+            <p class="mt-2 text-sm text-gray-600">Create a private workspace for your team.</p>
+        </div>
+
+        <div class="auth-card bg-white/80 backdrop-blur-xl px-8 py-10 shadow-2xl rounded-2xl card-3d border border-white/50">
+            {% if error %}
+            <div class="mb-6 rounded-lg bg-red-50 p-4 border border-red-100 flex items-center gap-3">
+                <svg class="h-5 w-5 text-red-500 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clip-rule="evenodd" />
+                </svg>
+                <h3 class="text-sm font-medium text-red-800">{{ error }}</h3>
+            </div>
+            {% endif %}
+
+            <form class="space-y-6" action="/register" method="POST">
+                <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                    <!-- Team Info -->
+                    <div class="sm:col-span-6">
+                        <label for="team_name" class="block text-sm font-medium text-gray-700 ml-1">Profile Name</label>
+                        <div class="mt-1">
+                            <input type="text" name="team_name" id="team_name" required
+                                class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-6">
+                        <label for="password" class="block text-sm font-medium text-gray-700 ml-1">Profile Password</label>
+                        <div class="mt-1">
+                            <input type="password" name="password" id="password" required
+                                class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-6">
+                        <label for="challenge_desc" class="block text-sm font-medium text-gray-700 ml-1">What are you
+                            building?</label>
+                        <div class="mt-1">
+                            <textarea id="challenge_desc" name="challenge_desc" rows="3"
+                                class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="sm:col-span-6">
+                        <label for="photo_url" class="block text-sm font-medium text-gray-700 ml-1">Team Photo
+                            URL</label>
+                        <div class="mt-1">
+                            <input type="text" name="photo_url" id="photo_url" placeholder="https://..."
+                                class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                    </div>
+
+                    <!-- Members -->
+                    <div class="sm:col-span-6 pt-4 border-t border-gray-200">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900">Team Members</h3>
+                        <p class="mt-1 text-sm text-gray-500">Add up to 3 members.</p>
+                    </div>
+
+                    <!-- Member 1 -->
+                    <div class="sm:col-span-3">
+                        <label for="member1_name" class="block text-sm font-medium text-gray-700 ml-1">Member 1
+                            Name</label>
+                        <div class="mt-1">
+                            <input type="text" name="member1_name" id="member1_name" required
+                                class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label for="member1_email" class="block text-sm font-medium text-gray-700 ml-1">Member 1
+                            Email</label>
+                        <div class="mt-1">
+                            <input type="email" name="member1_email" id="member1_email" required
+                                class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                    </div>
+
+                    <!-- Member 2 -->
+                    <div class="sm:col-span-3">
+                        <label for="member2_name" class="block text-sm font-medium text-gray-700 ml-1">Member 2
+                            Name</label>
+                        <div class="mt-1">
+                            <input type="text" name="member2_name" id="member2_name"
+                                class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label for="member2_email" class="block text-sm font-medium text-gray-700 ml-1">Member 2
+                            Email</label>
+                        <div class="mt-1">
+                            <input type="email" name="member2_email" id="member2_email"
+                                class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                    </div>
+
+                    <!-- Member 3 -->
+                    <div class="sm:col-span-3">
+                        <label for="member3_name" class="block text-sm font-medium text-gray-700 ml-1">Member 3
+                            Name</label>
+                        <div class="mt-1">
+                            <input type="text" name="member3_name" id="member3_name"
+                                class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                    </div>
+                    <div class="sm:col-span-3">
+                        <label for="member3_email" class="block text-sm font-medium text-gray-700 ml-1">Member 3
+                            Email</label>
+                        <div class="mt-1">
+                            <input type="email" name="member3_email" id="member3_email"
+                                class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit"
+                        class="group relative flex w-full justify-center rounded-xl border border-transparent bg-primary py-3 px-4 text-sm font-bold text-white shadow-lg hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 transition-all hover:scale-[1.02] active:scale-[0.98]">
+                        Create Profile Team
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-8 text-center">
+                <p class="text-sm text-gray-600">
+                    Already have a profile?
+                    <a href="/login" class="font-bold text-primary hover:text-primary/80 transition-colors">Access profile</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

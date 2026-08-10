@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>The Orbit | Vertex 4D</title>
+    <link rel="icon" href="/favicon.ico">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <style type="text/tailwindcss">
+        @import url('https://api.fontshare.com/v2/css?f[]=clash-display@700&display=swap');
+    </style>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "hyper-coral": "#E74530",
+                        "cyber-lavender": "#E74530",
+                        "electric-mint": "#A4A760",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"],
+                        "heading": ["Clash Display", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        .project-circle {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .project-circle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/vertex4d.css">
+</head>
+
+<body class="font-display bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900">
+    <!-- Top Bar -->
+    <header class="border-b border-gray-200 bg-white px-6 py-4 shadow-sm">
+        <div class="mx-auto flex max-w-7xl items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="/dashboard" class="text-sm text-gray-600 hover:text-gray-900">Back to Dashboard</a>
+                <span class="text-gray-300">|</span>
+                <h1 class="text-lg font-semibold text-gray-900">The Orbit</h1>
+            </div>
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <span class="font-mono text-xs font-bold text-cyber-lavender">42</span>
+                    <span class="text-sm text-gray-500">Signals</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-medium text-gray-700">Confidence</span>
+                    <div class="flex items-center gap-2">
+                        <div class="h-2 w-24 overflow-hidden rounded-full bg-gray-200">
+                            <div class="h-2 rounded-full bg-cyber-lavender" style="width: 35%;"></div>
+                        </div>
+                        <span class="font-mono text-sm font-bold text-cyber-lavender">35%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="mx-auto max-w-7xl px-6 py-8">
+        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
+            <!-- Left: Collaborative Canvas -->
+            <div>
+                <div class="mb-4">
+                    <h1 class="font-heading text-4xl font-bold text-gray-900">The Orbit</h1>
+                    <p class="text-gray-600">Your collaborative canvas to connect with other projects.</p>
+                </div>
+
+                <!-- Canvas -->
+                <div class="h-[600px] rounded-3xl bg-white p-8 shadow-lg">
+                    <div class="relative grid h-full grid-cols-2 grid-rows-3 gap-6">
+                        <!-- Your Project -->
+                        <div
+                            class="project-circle flex cursor-pointer items-center justify-center rounded-full border-4 border-gray-400 bg-gray-300">
+                            <div class="text-center">
+                                <div class="text-sm font-semibold text-gray-700">Your Project Name</div>
+                                <button
+                                    class="mt-2 rounded-full bg-hyper-coral px-4 py-1 text-xs font-bold text-white">Ready
+                                    to Collab</button>
+                            </div>
+                        </div>
+
+                        <!-- Innovate Inc. -->
+                        <div
+                            class="project-circle flex cursor-pointer items-center justify-center rounded-full border-4 border-electric-mint bg-gray-900 text-white">
+                            <div class="text-center">
+                                <div class="text-lg font-bold">Innovate Inc.</div>
+                            </div>
+                        </div>
+
+                        <!-- FutureForward -->
+                        <div
+                            class="project-circle flex cursor-pointer items-center justify-center rounded-full border-4 border-yellow-400 bg-gray-900 text-white">
+                            <div class="text-center">
+                                <div class="text-lg font-bold">FutureForward</div>
+                            </div>
+                        </div>
+
+                        <!-- NextGen AI -->
+                        <div
+                            class="project-circle flex cursor-pointer items-center justify-center rounded-full border-4 border-cyber-lavender bg-gray-900 text-white">
+                            <div class="text-center">
+                                <div class="text-lg font-bold">NextGen AI</div>
+                            </div>
+                        </div>
+
+                        <!-- Synergy Hub -->
+                        <div
+                            class="project-circle flex cursor-pointer items-center justify-center rounded-full border-4 border-blue-400 bg-gray-300">
+                            <div class="text-center">
+                                <div class="text-lg font-bold text-gray-700">Synergy Hub</div>
+                            </div>
+                        </div>
+
+                        <!-- Quantum Leap -->
+                        <div
+                            class="project-circle flex cursor-pointer items-center justify-center rounded-full border-4 border-electric-mint bg-gray-900 text-white">
+                            <div class="text-center">
+                                <div class="text-lg font-bold">Quantum Leap</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Cards -->
+                <div class="mt-6 grid grid-cols-3 gap-4">
+                    <div class="rounded-2xl bg-cyber-lavender/10 p-4 text-center">
+                        <div class="mb-1 text-2xl font-bold text-cyber-lavender">156</div>
+                        <div class="text-xs text-gray-600">Active Projects</div>
+                    </div>
+                    <div class="rounded-2xl bg-electric-mint/10 p-4 text-center">
+                        <div class="mb-1 text-2xl font-bold text-electric-mint">42</div>
+                        <div class="text-xs text-gray-600">Warp Rooms</div>
+                    </div>
+                    <div class="rounded-2xl bg-hyper-coral/10 p-4 text-center">
+                        <div class="mb-1 text-2xl font-bold text-hyper-coral">89</div>
+                        <div class="text-xs text-gray-600">SOS Requests</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: The Buzz Feed -->
+            <div>
+                <h2 class="font-heading mb-4 text-3xl font-bold text-gray-900">The Buzz</h2>
+                <div class="space-y-4 overflow-y-auto" style="max-height: 680px;">
+                    <!-- Post 1: SOS Request -->
+                    <div class="rounded-2xl border-2 border-yellow-300 bg-yellow-50 p-5 shadow-md">
+                        <div class="mb-3 flex items-center gap-3">
+                            <div class="size-12 rounded-full bg-yellow-400"></div>
+                            <div>
+                                <div class="font-bold text-gray-900">Ana Rodriguez</div>
+                                <div class="text-xs text-gray-600">Fintech • Seed Stage • Mexico City</div>
+                            </div>
+                        </div>
+                        <p class="mb-3 text-gray-900">¡Ayuda! Necesito beta testers para mi app de perritos.</p>
+                        <button
+                            class="rounded-full bg-hyper-coral px-5 py-2 font-bold text-white transition-all hover:bg-hyper-coral/90">I'm
+                            in!</button>
+                    </div>
+
+                    <!-- Post 2: High Five -->
+                    <div class="rounded-2xl border-2 border-electric-mint bg-electric-mint/10 p-5 shadow-md">
+                        <div class="mb-3 flex items-center gap-3">
+                            <div class="size-12 rounded-full bg-electric-mint"></div>
+                            <div>
+                                <div class="font-bold text-gray-900">David Chen</div>
+                                <div class="text-xs text-gray-600">SaaS B2B • Series A • San Francisco</div>
+                            </div>
+                        </div>
+                        <p class="mb-3 text-gray-900">¡Conseguimos nuestro primer cliente B2B!</p>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span>High Five</span>
+                            <span class="text-2xl">🙌</span>
+                        </div>
+                    </div>
+
+                    <!-- Post 3: Looking for Co-team lead -->
+                    <div class="rounded-2xl border-2 border-gray-200 bg-white p-5 shadow-md">
+                        <div class="mb-3 flex items-center gap-3">
+                            <div class="size-12 rounded-full bg-gray-400"></div>
+                            <div>
+                                <div class="font-bold text-gray-900">Maria Garcia</div>
+                                <div class="text-xs text-gray-600">HealthTech • Pre-Seed • Barcelona</div>
+                            </div>
+                        </div>
+                        <p class="mb-3 text-gray-900">Looking for a co-team lead with marketing experience!</p>
+                        <button
+                            class="rounded-full bg-hyper-coral px-5 py-2 font-bold text-white transition-all hover:bg-hyper-coral/90">I'm
+                            in!</button>
+                    </div>
+
+                    <!-- Post 4: Blog Feature -->
+                    <div class="rounded-2xl border-2 border-electric-mint bg-electric-mint/10 p-5 shadow-md">
+                        <div class="mb-3 flex items-center gap-3">
+                            <div class="size-12 rounded-full bg-cyber-lavender"></div>
+                            <div>
+                                <div class="font-bold text-gray-900">Kenji Tanaka</div>
+                                <div class="text-xs text-gray-600">AI/ML • Seed • Tokyo</div>
+                            </div>
+                        </div>
+                        <p class="mb-3 text-gray-900">Our app was just featured on a major tech blog!</p>
+                        <div class="flex items-center gap-2 text-sm">
+                            <span>High Five</span>
+                            <span class="text-2xl">🙌</span>
+                        </div>
+                    </div>
+
+                    <!-- Post 5: Warp Room Invitation -->
+                    <div class="rounded-2xl border-2 border-cyber-lavender bg-cyber-lavender/10 p-5 shadow-md">
+                        <div class="mb-3 flex items-center gap-3">
+                            <div class="size-12 rounded-full bg-cyber-lavender"></div>
+                            <div>
+                                <div class="font-bold text-gray-900">Warp Room Invite</div>
+                                <div class="text-xs text-gray-600">Powered by SynapMap</div>
+                            </div>
+                        </div>
+                        <p class="mb-3 text-gray-900">🚀 <strong>Quantum Leap</strong> & <strong>NextGen AI</strong> are
+                            exploring synergies. Join the Warp Room!</p>
+                        <button
+                            class="rounded-full border-2 border-cyber-lavender bg-white px-5 py-2 font-bold text-cyber-lavender transition-all hover:bg-cyber-lavender hover:text-white">Join
+                            Warp Room</button>
+                    </div>
+
+                    <!-- Post 6: Resource Share -->
+                    <div class="rounded-2xl border-2 border-gray-200 bg-white p-5 shadow-md">
+                        <div class="mb-3 flex items-center gap-3">
+                            <div class="size-12 rounded-full bg-gray-500"></div>
+                            <div>
+                                <div class="font-bold text-gray-900">Alex Johnson</div>
+                                <div class="text-xs text-gray-600">EdTech • Series A • London</div>
+                            </div>
+                        </div>
+                        <p class="mb-3 text-gray-900">Sharing our pitch deck template - hope it helps early-stage
+                            teams!</p>
+                        <button
+                            class="rounded-full border-2 border-gray-300 bg-white px-5 py-2 font-bold text-gray-700 transition-all hover:bg-gray-100">View
+                            Resource</button>
+                    </div>
+                </div>
+
+                <!-- Create Post -->
+                <div class="mt-6 rounded-2xl border-2 border-dashed border-gray-300 bg-white p-4">
+                    <textarea
+                        class="w-full resize-none rounded-lg border border-gray-300 p-3 text-sm focus:border-cyber-lavender focus:outline-none focus:ring-2 focus:ring-cyber-lavender/20"
+                        placeholder="Share an update, ask for help, or celebrate a win..." rows="3"></textarea>
+                    <div class="mt-3 flex gap-2">
+                        <button
+                            class="flex-1 rounded-lg bg-hyper-coral px-4 py-2 font-semibold text-white transition-all hover:bg-hyper-coral/90">Post
+                            SOS</button>
+                        <button
+                            class="flex-1 rounded-lg border-2 border-electric-mint bg-white px-4 py-2 font-semibold text-electric-mint transition-all hover:bg-electric-mint hover:text-white">Share
+                            Win</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

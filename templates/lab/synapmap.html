@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>SynapMap - The Visionary | Vertex 4D</title>
+    <link rel="icon" href="/favicon.ico">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300..700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1946D1",
+                        "background-light": "#F4EBDC",
+                        "background-dark": "#181810",
+                        "vapor-grey": "#F3DFBF",
+                        "cyber-lavender": "#E74530",
+                        "hyper-coral": "#E74530",
+                        "electric-mint": "#A4A760",
+                        "near-black": "#181810",
+                        "medium-grey": "#776F68"
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24
+        }
+
+        .bg-dots {
+            background-image: linear-gradient(rgba(25, 70, 209, 0.09) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(25, 70, 209, 0.09) 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+
+        #system-map-svg line {
+            stroke: rgba(25, 70, 209, 0.36);
+            stroke-width: 2px;
+            transition: stroke 0.2s, stroke-width 0.2s;
+            cursor: pointer;
+        }
+
+        #system-map-svg line:hover {
+            stroke: #1946D1;
+            stroke-width: 4px;
+        }
+
+        .d3-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 1000;
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/vertex4d.css">
+</head>
+
+<body class="font-display bg-background-light text-near-black">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Left Sidebar -->
+        <div class="flex flex-col items-center gap-6 border-r border-vapor-grey bg-vapor-grey/50 p-3">
+            <a href="/dashboard" class="size-8 text-primary">
+                <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd"
+                        d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z"
+                        fill="currentColor" fill-rule="evenodd"></path>
+                </svg>
+            </a>
+            <div class="flex flex-col items-center gap-2">
+                <a href="/dashboard/lab/synapmap"
+                    class="flex size-12 items-center justify-center rounded-2xl bg-cyber-lavender/20 text-cyber-lavender ring-2 ring-cyber-lavender transition-all hover:bg-cyber-lavender/30">
+                    <span class="material-symbols-outlined text-3xl">hub</span>
+                </a>
+                <a href="/dashboard/lab/alex"
+                    class="flex size-12 items-center justify-center rounded-2xl bg-hyper-coral/20 text-hyper-coral transition-all hover:bg-hyper-coral/30">
+                    <span class="material-symbols-outlined text-3xl">shield</span>
+                </a>
+                <a href="/dashboard/lab/billie"
+                    class="flex size-12 items-center justify-center rounded-2xl bg-electric-mint/20 text-electric-mint transition-all hover:bg-electric-mint/30">
+                    <span class="material-symbols-outlined text-3xl">donut_small</span>
+                </a>
+            </div>
+            <div class="mt-auto flex flex-col items-center gap-4">
+                <button id="save-map-btn"
+                    class="flex size-12 items-center justify-center rounded-full bg-primary/20 text-primary transition-all hover:bg-primary/30"
+                    title="Save Map">
+                    <span class="material-symbols-outlined text-3xl">save</span>
+                </button>
+                <button id="delete-map-btn"
+                    class="flex size-12 items-center justify-center rounded-full bg-vapor-grey text-medium-grey transition-all hover:bg-white/5"
+                    title="Delete Map">
+                    <span class="material-symbols-outlined text-3xl">delete</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content: 3 Columns -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <header
+                class="flex items-center justify-between border-b border-vapor-grey bg-background-light/80 px-10 py-3 backdrop-blur-sm">
+                <div class="flex items-center gap-2 text-sm text-medium-grey">
+                    <a class="hover:text-near-black" href="/dashboard/lab">4D Lab</a>
+                    <span>/</span>
+                    <span class="font-medium text-near-black">SynapMap</span>
+                </div>
+                <div class="flex items-center gap-6">
+                    <div class="flex items-center gap-2">
+                        <span class="font-mono text-xs font-bold text-cyber-lavender">42</span>
+                        <span class="text-sm text-medium-grey">Signals</span>
+                    </div>
+                    <div class="flex w-48 flex-col gap-1.5">
+                        <div class="flex items-center justify-between">
+                            <p class="text-sm font-medium text-near-black">Confidence</p>
+                            <p class="text-sm font-bold text-primary">35%</p>
+                        </div>
+                        <div class="h-2 w-full rounded-full bg-vapor-grey">
+                            <div class="h-2 rounded-full bg-primary" style="width: 35%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="flex-1 grid grid-cols-12 gap-0 overflow-hidden">
+                <!-- Column 1: Chat (3/12) -->
+                <div class="col-span-3 flex flex-col border-r border-vapor-grey bg-white">
+                    <div id="chat-container" class="flex-1 overflow-y-auto p-6">
+                        <div class="flex items-start gap-3">
+                            <div
+                                class="flex size-10 items-center justify-center rounded-full bg-cyber-lavender/20 text-cyber-lavender flex-shrink-0">
+                                <span class="material-symbols-outlined">hub</span>
+                            </div>
+                            <div class="rounded-2xl rounded-tl-none bg-vapor-grey p-3">
+                                <p class="font-bold text-near-black text-sm">SynapMap</p>
+                                <p class="text-medium-grey text-xs">Describe your project. I will generate a system map
+                                    with stakeholders, dependencies, bottlenecks, and a RACI matrix.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div class="border-t border-vapor-grey bg-white p-3">
+                        <div id="status-message" class="mb-2 text-center text-xs"></div>
+                        <div class="relative">
+                            <input type="file" id="file-input" class="hidden"
+                                accept=".txt,.pdf,.ppt,.pptx,.doc,.docx,image/*,audio/*" />
+                            <textarea id="idea-input"
+                                class="w-full resize-none rounded-xl border-vapor-grey bg-vapor-grey p-3 pr-20 text-near-black text-sm placeholder:text-medium-grey focus:border-cyber-lavender focus:ring-2 focus:ring-cyber-lavender/50"
+                                placeholder="Describe your idea..." rows="3"></textarea>
+                            <div class="absolute bottom-2 right-2 flex gap-1">
+                                <button id="upload-btn" onclick="document.getElementById('file-input').click()"
+                                    class="flex size-7 items-center justify-center rounded-lg bg-vapor-grey text-medium-grey transition-colors hover:bg-cyber-lavender/20 hover:text-cyber-lavender">
+                                    <span class="material-symbols-outlined text-lg">upload</span>
+                                </button>
+                                <button id="analyze-btn"
+                                    class="flex size-7 items-center justify-center rounded-lg bg-cyber-lavender text-white transition-colors hover:bg-cyber-lavender/80">
+                                    <span class="material-symbols-outlined text-lg">auto_awesome</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Column 2: Map (6/12) -->
+                <div class="col-span-6 relative bg-dots">
+                    <div id="system-map-container" class="h-full w-full">
+                        <svg id="system-map-svg" class="h-full w-full"></svg>
+                        <div id="d3-tooltip" class="d3-tooltip"></div>
+                    </div>
+                    <button id="reset-zoom-btn"
+                        class="absolute top-4 left-4 flex size-10 items-center justify-center rounded-lg bg-white border border-vapor-grey shadow-lg text-cyber-lavender hover:bg-cyber-lavender/10"
+                        title="Reset Zoom">
+                        <span class="material-symbols-outlined">center_focus_strong</span>
+                    </button>
+                </div>
+
+                <!-- Column 3: RACI + Insights (3/12) -->
+                <div class="col-span-3 flex flex-col border-l border-vapor-grey bg-white overflow-y-auto">
+                    <!-- RACI Matrix -->
+                    <div class="p-4 border-b border-vapor-grey">
+                        <h3 class="font-bold text-near-black mb-3 text-sm flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">table_chart</span>
+                            RACI Matrix
+                        </h3>
+                        <div id="raci-container" class="text-xs">
+                            <p class="text-center text-medium-grey">No data</p>
+                        </div>
+                    </div>
+
+                    <!-- System Insights -->
+                    <div class="p-4">
+                        <h3 class="font-bold text-near-black mb-3 text-sm flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">insights</span>
+                            System Analysis
+                        </h3>
+                        <div id="insights-container" class="text-xs space-y-3">
+                            <p class="text-center text-medium-grey">No analysis</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // STATE
+        let currentAnalysis = null;
+        let conversationHistory = [];
+        let attachedFileContent = ""; // Store file content in memory
+
+        // ELEMENTS
+        const ideaInput = document.getElementById('idea-input');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const uploadBtn = document.getElementById('upload-btn');
+        const fileInput = document.getElementById('file-input');
+        const statusMessage = document.getElementById('status-message');
+        const saveMapBtn = document.getElementById('save-map-btn');
+        const deleteMapBtn = document.getElementById('delete-map-btn');
+        const resetZoomBtn = document.getElementById('reset-zoom-btn');
+        const tooltip = document.getElementById('d3-tooltip');
+        const chatContainer = document.getElementById('chat-container');
+
+        // EVENT LISTENERS
+        analyzeBtn.addEventListener('click', runAnalysis);
+        // uploadBtn click handled inline in HTML
+        fileInput.addEventListener('change', handleFileUpload);
+        saveMapBtn.addEventListener('click', saveCurrentMap);
+        deleteMapBtn.addEventListener('click', deleteCurrentMap);
+        resetZoomBtn.addEventListener('click', resetZoom);
+
+        ideaInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                runAnalysis();
+            }
+        });
+
+        // LOAD SAVED MAP
+        loadSavedMap();
+
+        function setStatus(msg, type = 'neutral') {
+            statusMessage.textContent = msg;
+            statusMessage.className = 'mb-2 text-center text-xs ' +
+                (type === 'error' ? 'text-hyper-coral font-semibold' :
+                    type === 'success' ? 'text-electric-mint font-semibold' : 'text-medium-grey');
+        }
+
+        function addChatMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start gap-3 mt-3';
+
+            if (isUser) {
+                messageDiv.innerHTML = `
+            <div class="flex size-10 items-center justify-center rounded-full bg-primary/20 text-primary flex-shrink-0">
+                <span class="material-symbols-outlined">person</span>
+            </div>
+            <div class="rounded-2xl rounded-tl-none bg-primary/10 p-3 overflow-hidden">
+                <p class="text-near-black text-xs whitespace-pre-wrap">${content}</p>
+            </div>
+        `;
+            } else {
+                messageDiv.innerHTML = `
+            <div class="flex size-10 items-center justify-center rounded-full bg-cyber-lavender/20 text-cyber-lavender flex-shrink-0">
+                <span class="material-symbols-outlined">hub</span>
+            </div>
+            <div class="rounded-2xl rounded-tl-none bg-vapor-grey p-3">
+                <p class="font-bold text-near-black text-sm">SynapMap</p>
+                <p class="text-medium-grey text-xs">${content}</p>
+            </div>
+        `;
+            }
+
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        async function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            setStatus('Uploading and processing file...', 'neutral');
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/process-file', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Error processing file');
+                }
+
+                const data = await response.json();
+
+                // Store content in memory, NOT in the textarea
+                attachedFileContent = data.content;
+
+                // Show success status with file name
+                setStatus(`Attached: ${data.filename}`, 'success');
+                ideaInput.placeholder = `Write instructions to analyze "${data.filename}"...`;
+                ideaInput.focus();
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                setStatus(`Error: ${error.message}`, 'error');
+                attachedFileContent = "";
+            }
+
+            fileInput.value = '';
+        }
+
+        async function runAnalysis() {
+            const userInput = ideaInput.value.trim();
+
+            // Allow analysis if there is attached content OR user input
+            if (!userInput && !attachedFileContent) {
+                setStatus('Please write something or upload a file', 'error');
+                return;
+            }
+
+            // Combine user input and attached file content
+            let fullContent = userInput;
+            let displayMessage = userInput;
+
+            if (attachedFileContent) {
+                fullContent += "\n\n[ATTACHED FILE CONTENT]:\n" + attachedFileContent;
+                displayMessage += userInput ? `\n(+ Attached file)` : `(Attached file analyzed)`;
+            }
+
+            // --- INCREMENTAL UPDATE LOGIC ---
+            let contextPrompt = "";
+            let taskInstruction = "Generate a system map from scratch.";
+
+            if (currentAnalysis) {
+                taskInstruction = "UPDATE and EXPAND the existing system map with the new input.";
+                contextPrompt = `
+\n\n[EXISTING SYSTEM STATE (JSON)]:
+${JSON.stringify(currentAnalysis)}
+
+[INSTRUCTION FOR UPDATE]:
+1. **MERGE** the [NEW INPUT] into the [EXISTING SYSTEM STATE].
+2. **KEEP** all existing nodes, edges, and RACI entries unless the new input explicitly contradicts them.
+3. **ADD** new nodes and connections found in the new input.
+4. **TRANSLATE** any existing Spanish content in the JSON to American English.
+5. **RETURN** the single, consolidated JSON object containing BOTH old and new data.
+`;
+            }
+
+            addChatMessage(displayMessage, true);
+            setStatus('Analyzing and merging...', 'neutral');
+            analyzeBtn.disabled = true;
+            ideaInput.value = '';
+            ideaInput.placeholder = "Describe your idea...";
+
+            // Clear attached content after sending
+            const contentToSend = `[NEW INPUT]:\n${fullContent}\n${contextPrompt}`;
+            attachedFileContent = "";
+
+            const systemPrompt = `You are SynapMap, an expert Systems Thinking AI.
+
+TASK: ${taskInstruction}
+
+OUTPUT REQUIREMENTS:
+1. **System Map**: Nodes (stakeholders, activities, decisions, systems) and connections (dependencies, information flow, resources).
+2. **RACI Matrix**: For key activities/decisions.
+3. **Analysis**: Bottlenecks, risks, opportunities, conflicts.
+4. **Language**: STRICTLY AMERICAN ENGLISH. Translate any non-English input or existing data.
+
+RESPONSE FORMAT (Strict JSON):
+{
+  "system_map": {
+    "nodes": [
+      {"id": "unique_id", "label": "Name (English)", "category": "stakeholder|activity|decision|system"}
+    ],
+    "edges": [
+      {"from": "source_id", "to": "target_id", "type": "dependency|information|resource", "label": "relationship (English)"}
+    ]
+  },
+  "raci_matrix": [
+    {"activity": "Activity Name", "responsible": ["Name"], "accountable": ["Name"], "consulted": ["Name"], "informed": ["Name"]}
+  ],
+  "insights": {
+    "bottlenecks": ["Description"],
+    "risks": ["Description"],
+    "opportunities": ["Description"],
+    "conflicts": ["Description"]
+  },
+  "summary": "Brief summary of changes/additions (in American English)"
+}
+
+RULES:
+- Ensure node IDs are consistent when merging.
+- Do not duplicate nodes (use the same ID if it refers to the same entity).
+- If updating, the output MUST include the FULL state (old + new).`;
+
+            conversationHistory.push({
+                role: 'user',
+                content: contentToSend
+            });
+
+            try {
+                const response = await fetch('/api/openai/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        model: 'gpt-4o',
+                        response_format: { type: "json_object" },
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            ...conversationHistory.slice(-6)
+                        ],
+                        temperature: 0.7
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API Error:', response.status, errorText);
+                    throw new Error(`Error ${response.status}: ${errorText}`);
+                }
+
+                const data = await response.json();
+                const content = data.choices[0].message.content;
+                const cleanContent = content.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+
+                const analysis = JSON.parse(cleanContent);
+                currentAnalysis = analysis;
+
+                // Don't add full JSON to chat, just summary
+                conversationHistory.push({
+                    role: 'assistant',
+                    content: cleanContent
+                });
+
+                renderSystemMap(analysis.system_map);
+                renderRaciMatrix(analysis.raci_matrix);
+                renderInsights(analysis.insights);
+
+                addChatMessage(analysis.summary || 'Analysis updated.', false);
+                setStatus('Analysis updated', 'success');
+
+            } catch (error) {
+                console.error('Full error:', error);
+                setStatus(`Error: ${error.message}`, 'error');
+                addChatMessage(`Error analyzing: ${error.message}. Try again or load demo data.`, false);
+
+                // Offer demo data
+                setTimeout(() => {
+                    if (!currentAnalysis && confirm('Do you want to load demo data?')) {
+                        loadDemoData();
+                    }
+                }, 1000);
+            } finally {
+                analyzeBtn.disabled = false;
+            }
+        }
+
+        let currentTransform = null;
+
+        function renderSystemMap(data) {
+            if (!data || !data.nodes) return;
+
+            const container = d3.select('#system-map-svg');
+            container.selectAll('*').remove();
+
+            const width = document.getElementById('system-map-container').clientWidth;
+            const height = document.getElementById('system-map-container').clientHeight;
+
+            // PREPARE DATA FOR D3
+            // 1. Create a Set of valid Node IDs for validation
+            const nodeIds = new Set(data.nodes.map(n => n.id));
+
+            // 2. Map nodes (shallow copy to avoid mutating original data)
+            const nodes = data.nodes.map(d => ({ ...d }));
+
+            // 3. Map edges: Convert 'from'/'to' to 'source'/'target' and validate
+            const edges = (data.edges || [])
+                .filter(edge => {
+                    if (!nodeIds.has(edge.from)) {
+                        console.warn(`Missing source node: ${edge.from}`);
+                        return false;
+                    }
+                    if (!nodeIds.has(edge.to)) {
+                        console.warn(`Missing target node: ${edge.to}`);
+                        return false;
+                    }
+                    return true;
+                })
+                .map(edge => ({
+                    ...edge,
+                    source: edge.from,
+                    target: edge.to
+                }));
+
+            const svg = container
+                .attr('width', width)
+                .attr('height', height);
+
+            const g = svg.append('g');
+
+            const zoom = d3.zoom()
+                .scaleExtent([0.1, 4])
+                .on('zoom', (event) => {
+                    currentTransform = event.transform;
+                    g.attr('transform', event.transform);
+                });
+
+            svg.call(zoom);
+
+            const simulation = d3.forceSimulation(nodes)
+                .force('link', d3.forceLink(edges)
+                    .id(d => d.id)
+                    .distance(120)
+                    .strength(0.5))
+                .force('charge', d3.forceManyBody().strength(-400))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('collide', d3.forceCollide().radius(40));
+
+            const link = g.append('g')
+                .selectAll('line')
+                .data(edges)
+                .join('line')
+                .attr('stroke-width', 2)
+                .on('mouseover', function (event, d) {
+                    d3.select(this).attr('stroke', '#1946D1').attr('stroke-width', 4);
+                    tooltip.style.opacity = 1;
+                    tooltip.textContent = d.label || d.type;
+                    tooltip.style.left = (event.pageX + 10) + 'px';
+                    tooltip.style.top = (event.pageY - 10) + 'px';
+                })
+                .on('mouseout', function () {
+                    d3.select(this).attr('stroke', 'rgba(25, 70, 209, 0.36)').attr('stroke-width', 2);
+                    tooltip.style.opacity = 0;
+                });
+
+            const node = g.append('g')
+                .selectAll('g')
+                .data(nodes)
+                .join('g')
+                .call(d3.drag()
+                    .on('start', (e, d) => {
+                        if (!e.active) simulation.alphaTarget(0.3).restart();
+                        d.fx = d.x; d.fy = d.y;
+                    })
+                    .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
+                    .on('end', (e, d) => {
+                        if (!e.active) simulation.alphaTarget(0);
+                        d.fx = null; d.fy = null;
+                    }));
+
+            node.append('circle')
+                .attr('r', d => d.category === 'system' ? 24 : 18)
+                .attr('fill', d => {
+                    if (d.category === 'stakeholder') return '#E74530';
+                    if (d.category === 'system') return '#1946D1';
+                    if (d.category === 'decision') return '#A4A760';
+                    return '#181810';
+                })
+                .attr('stroke', '#FFFDF8')
+                .attr('stroke-width', 3)
+                .style('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))');
+
+            node.append('text')
+                .text(d => d.label)
+                .attr('dy', 40)
+                .attr('text-anchor', 'middle')
+                .attr('fill', '#181810')
+                .style('font-size', '11px')
+                .style('font-weight', '600')
+                .style('text-shadow', '0 1px 2px rgba(255,255,255,0.8)');
+
+            simulation.on('tick', () => {
+                link
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+        }
+
+        function resetZoom() {
+            const svg = d3.select('#system-map-svg');
+            const zoom = d3.zoom();
+            svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+            currentTransform = null;
+        }
+
+        function renderRaciMatrix(data) {
+            const container = document.getElementById('raci-container');
+            if (!data || !data.length) {
+                container.innerHTML = '<p class="text-center text-medium-grey">No data</p>';
+                return;
+            }
+
+            let html = '<div class="space-y-2">';
+            data.forEach(row => {
+                html += `<div class="border border-vapor-grey rounded-lg p-2">
+            <p class="font-bold text-near-black text-xs mb-1">${row.activity}</p>
+            <div class="grid grid-cols-2 gap-1 text-xs">
+                <div><span class="font-semibold text-primary">R:</span> ${(row.responsible || []).join(', ') || '-'}</div>
+                <div><span class="font-semibold text-hyper-coral">A:</span> ${(row.accountable || []).join(', ') || '-'}</div>
+                <div><span class="font-semibold text-electric-mint">C:</span> ${(row.consulted || []).join(', ') || '-'}</div>
+                <div><span class="font-semibold text-medium-grey">I:</span> ${(row.informed || []).join(', ') || '-'}</div>
+            </div>
+        </div>`;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function renderInsights(insights) {
+            const container = document.getElementById('insights-container');
+            let html = '';
+
+            const addSection = (title, items, emoji, color) => {
+                if (!items || !items.length) return;
+                html += `<div class="border-l-4 ${color} pl-2">`;
+                html += `<h4 class="text-xs font-bold mb-1">${emoji} ${title}</h4>`;
+                html += '<ul class="space-y-1">';
+                items.forEach(item => html += `<li class="text-xs text-medium-grey">- ${item}</li>`);
+                html += '</ul></div>';
+            };
+
+            if (insights) {
+                addSection('Bottlenecks', insights.bottlenecks, '01', 'border-hyper-coral');
+                addSection('Risks', insights.risks, '02', 'border-yellow-500');
+                addSection('Opportunities', insights.opportunities, '03', 'border-electric-mint');
+                addSection('Conflicts', insights.conflicts, '04', 'border-primary');
+            }
+
+            container.innerHTML = html || '<p class="text-center text-medium-grey">No analysis</p>';
+        }
+
+        function saveCurrentMap() {
+            if (!currentAnalysis) {
+                setStatus('No map to save', 'error');
+                return;
+            }
+
+            const mapData = {
+                analysis: currentAnalysis,
+                history: conversationHistory,
+                timestamp: new Date().toISOString()
+            };
+
+            localStorage.setItem('synapmap_current', JSON.stringify(mapData));
+            setStatus('Map saved', 'success');
+            setTimeout(() => setStatus(''), 2000);
+        }
+
+        function deleteCurrentMap() {
+            if (confirm('Are you sure you want to delete the current map?')) {
+                localStorage.removeItem('synapmap_current');
+                currentAnalysis = null;
+                conversationHistory = [];
+                d3.select('#system-map-svg').selectAll('*').remove();
+                document.getElementById('raci-container').innerHTML = '<p class="text-center text-medium-grey">No data</p>';
+                document.getElementById('insights-container').innerHTML = '<p class="text-center text-medium-grey">No analysis</p>';
+                document.getElementById('chat-container').innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <div class="flex size-10 items-center justify-center rounded-full bg-cyber-lavender/20 text-cyber-lavender flex-shrink-0">
+                            <span class="material-symbols-outlined">hub</span>
+                        </div>
+                        <div class="rounded-2xl rounded-tl-none bg-vapor-grey p-3">
+                            <p class="font-bold text-near-black text-sm">SynapMap</p>
+                            <p class="text-medium-grey text-xs">Describe your project. I will generate a system map with stakeholders, dependencies, bottlenecks, and a RACI matrix.</p>
+                        </div>
+                    </div>`;
+                setStatus('Map deleted', 'success');
+            }
+        }
+
+        function loadSavedMap() {
+            const saved = localStorage.getItem('synapmap_current');
+            if (!saved) return;
+
+            try {
+                const mapData = JSON.parse(saved);
+                currentAnalysis = mapData.analysis;
+                conversationHistory = mapData.history || [];
+
+                renderSystemMap(currentAnalysis.system_map);
+                renderRaciMatrix(currentAnalysis.raci_matrix);
+                renderInsights(currentAnalysis.insights);
+
+                setStatus(`Map loaded`, 'success');
+            } catch (e) {
+                console.error('Error loading map:', e);
+            }
+        }
+
+        function loadDemoData() {
+            const demoAnalysis = {
+                system_map: {
+                    nodes: [
+                        { id: "ceo", label: "CEO (Sarah)", category: "stakeholder" },
+                        { id: "cto", label: "CTO (Mike)", category: "stakeholder" },
+                        { id: "designer", label: "Designer (Lisa)", category: "stakeholder" },
+                        { id: "tech_stack", label: "Tech Stack", category: "decision" },
+                        { id: "mvp", label: "MVP", category: "activity" },
+                        { id: "funding", label: "Funding", category: "system" },
+                        { id: "users", label: "Early Users", category: "stakeholder" }
+                    ],
+                    edges: [
+                        { from: "ceo", to: "tech_stack", type: "decision", label: "Approves" },
+                        { from: "cto", to: "tech_stack", type: "decision", label: "Defines" },
+                        { from: "tech_stack", to: "mvp", type: "dependency", label: "Blocks" },
+                        { from: "designer", to: "mvp", type: "resource", label: "Designs" },
+                        { from: "funding", to: "mvp", type: "resource", label: "Funds" },
+                        { from: "mvp", to: "users", type: "information", label: "Validates" }
+                    ]
+                },
+                raci_matrix: [
+                    { activity: "Tech Stack Definition", responsible: ["Mike"], accountable: ["Sarah"], consulted: ["Lisa"], informed: ["Team"] },
+                    { activity: "MVP Development", responsible: ["Mike"], accountable: ["Sarah"], consulted: ["Lisa"], informed: ["Investors"] },
+                    { activity: "Funding Search", responsible: ["Sarah"], accountable: ["Sarah"], consulted: ["Mike"], informed: ["Team"] }
+                ],
+                insights: {
+                    bottlenecks: ["Tech stack decision is blocking MVP development"],
+                    risks: ["Funding not confirmed yet", "Critical dependency on CTO"],
+                    opportunities: ["Early user validation can improve product"],
+                    conflicts: []
+                },
+                summary: "Demo project: Delivery App with 7 nodes and 6 key dependencies."
+            };
+
+            currentAnalysis = demoAnalysis;
+            renderSystemMap(demoAnalysis.system_map);
+            renderRaciMatrix(demoAnalysis.raci_matrix);
+            renderInsights(demoAnalysis.insights);
+            addChatMessage(demoAnalysis.summary, false);
+            setStatus('Demo data loaded', 'success');
+        }
+    </script>
+
+</body>
+
+</html>

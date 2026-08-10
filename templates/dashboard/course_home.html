@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Dashboard | Vertex 4D</title>
+    <link rel="icon" href="/favicon.ico">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
+    <style type="text/tailwindcss">
+        .noise-texture {
+            position: relative;
+        }
+        .noise-texture::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("/static/brand/textures/paper-grain-overlay.png");
+            opacity: 0.03;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .card-3d {
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+    </style>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+        rel="stylesheet" />
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1946D1",
+                        "cyber-lavender": "#E74530",
+                        "electric-mint": "#A4A760",
+                        "background-light": "#F4EBDC",
+                        "background-dark": "#181810",
+                    },
+                    fontFamily: {
+                        "display": ["Work Sans", "sans-serif"],
+                        "heading": ["Libre Baskerville", "Georgia", "serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="/static/css/vertex4d.css">
+</head>
+
+<body class="app-shell font-display bg-background-light dark:bg-background-dark text-stone-900 dark:text-stone-100 noise-texture">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+
+        <!-- Header -->
+        <header
+            class="app-header sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-stone-200 dark:border-stone-800 px-4 sm:px-6 lg:px-10 py-3 backdrop-blur-sm">
+            <div class="brand-lockup">
+                <span class="brand-mark">SL</span>
+                <span class="brand-wordmark">Srsly Labs</span>
+                <span class="vertex-product-label">Vertex 4D</span>
+            </div>
+
+            <div class="hidden lg:flex flex-1 justify-center gap-8">
+                <a class="app-nav-link transition-colors" href="/dashboard">Workspace</a>
+                <a class="app-nav-link transition-colors" href="/dashboard/lab">Tools</a>
+                <a class="app-nav-link transition-colors" href="/dashboard/orbit">Evidence Orbit</a>
+                <a class="app-nav-link transition-colors"
+                    href="/dashboard/bookings">Sessions</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-sm font-bold hidden sm:block">{{ user.team_name }}</span>
+                    <span
+                        class="flex size-10 items-center justify-center rounded-lg border border-primary bg-white text-xs font-black text-primary">SL</span>
+                </div>
+                <a href="/logout"
+                    class="flex h-10 items-center justify-center gap-2 rounded-lg bg-stone-100 px-3 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 transition-colors text-stone-600 dark:text-stone-400"
+                    title="Logout">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span class="hidden sm:inline text-sm font-bold">Exit</span>
+                </a>
+            </div>
+        </header>
+
+        <main class="px-4 sm:px-6 lg:px-10 flex-1 py-8">
+            <div class="max-w-6xl mx-auto flex flex-col gap-8">
+
+                <div class="flex flex-col gap-2">
+                    <p class="app-kicker">Private workspace</p>
+                    <h1 class="font-heading text-3xl sm:text-4xl font-black tracking-tight min-w-72">
+                        Problem Mapping Workspace
+                    </h1>
+                    <p class="max-w-2xl text-sm sm:text-base text-stone-600">
+                        Read the evidence, name the real problem, and choose the next action with less noise.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+
+                    <!-- Main Content Column -->
+                    <div class="lg:col-span-2 flex flex-col gap-8">
+
+                        <!-- Course Overview Card -->
+                        <div
+                            class="app-card p-5 sm:p-6 bg-white dark:bg-stone-900 shadow-sm card-3d border border-stone-100 dark:border-stone-800">
+                            <div class="flex flex-col sm:flex-row gap-5 sm:items-center">
+                                <div class="app-illustration h-28 w-full sm:w-32 sm:shrink-0">
+                                    <img src="/static/brand/section-illustrations/research.svg" alt="">
+                                </div>
+                                <div class="flex flex-1 flex-col justify-center gap-2">
+                                    <p class="app-kicker">Current work</p>
+                                    <h3 class="font-heading text-xl sm:text-2xl font-bold leading-tight">Frame the problem before designing the solution</h3>
+                                    <p class="text-stone-600 dark:text-stone-400 text-sm sm:text-base mb-2">
+                                        Start by capturing emotional signals, context, system relationships, and the decision that must be made.
+                                    </p>
+                                    <div class="flex flex-wrap gap-3">
+                                        <a href="/dashboard/roadmap"
+                                            class="app-button inline-flex items-center justify-center h-10 px-5 text-sm transition-opacity hover:opacity-90">
+                                            Continue frame
+                                        </a>
+                                        <a href="/dashboard/lab"
+                                            class="app-button-secondary inline-flex items-center justify-center h-10 px-5 text-sm font-bold">
+                                            Open tools
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4D Progress -->
+                        <div
+                            class="app-card p-5 sm:p-6 bg-white dark:bg-stone-900 shadow-sm card-3d border border-stone-100 dark:border-stone-800">
+                            <div class="mb-5 flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="app-kicker">Guided flow</p>
+                                    <h2 class="font-heading text-xl sm:text-2xl font-bold">4D Problem Frame</h2>
+                                </div>
+                                <a href="/dashboard/roadmap" class="app-button-secondary hidden sm:inline-flex h-9 items-center px-4 text-sm font-bold">Open full flow</a>
+                            </div>
+                            <div class="grid gap-3">
+                                <div class="flex items-center gap-3 rounded-lg bg-primary/5 px-3 py-2">
+                                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-electric-mint text-white">
+                                        <span class="material-symbols-outlined text-base">check</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-base font-bold">1. Observe emotional signals</p>
+                                        <p class="text-sm text-stone-500">Trust, fear, motivation, tension.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-3 rounded-lg bg-primary/5 px-3 py-2">
+                                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-electric-mint text-white">
+                                        <span class="material-symbols-outlined text-base">check</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-base font-bold">2. Map context and constraints</p>
+                                        <p class="text-sm text-stone-500">Culture, territory, rules, timing.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/10 px-3 py-2">
+                                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-white">
+                                        <span class="material-symbols-outlined text-base">arrow_forward</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <p class="text-base font-bold text-primary">3. Map system relationships</p>
+                                        <p class="text-sm text-stone-500">Actors, incentives, dependencies. You are here.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-3 rounded-lg px-3 py-2 opacity-55">
+                                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-stone-200 dark:bg-stone-700">
+                                        <span class="material-symbols-outlined text-base text-stone-500">lock</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-base font-bold">4. Name the problem frame</p>
+                                        <p class="text-sm text-stone-500">Question, scope, evidence gaps.</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-3 rounded-lg px-3 py-2 opacity-55">
+                                    <div class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-stone-200 dark:bg-stone-700">
+                                        <span class="material-symbols-outlined text-base text-stone-500">lock</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-base font-bold">5. Prepare decision brief</p>
+                                        <p class="text-sm text-stone-500">What to test, stop, or build next.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar Column -->
+                    <div class="lg:col-span-1 flex flex-col gap-8">
+
+                        <!-- Team Members -->
+                        <div
+                            class="app-card p-5 bg-white dark:bg-stone-900 shadow-sm card-3d border border-stone-100 dark:border-stone-800">
+                            <p class="app-kicker mb-2">Team</p>
+                            <h2 class="font-heading text-xl font-bold mb-4">Your Team</h2>
+                            <div class="flex flex-col gap-4">
+                                {% for member in user.members %}
+                                <div class="flex items-center gap-4">
+                                    <div class="flex aspect-square size-12 items-center justify-center rounded-full border-2 border-primary bg-white text-xs font-black text-primary">SL</div>
+                                    <div>
+                                        <p class="font-bold">{{ member.name }}</p>
+                                        <p class="text-sm text-stone-500">{{ member.email }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Evidence Snapshot -->
+                        <div
+                            class="app-card p-5 bg-white dark:bg-stone-900 shadow-sm card-3d border border-stone-100 dark:border-stone-800">
+                            <p class="app-kicker mb-2">Evidence</p>
+                            <h2 class="font-heading text-xl font-bold mb-4">Snapshot</h2>
+                            <div class="grid gap-3">
+                                <div
+                                    class="app-card-muted rounded-xl border border-primary/10 p-4">
+                                    <p class="text-sm font-bold text-primary">Captured</p>
+                                    <p class="mt-1 text-2xl font-black">12 notes</p>
+                                    <p class="text-sm text-stone-500">Interviews, observations, and working assumptions.</p>
+                                </div>
+                                <div
+                                    class="rounded-xl border border-cyber-lavender/20 bg-cyber-lavender/10 p-4">
+                                    <p class="text-sm font-bold text-primary">Needs attention</p>
+                                    <p class="mt-1 text-2xl font-black">3 gaps</p>
+                                    <p class="text-sm text-stone-500">Missing context before the frame can be trusted.</p>
+                                </div>
+                                <a href="/dashboard/orbit" class="app-button-secondary inline-flex h-10 items-center justify-center text-sm font-bold">
+                                    Review evidence
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Next With Srsly Labs -->
+                        <div
+                            class="app-card p-5 bg-white dark:bg-stone-900 shadow-sm card-3d border border-stone-100 dark:border-stone-800">
+                            <p class="app-kicker mb-2">Next with Srsly Labs</p>
+                            <h2 class="font-heading text-xl font-bold mb-4">Prepare the session</h2>
+                            <div class="flex flex-col gap-4">
+                                <div class="rounded-xl border border-primary/10 bg-primary/5 p-4">
+                                    <p class="font-bold">Bring one messy question</p>
+                                    <p class="mt-1 text-sm text-stone-600 dark:text-stone-400">The best session starts with the problem you are not sure how to name yet.</p>
+                                </div>
+                                <div class="rounded-xl border border-primary/10 p-4">
+                                    <p class="font-bold">Share current evidence</p>
+                                    <p class="mt-1 text-sm text-stone-600 dark:text-stone-400">Upload notes, links, or assumptions before booking time.</p>
+                                </div>
+                                <a href="/dashboard/bookings" class="app-button inline-flex h-10 items-center justify-center text-sm">
+                                    Book session
+                                </a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>
