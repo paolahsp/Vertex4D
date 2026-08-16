@@ -32,10 +32,27 @@
   "bounded_scenario_type": "stakeholder_adoption_resistance",
   "approved_input_references": {
     "system_map_id": "system_map_recircle_v1",
-    "stakeholder_ids": ["stk_cafe_operators", "stk_cafe_staff", "stk_takeaway_customers", "stk_washing_partner"],
-    "relationship_ids": ["rel_founder_cafes", "rel_staff_customers", "rel_washing_cafes"],
-    "assumption_ids": ["asm_deposit_acceptance", "asm_washing_capacity", "asm_staff_training"],
-    "evidence_ids": ["ev_cafe_ops_note", "ev_customer_behavior_note", "ev_washing_logistics_note"]
+    "stakeholder_ids": [
+      "stk_cafe_operators",
+      "stk_cafe_staff",
+      "stk_takeaway_customers",
+      "stk_washing_partner"
+    ],
+    "relationship_ids": [
+      "rel_founder_cafes",
+      "rel_staff_customers",
+      "rel_washing_cafes"
+    ],
+    "assumption_ids": [
+      "asm_deposit_acceptance",
+      "asm_washing_capacity",
+      "asm_staff_training"
+    ],
+    "evidence_ids": [
+      "ev_cafe_ops_note",
+      "ev_customer_behavior_note",
+      "ev_washing_logistics_note"
+    ]
   },
   "assumptions_used": [
     {
@@ -60,28 +77,34 @@
       "simulated_response": "May support a limited pilot if setup is simple and weekly issue resolution is visible.",
       "adoption_likelihood": 0.63,
       "resistance_likelihood": 0.34,
-      "classification": "hypothesis"
+      "classification": "hypothesis",
+      "undecided_likelihood": 0.03
     },
     {
       "stakeholder_id": "stk_cafe_staff",
       "simulated_response": "May resist if customer explanations add queue time during morning peaks.",
       "adoption_likelihood": 0.42,
       "resistance_likelihood": 0.58,
-      "classification": "hypothesis"
+      "classification": "hypothesis",
+      "undecided_likelihood": 0.0
     },
     {
       "stakeholder_id": "stk_takeaway_customers",
       "simulated_response": "May try the service when return points are obvious and deposit language is short.",
       "adoption_likelihood": 0.55,
       "resistance_likelihood": 0.38,
-      "classification": "hypothesis"
+      "classification": "hypothesis",
+      "undecided_likelihood": 0.07
     }
   ],
   "adoption_signals": [
     {
       "signal_id": "sig_visible_return_bin",
       "statement": "Visible return bins near checkout may increase customer confidence.",
-      "stakeholder_ids": ["stk_takeaway_customers", "stk_cafe_staff"],
+      "stakeholder_ids": [
+        "stk_takeaway_customers",
+        "stk_cafe_staff"
+      ],
       "classification": "hypothesis",
       "confidence": 0.57
     }
@@ -90,7 +113,9 @@
     {
       "signal_id": "sig_peak_hour_explanation",
       "statement": "Peak-hour explanation burden may reduce staff enthusiasm.",
-      "stakeholder_ids": ["stk_cafe_staff"],
+      "stakeholder_ids": [
+        "stk_cafe_staff"
+      ],
       "classification": "hypothesis",
       "confidence": 0.62
     }
@@ -99,15 +124,25 @@
     {
       "cascade_id": "cas_staff_short_script",
       "statement": "If staff use a short script successfully in two cafes, other cafes may copy the workflow faster.",
-      "trigger_refs": ["sig_visible_return_bin", "asm_staff_training"],
+      "trigger_refs": [
+        "sig_visible_return_bin",
+        "asm_staff_training"
+      ],
       "classification": "hypothesis",
       "confidence": 0.49
     }
   ],
   "uncertainty": {
     "level": "medium",
-    "drivers": ["small synthetic sample", "unknown repeat return behavior", "no real cafe pilot data"],
-    "unknowns_preserved": ["unk_repeat_return_rate", "unk_container_loss"]
+    "drivers": [
+      "small synthetic sample",
+      "unknown repeat return behavior",
+      "no real cafe pilot data"
+    ],
+    "unknowns_preserved": [
+      "unk_repeat_return_rate",
+      "unk_container_loss"
+    ]
   },
   "limitations": [
     "This is a contract fixture, not an executed simulation.",
@@ -123,5 +158,7 @@
     "external_api_calls_made": false,
     "scenario_count": 1,
     "time_horizon": "six-week five-cafe pilot"
-  }
+  },
+  "revision": 1,
+  "updated_at": "2026-08-16T10:00:00Z"
 }

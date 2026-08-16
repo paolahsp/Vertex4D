@@ -30,7 +30,12 @@
     "country": "Germany",
     "operating_scope": "local"
   },
-  "impact_area": ["climate", "circular_economy", "food_systems", "gender_equity"],
+  "impact_area": [
+    "climate",
+    "circular_economy",
+    "food_systems",
+    "gender_equity"
+  ],
   "cohort_program_context": {
     "program_name": "VERTEX 4D Synthetic Pilot Readiness Lab",
     "cohort_name": "Golden Case v1",
@@ -49,5 +54,7 @@
     "predictive_hypothesis_id": "predictive_hypothesis_recircle_v1",
     "financial_scenario_id": "financial_scenario_recircle_v1",
     "decision_record_id": "decision_record_recircle_v1"
-  }
+  },
+  "revision": 2,
+  "updated_at": "2026-08-16T11:05:00Z"
 }

@@ -19,28 +19,22 @@ The fixtures live in `fixtures/golden-case/v1/`:
 
 The final decision recommends a limited pilot, not a full launch. The next experiment measures first-time uptake, repeat returns, staff explanation time and container loss over six weeks.
 
+## Hardened v1 Semantics
+
+- `ProjectRecord` has `revision` and `updated_at` so current artifact references represent the final fixture snapshot.
+- Evidence objects declare `evidence_context: synthetic_fixture`.
+- Financial assumptions trace from `ProblemFrame` to `SystemMap` to `FinancialScenario`: EUR 0.45 service fee, EUR 0.28 washing and handling cost, EUR 900 setup buffer and 1,800 pilot uses.
+- Predictive responses include adoption, resistance and undecided likelihoods that sum to 1.
+- `DecisionRecord` has a resolving `selected_alternative_id` and structured success criteria.
+
 ## Local Validation
 
-Run:
-
 ```bash
+python -m pip install -r requirements-contracts.txt
 python scripts/validate_contracts.py
+python -m compileall main.py database.py scripts
 ```
 
-The validator checks:
-
-- all schemas are JSON Schema Draft 2020-12 documents
-- all six fixtures validate against their schemas
-- all artifacts use the same `project_id`
-- referenced artifacts exist
-- evidence references resolve
-- stakeholder and relationship references resolve
-- `PredictiveHypothesis` uses only approved `SystemMap` inputs
-- `FinancialScenario` uses only approved financial assumptions
-- `DecisionRecord` references all preceding artifacts
-- predictive hypotheses remain labelled as hypotheses
-- unknowns and limitations are preserved downstream
-- an invalid in-memory fixture fails predictably
+The validator checks official schema validity, fixture validation, cross-artifact references, approval gates, synthetic evidence semantics, assumption provenance, probability semantics, downstream unknown preservation and deterministic negative cases.
 
 No external API calls, LLM calls, database reads or external component imports are required.
-

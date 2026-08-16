@@ -51,13 +51,15 @@
       "evidence_id": "ev_cafe_ops_note",
       "summary": "Synthetic operations evidence shows service speed and staff burden are central constraints.",
       "classification": "fact",
-      "source_artifact_id": "problem_frame_recircle_v1"
+      "source_artifact_id": "problem_frame_recircle_v1",
+      "evidence_context": "synthetic_fixture"
     },
     {
       "evidence_id": "ev_washing_logistics_note",
       "summary": "Synthetic logistics evidence identifies washing reliability as a required pilot condition.",
       "classification": "fact",
-      "source_artifact_id": "system_map_recircle_v1"
+      "source_artifact_id": "system_map_recircle_v1",
+      "evidence_context": "synthetic_fixture"
     }
   ],
   "assumptions": [
@@ -70,6 +72,18 @@
     {
       "assumption_id": "asm_washing_capacity",
       "summary": "Shared washing capacity is approved but still hypothetical.",
+      "classification": "hypothesis",
+      "approval_state": "approved"
+    },
+    {
+      "assumption_id": "asm_service_fee_per_use",
+      "summary": "The EUR 0.45 service fee is a synthetic financial assumption.",
+      "classification": "hypothesis",
+      "approval_state": "approved"
+    },
+    {
+      "assumption_id": "asm_pilot_volume_uses",
+      "summary": "The 1,800-use pilot volume is a synthetic financial assumption.",
       "classification": "hypothesis",
       "approval_state": "approved"
     }
@@ -95,7 +109,9 @@
       "id": "risk_staff_burden",
       "statement": "Staff burden could suppress adoption even if cafe owners like the concept.",
       "classification": "hypothesis",
-      "source_refs": ["predictive_hypothesis_recircle_v1"]
+      "source_refs": [
+        "predictive_hypothesis_recircle_v1"
+      ]
     }
   ],
   "unknowns": [
@@ -103,7 +119,10 @@
       "id": "unk_return_rate_decision",
       "statement": "Repeat return rate and container loss remain unknown.",
       "classification": "unknown",
-      "source_refs": ["unk_repeat_return_rate", "unk_container_loss"]
+      "source_refs": [
+        "unk_repeat_return_rate",
+        "unk_container_loss"
+      ]
     }
   ],
   "contradictions": [
@@ -111,7 +130,10 @@
       "id": "ctr_interest_vs_operations",
       "statement": "Sustainability interest may be high while operational willingness remains uncertain.",
       "classification": "inference",
-      "source_refs": ["ten_sustainability_vs_speed", "sig_peak_hour_explanation"]
+      "source_refs": [
+        "ten_sustainability_vs_speed",
+        "sig_peak_hour_explanation"
+      ]
     }
   ],
   "selected_decision": {
@@ -137,10 +159,46 @@
     "measurement_window": "six weeks"
   },
   "success_criteria": [
-    "At least 25 percent of eligible takeaway orders choose the reusable option in week six.",
-    "At least 70 percent of containers are returned within seven days.",
-    "Median staff explanation time stays under 20 seconds.",
-    "Container loss stays below 10 percent over the pilot."
+    {
+      "criterion_id": "crit_week_six_uptake",
+      "metric": "eligible takeaway orders choosing reusable option in week six",
+      "operator": ">=",
+      "target_value": 25,
+      "unit": "percent",
+      "measurement_window": "week six",
+      "data_source": "synthetic pilot measurement plan",
+      "classification": "hypothesis"
+    },
+    {
+      "criterion_id": "crit_return_rate",
+      "metric": "containers returned within seven days",
+      "operator": ">=",
+      "target_value": 70,
+      "unit": "percent",
+      "measurement_window": "six-week pilot",
+      "data_source": "synthetic pilot measurement plan",
+      "classification": "hypothesis"
+    },
+    {
+      "criterion_id": "crit_staff_explanation_time",
+      "metric": "median staff explanation time",
+      "operator": "<=",
+      "target_value": 20,
+      "unit": "seconds",
+      "measurement_window": "six-week pilot",
+      "data_source": "synthetic pilot measurement plan",
+      "classification": "hypothesis"
+    },
+    {
+      "criterion_id": "crit_container_loss",
+      "metric": "container loss over the pilot",
+      "operator": "<",
+      "target_value": 10,
+      "unit": "percent",
+      "measurement_window": "six-week pilot",
+      "data_source": "synthetic pilot measurement plan",
+      "classification": "hypothesis"
+    }
   ],
   "owner_role": "founder",
   "review_date": "2026-10-01",
@@ -169,7 +227,12 @@
       "timestamp": "2026-08-16T11:00:00Z",
       "actor_role": "facilitator",
       "action": "approved_limited_pilot_decision_fixture",
-      "artifact_refs": ["decision_record_recircle_v1"]
+      "artifact_refs": [
+        "decision_record_recircle_v1"
+      ]
     }
-  ]
+  ],
+  "revision": 1,
+  "updated_at": "2026-08-16T10:45:00Z",
+  "selected_alternative_id": "alt_limited_pilot"
 }

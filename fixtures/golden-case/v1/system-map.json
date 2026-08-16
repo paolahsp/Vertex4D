@@ -32,8 +32,13 @@
       "role": "founder_team",
       "influence": "high",
       "interest": "high",
-      "incentives": ["prove pilot feasibility", "avoid overbuilding before adoption evidence"],
-      "evidence_refs": ["ev_cafe_ops_note"],
+      "incentives": [
+        "prove pilot feasibility",
+        "avoid overbuilding before adoption evidence"
+      ],
+      "evidence_refs": [
+        "ev_cafe_ops_note"
+      ],
       "is_identifiable_person": false
     },
     {
@@ -42,8 +47,14 @@
       "role": "customer_segment",
       "influence": "high",
       "interest": "medium",
-      "incentives": ["reduce waste", "avoid slower service", "maintain customer goodwill"],
-      "evidence_refs": ["ev_cafe_ops_note"],
+      "incentives": [
+        "reduce waste",
+        "avoid slower service",
+        "maintain customer goodwill"
+      ],
+      "evidence_refs": [
+        "ev_cafe_ops_note"
+      ],
       "is_identifiable_person": false
     },
     {
@@ -52,8 +63,13 @@
       "role": "operator",
       "influence": "high",
       "interest": "medium",
-      "incentives": ["keep queue moving", "avoid explaining confusing rules"],
-      "evidence_refs": ["ev_cafe_ops_note"],
+      "incentives": [
+        "keep queue moving",
+        "avoid explaining confusing rules"
+      ],
+      "evidence_refs": [
+        "ev_cafe_ops_note"
+      ],
       "is_identifiable_person": false
     },
     {
@@ -62,8 +78,14 @@
       "role": "customer_segment",
       "influence": "medium",
       "interest": "medium",
-      "incentives": ["convenience", "low deposit friction", "visible sustainability"],
-      "evidence_refs": ["ev_customer_behavior_note"],
+      "incentives": [
+        "convenience",
+        "low deposit friction",
+        "visible sustainability"
+      ],
+      "evidence_refs": [
+        "ev_customer_behavior_note"
+      ],
       "is_identifiable_person": false
     },
     {
@@ -72,8 +94,13 @@
       "role": "partner",
       "influence": "medium",
       "interest": "medium",
-      "incentives": ["predictable pickup route", "container quality control"],
-      "evidence_refs": ["ev_washing_logistics_note"],
+      "incentives": [
+        "predictable pickup route",
+        "container quality control"
+      ],
+      "evidence_refs": [
+        "ev_washing_logistics_note"
+      ],
       "is_identifiable_person": false
     }
   ],
@@ -85,7 +112,9 @@
       "relationship_type": "service_exchange",
       "label": "Pilot onboarding and weekly service support",
       "strength": "high",
-      "evidence_refs": ["ev_cafe_ops_note"]
+      "evidence_refs": [
+        "ev_cafe_ops_note"
+      ]
     },
     {
       "relationship_id": "rel_staff_customers",
@@ -94,7 +123,9 @@
       "relationship_type": "information_flow",
       "label": "Staff explain deposit and return process at point of sale",
       "strength": "medium",
-      "evidence_refs": ["ev_customer_behavior_note"]
+      "evidence_refs": [
+        "ev_customer_behavior_note"
+      ]
     },
     {
       "relationship_id": "rel_washing_cafes",
@@ -103,7 +134,9 @@
       "relationship_type": "resource_flow",
       "label": "Clean containers and pickup schedule support cafe operations",
       "strength": "high",
-      "evidence_refs": ["ev_washing_logistics_note"]
+      "evidence_refs": [
+        "ev_washing_logistics_note"
+      ]
     }
   ],
   "tensions": [
@@ -112,7 +145,10 @@
       "statement": "The service depends on staff explanations, but staff time is limited.",
       "classification": "inference",
       "confidence": 0.71,
-      "evidence_refs": ["ev_cafe_ops_note", "ev_customer_behavior_note"]
+      "evidence_refs": [
+        "ev_cafe_ops_note",
+        "ev_customer_behavior_note"
+      ]
     }
   ],
   "dependencies": [
@@ -121,7 +157,9 @@
       "statement": "Cafe adoption depends on reliable pickup and clean-container return.",
       "classification": "hypothesis",
       "confidence": 0.67,
-      "evidence_refs": ["ev_washing_logistics_note"]
+      "evidence_refs": [
+        "ev_washing_logistics_note"
+      ]
     }
   ],
   "evidence_references": [
@@ -130,20 +168,31 @@
       "label": "Synthetic cafe operations note",
       "source_type": "synthetic_interview_note",
       "classification": "fact",
-      "contains_personal_data": false
+      "contains_personal_data": false,
+      "evidence_context": "synthetic_fixture"
     },
     {
       "evidence_id": "ev_customer_behavior_note",
       "label": "Synthetic takeaway behavior note",
       "source_type": "synthetic_observation",
       "classification": "fact",
-      "contains_personal_data": false
+      "contains_personal_data": false,
+      "evidence_context": "synthetic_fixture"
     },
     {
       "evidence_id": "ev_washing_logistics_note",
       "label": "Synthetic washing logistics note",
       "source_type": "synthetic_market_note",
       "classification": "fact",
+      "contains_personal_data": false,
+      "evidence_context": "synthetic_fixture"
+    },
+    {
+      "evidence_id": "ev_synthetic_financial_note",
+      "label": "Synthetic pilot finance note",
+      "source_type": "synthetic_financial_note",
+      "classification": "fact",
+      "evidence_context": "synthetic_fixture",
       "contains_personal_data": false
     }
   ],
@@ -157,8 +206,17 @@
     }
   ],
   "system_boundaries": {
-    "included": ["five cafes", "customers using takeaway containers", "washing pickup", "deposit and return communication"],
-    "excluded": ["citywide rollout", "consumer app marketplace", "full logistics optimization"],
+    "included": [
+      "five cafes",
+      "customers using takeaway containers",
+      "washing pickup",
+      "deposit and return communication"
+    ],
+    "excluded": [
+      "citywide rollout",
+      "consumer app marketplace",
+      "full logistics optimization"
+    ],
     "time_horizon": "six-week pilot preparation and test window",
     "geography": "Berlin neighborhood cluster"
   },
@@ -168,21 +226,58 @@
       "source_artifact_id": "problem_frame_recircle_v1",
       "statement": "A small refundable deposit will not materially suppress first-time trial.",
       "approved_for_predictive_processing": true,
-      "approved_for_financial_processing": true
+      "approved_for_financial_processing": true,
+      "approval_state": "approved"
     },
     {
       "assumption_id": "asm_washing_capacity",
       "source_artifact_id": "problem_frame_recircle_v1",
       "statement": "A shared washing pickup twice per week can support five cafes during a small pilot.",
       "approved_for_predictive_processing": true,
-      "approved_for_financial_processing": true
+      "approved_for_financial_processing": true,
+      "approval_state": "approved"
     },
     {
       "assumption_id": "asm_staff_training",
       "source_artifact_id": "problem_frame_recircle_v1",
       "statement": "A fifteen-minute staff briefing is enough for cafe teams to explain the service.",
       "approved_for_predictive_processing": true,
-      "approved_for_financial_processing": false
+      "approved_for_financial_processing": false,
+      "approval_state": "approved"
+    },
+    {
+      "assumption_id": "asm_service_fee_per_use",
+      "source_artifact_id": "problem_frame_recircle_v1",
+      "statement": "The pilot service fee is EUR 0.45 per container use.",
+      "approval_state": "approved",
+      "approved_for_predictive_processing": false,
+      "approved_for_financial_processing": true
+    },
+    {
+      "assumption_id": "asm_washing_handling_cost_per_use",
+      "source_artifact_id": "problem_frame_recircle_v1",
+      "statement": "Washing and handling cost is EUR 0.28 per container use.",
+      "approval_state": "approved",
+      "approved_for_predictive_processing": false,
+      "approved_for_financial_processing": true
+    },
+    {
+      "assumption_id": "asm_setup_buffer",
+      "source_artifact_id": "problem_frame_recircle_v1",
+      "statement": "The five-cafe pilot needs a EUR 900 setup buffer.",
+      "approval_state": "approved",
+      "approved_for_predictive_processing": false,
+      "approved_for_financial_processing": true
+    },
+    {
+      "assumption_id": "asm_pilot_volume_uses",
+      "source_artifact_id": "problem_frame_recircle_v1",
+      "statement": "The six-week five-cafe pilot volume is 1,800 container uses.",
+      "approval_state": "approved",
+      "approved_for_predictive_processing": false,
+      "approved_for_financial_processing": true
     }
-  ]
+  ],
+  "revision": 1,
+  "updated_at": "2026-08-16T09:30:00Z"
 }

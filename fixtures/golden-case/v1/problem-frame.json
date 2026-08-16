@@ -35,13 +35,17 @@
       "user_group_id": "ug_cafe_operators",
       "label": "Independent cafe operators",
       "classification": "fact",
-      "evidence_refs": ["ev_cafe_ops_note"]
+      "evidence_refs": [
+        "ev_cafe_ops_note"
+      ]
     },
     {
       "user_group_id": "ug_takeaway_customers",
       "label": "Takeaway customers",
       "classification": "inference",
-      "evidence_refs": ["ev_customer_behavior_note"]
+      "evidence_refs": [
+        "ev_customer_behavior_note"
+      ]
     }
   ],
   "needs": [
@@ -50,14 +54,18 @@
       "statement": "Customers need a return flow that is visible and low effort.",
       "classification": "hypothesis",
       "confidence": 0.64,
-      "evidence_refs": ["ev_customer_behavior_note"]
+      "evidence_refs": [
+        "ev_customer_behavior_note"
+      ]
     },
     {
       "id": "need_simple_cafe_workflow",
       "statement": "Cafe staff need a workflow that does not slow peak-hour service.",
       "classification": "hypothesis",
       "confidence": 0.69,
-      "evidence_refs": ["ev_cafe_ops_note"]
+      "evidence_refs": [
+        "ev_cafe_ops_note"
+      ]
     }
   ],
   "assumptions": [
@@ -69,7 +77,9 @@
       "approval_state": "approved",
       "approved_for_predictive_processing": true,
       "approved_for_financial_processing": true,
-      "evidence_refs": ["ev_customer_behavior_note"]
+      "evidence_refs": [
+        "ev_customer_behavior_note"
+      ]
     },
     {
       "assumption_id": "asm_washing_capacity",
@@ -79,7 +89,9 @@
       "approval_state": "approved",
       "approved_for_predictive_processing": true,
       "approved_for_financial_processing": true,
-      "evidence_refs": ["ev_washing_logistics_note"]
+      "evidence_refs": [
+        "ev_washing_logistics_note"
+      ]
     },
     {
       "assumption_id": "asm_staff_training",
@@ -89,7 +101,57 @@
       "approval_state": "approved",
       "approved_for_predictive_processing": true,
       "approved_for_financial_processing": false,
-      "evidence_refs": ["ev_cafe_ops_note"]
+      "evidence_refs": [
+        "ev_cafe_ops_note"
+      ]
+    },
+    {
+      "assumption_id": "asm_service_fee_per_use",
+      "statement": "The pilot service fee is EUR 0.45 per container use.",
+      "classification": "hypothesis",
+      "confidence": 0.5,
+      "approval_state": "approved",
+      "approved_for_predictive_processing": false,
+      "approved_for_financial_processing": true,
+      "evidence_refs": [
+        "ev_synthetic_financial_note"
+      ]
+    },
+    {
+      "assumption_id": "asm_washing_handling_cost_per_use",
+      "statement": "Washing and handling cost is EUR 0.28 per container use.",
+      "classification": "hypothesis",
+      "confidence": 0.5,
+      "approval_state": "approved",
+      "approved_for_predictive_processing": false,
+      "approved_for_financial_processing": true,
+      "evidence_refs": [
+        "ev_synthetic_financial_note"
+      ]
+    },
+    {
+      "assumption_id": "asm_setup_buffer",
+      "statement": "The five-cafe pilot needs a EUR 900 setup buffer.",
+      "classification": "hypothesis",
+      "confidence": 0.5,
+      "approval_state": "approved",
+      "approved_for_predictive_processing": false,
+      "approved_for_financial_processing": true,
+      "evidence_refs": [
+        "ev_synthetic_financial_note"
+      ]
+    },
+    {
+      "assumption_id": "asm_pilot_volume_uses",
+      "statement": "The six-week five-cafe pilot volume is 1,800 container uses.",
+      "classification": "hypothesis",
+      "confidence": 0.5,
+      "approval_state": "approved",
+      "approved_for_predictive_processing": false,
+      "approved_for_financial_processing": true,
+      "evidence_refs": [
+        "ev_synthetic_financial_note"
+      ]
     }
   ],
   "tensions": [
@@ -98,7 +160,9 @@
       "statement": "Sustainability goals may conflict with fast counter service during rush periods.",
       "classification": "inference",
       "confidence": 0.7,
-      "evidence_refs": ["ev_cafe_ops_note"]
+      "evidence_refs": [
+        "ev_cafe_ops_note"
+      ]
     }
   ],
   "evidence_references": [
@@ -107,20 +171,31 @@
       "label": "Synthetic cafe operations note",
       "source_type": "synthetic_interview_note",
       "classification": "fact",
-      "contains_personal_data": false
+      "contains_personal_data": false,
+      "evidence_context": "synthetic_fixture"
     },
     {
       "evidence_id": "ev_customer_behavior_note",
       "label": "Synthetic takeaway behavior note",
       "source_type": "synthetic_observation",
       "classification": "fact",
-      "contains_personal_data": false
+      "contains_personal_data": false,
+      "evidence_context": "synthetic_fixture"
     },
     {
       "evidence_id": "ev_washing_logistics_note",
       "label": "Synthetic washing logistics note",
       "source_type": "synthetic_market_note",
       "classification": "fact",
+      "contains_personal_data": false,
+      "evidence_context": "synthetic_fixture"
+    },
+    {
+      "evidence_id": "ev_synthetic_financial_note",
+      "label": "Synthetic pilot finance note",
+      "source_type": "synthetic_financial_note",
+      "classification": "fact",
+      "evidence_context": "synthetic_fixture",
       "contains_personal_data": false
     }
   ],
@@ -138,26 +213,38 @@
       "summary": "Cafe teams may feel proud of a visible sustainability move but anxious about queues and complaints.",
       "classification": "inference",
       "confidence": 0.61,
-      "evidence_refs": ["ev_cafe_ops_note"]
+      "evidence_refs": [
+        "ev_cafe_ops_note"
+      ]
     },
     "contextual": {
       "summary": "Berlin cafes operate in a context of high sustainability awareness and tight service constraints.",
       "classification": "inference",
       "confidence": 0.66,
-      "evidence_refs": ["ev_cafe_ops_note", "ev_customer_behavior_note"]
+      "evidence_refs": [
+        "ev_cafe_ops_note",
+        "ev_customer_behavior_note"
+      ]
     },
     "systemic": {
       "summary": "The reuse loop depends on cafes, customers, washing pickup, inventory buffers and deposit trust working together.",
       "classification": "inference",
       "confidence": 0.74,
-      "evidence_refs": ["ev_washing_logistics_note"]
+      "evidence_refs": [
+        "ev_washing_logistics_note"
+      ]
     },
     "problem_framing": {
       "summary": "The first test should measure operating friction and repeat behavior, not brand interest alone.",
       "classification": "hypothesis",
       "confidence": 0.68,
-      "evidence_refs": ["ev_cafe_ops_note", "ev_customer_behavior_note"]
+      "evidence_refs": [
+        "ev_cafe_ops_note",
+        "ev_customer_behavior_note"
+      ]
     }
   },
-  "approval_state": "approved_for_system_mapping"
+  "approval_state": "approved_for_system_mapping",
+  "revision": 1,
+  "updated_at": "2026-08-16T09:10:00Z"
 }

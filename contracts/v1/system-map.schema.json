@@ -1,7 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://vertex4d.local/contracts/v1/system-map.schema.json",
-  "title": "VERTEX 4D SystemMap v1",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -23,35 +20,625 @@
     "evidence_references",
     "unknowns",
     "system_boundaries",
-    "approved_assumptions"
+    "approved_assumptions",
+    "revision",
+    "updated_at"
   ],
   "properties": {
-    "schema_version": { "type": "string", "const": "1.0.0" },
-    "artifact_type": { "type": "string", "const": "system_map" },
-    "artifact_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
-    "project_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
-    "created_at": { "type": "string", "format": "date-time" },
-    "created_by_role": { "type": "string", "enum": ["synapmap", "founder", "facilitator", "system"] },
-    "status": { "type": "string", "enum": ["draft", "pending_review", "approved", "rejected", "superseded"] },
-    "provenance": { "type": "object" },
-    "human_approval": { "type": "object" },
-    "validation_errors": { "type": "array" },
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "artifact_type": {
+      "type": "string",
+      "const": "system_map"
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "project_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "created_by_role": {
+      "type": "string",
+      "enum": [
+        "founder",
+        "facilitator",
+        "admin",
+        "system",
+        "alex",
+        "synapmap",
+        "d_predict",
+        "finops"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending_review",
+        "approved",
+        "rejected",
+        "superseded"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "source_label",
+        "ip_owner",
+        "external_components_used",
+        "notes"
+      ],
+      "properties": {
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "synthetic_fixture",
+            "user_supplied",
+            "imported",
+            "system_generated"
+          ]
+        },
+        "source_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ip_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "external_components_used": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "human_approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "state",
+        "approved_by_role",
+        "approved_at",
+        "notes"
+      ],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "approved_by_role": {
+          "type": "string",
+          "enum": [
+            "founder",
+            "facilitator",
+            "admin"
+          ]
+        },
+        "approved_at": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "validation_errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
     "preceding_artifacts": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["project_record_id", "problem_frame_id"],
+      "required": [
+        "project_record_id",
+        "problem_frame_id"
+      ],
       "properties": {
-        "project_record_id": { "type": "string" },
-        "problem_frame_id": { "type": "string" }
+        "project_record_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "problem_frame_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        }
       }
     },
-    "stakeholders": { "type": "array" },
-    "relationships": { "type": "array" },
-    "tensions": { "type": "array" },
-    "dependencies": { "type": "array" },
-    "evidence_references": { "type": "array" },
-    "unknowns": { "type": "array" },
-    "system_boundaries": { "type": "object" },
-    "approved_assumptions": { "type": "array" }
-  }
+    "stakeholders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stakeholder_id",
+          "label",
+          "role",
+          "influence",
+          "interest",
+          "incentives",
+          "evidence_refs",
+          "is_identifiable_person"
+        ],
+        "properties": {
+          "stakeholder_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "founder_team",
+              "customer_segment",
+              "operator",
+              "supplier",
+              "facilitator",
+              "regulator",
+              "community",
+              "partner"
+            ]
+          },
+          "influence": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "interest": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "incentives": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "is_identifiable_person": {
+            "type": "boolean",
+            "const": false
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "relationship_id",
+          "from_stakeholder_id",
+          "to_stakeholder_id",
+          "relationship_type",
+          "label",
+          "strength",
+          "evidence_refs"
+        ],
+        "properties": {
+          "relationship_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "from_stakeholder_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "to_stakeholder_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "relationship_type": {
+            "type": "string",
+            "enum": [
+              "dependency",
+              "information_flow",
+              "resource_flow",
+              "approval",
+              "service_exchange",
+              "risk_transfer"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "strength": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "tensions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement",
+          "classification",
+          "confidence",
+          "evidence_refs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement",
+          "classification",
+          "confidence",
+          "evidence_refs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "evidence_references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "evidence_id",
+          "label",
+          "source_type",
+          "classification",
+          "contains_personal_data",
+          "evidence_context"
+        ],
+        "properties": {
+          "evidence_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_type": {
+            "type": "string",
+            "enum": [
+              "synthetic_interview_note",
+              "synthetic_observation",
+              "synthetic_market_note",
+              "synthetic_financial_note"
+            ]
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "contains_personal_data": {
+            "type": "boolean"
+          },
+          "evidence_context": {
+            "type": "string",
+            "const": "synthetic_fixture"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement",
+          "classification",
+          "confidence",
+          "evidence_refs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "confidence": {
+            "type": "integer"
+          },
+          "evidence_refs": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "system_boundaries": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "included",
+        "excluded",
+        "time_horizon",
+        "geography"
+      ],
+      "properties": {
+        "included": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "excluded": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "time_horizon": {
+          "type": "string",
+          "minLength": 1
+        },
+        "geography": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "approved_assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assumption_id",
+          "source_artifact_id",
+          "statement",
+          "approved_for_predictive_processing",
+          "approved_for_financial_processing",
+          "approval_state"
+        ],
+        "properties": {
+          "assumption_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "source_artifact_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approved_for_predictive_processing": {
+            "type": "boolean"
+          },
+          "approved_for_financial_processing": {
+            "type": "boolean"
+          },
+          "approval_state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "approved",
+              "rejected",
+              "approved_for_system_mapping",
+              "approved_for_decision_record",
+              "approved_for_financial_processing",
+              "pending_founder_review",
+              "pending_financial_review"
+            ]
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updated_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vertex4d.local/contracts/v1/system-map.schema.json",
+  "title": "VERTEX 4D system_map v1",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "approved"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "human_approval": {
+            "properties": {
+              "state": {
+                "const": "approved"
+              },
+              "approved_by_role": {
+                "type": "string"
+              },
+              "approved_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

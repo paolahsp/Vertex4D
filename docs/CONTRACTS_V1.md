@@ -2,52 +2,61 @@
 
 These contracts define the first integration foundation for the VERTEX 4D journey. They do not integrate Alex, SynapMap, D-Predict, MiroFish, FinOps or Billie code.
 
+## Validation Model
+
+Contract validation has two layers:
+
+1. Official JSON Schema Draft 2020-12 validation with Python `jsonschema`, `Draft202012Validator.check_schema()`, `Draft202012Validator` and `FormatChecker`.
+2. Business-rule validation in `scripts/validate_contracts.py` for cross-artifact references and policy rules JSON Schema cannot fully express.
+
+Checking `$schema` alone does not prove a schema is valid; the official validator checks each schema before validating fixtures.
+
 ## Artifact Sequence
 
-1. `ProjectRecord` creates the project container, synthetic-data declaration and current artifact references.
+1. `ProjectRecord` creates the project container, synthetic-data declaration, revision metadata and current artifact references.
 2. `ProblemFrame` represents future Alex output: original challenge, reframed problem, needs, assumptions, tensions, unknowns and Four Dimensions analysis.
 3. `SystemMap` represents future SynapMap output: stakeholders, roles, relationships, dependencies, tensions, evidence references, boundaries and approved assumptions.
 4. `PredictiveHypothesis` represents a future internal D-Predict scenario result. It is always a bounded simulation hypothesis.
 5. `FinancialScenario` represents a future FinOps adapter output. It is a contract, not a calculator.
 6. `DecisionRecord` is the final VERTEX artifact. It links all upstream artifacts and preserves evidence, assumptions, hypotheses, risks and unknowns.
 
-## Approval Gates
+## Approval Conditions
 
-Human approval is explicit in every artifact through `human_approval`.
+Every artifact carries `human_approval`. The validator rejects contradictory approval states.
 
-- `ProblemFrame` must be approved before system mapping.
+- `status=approved` requires `human_approval.state=approved`, `approved_by_role` and `approved_at`.
+- `ProblemFrame` can enter `SystemMap` only when `approval_state=approved_for_system_mapping`.
 - `SystemMap` must be approved before predictive or financial processing.
-- `PredictiveHypothesis` must be reviewed as a hypothesis before it can be summarized in a decision record.
-- `FinancialScenario` must be approved as fixture or calculated output before it can be summarized in a decision record.
+- `PredictiveHypothesis` and `FinancialScenario` must be reviewed before `DecisionRecord` inclusion.
 - `DecisionRecord` requires facilitator approval.
 
 ## Classification Boundaries
 
-`fact` means a traceable source supports the statement.
+`fact` means a traceable source supports the statement inside its declared context. `inference` is a derived interpretation. `hypothesis` needs testing. `unknown` must be preserved rather than filled.
 
-`inference` means VERTEX or a human reviewer derived a reasonable interpretation from facts.
+## Synthetic Evidence
 
-`hypothesis` means the statement needs testing. Assumptions, simulations and fixture financial values remain hypotheses.
+Every evidence object includes `evidence_context: synthetic_fixture`. A synthetic note can be a fact inside the fictional golden case, but it is not real-world evidence. The validator rejects non-synthetic evidence in the golden case.
 
-`unknown` means VERTEX must preserve uncertainty rather than filling the gap.
+## Assumption Provenance
 
-## PredictiveHypothesis Is Not Evidence
+Assumptions originate in `ProblemFrame`, are carried into `SystemMap`, and can only be used downstream if approval flags allow it. `SystemMap` cannot introduce new assumptions, silently change assumption statements or escalate unapproved assumptions.
 
-`PredictiveHypothesis` has `classification: predictive_hypothesis` and carries this required warning:
+Financial assumptions for service fee, washing cost, setup buffer and pilot volume are separate from operational assumptions such as deposit acceptance, washing capacity and staff training.
 
-> This output is a bounded simulation hypothesis. It is not direct evidence, a factual prediction or a conclusion about identifiable people.
+## Predictive Semantics
 
-The `DecisionRecord` may summarize predictive hypotheses, but it must not convert them into evidence or facts.
+`PredictiveHypothesis` is bounded to `stakeholder_adoption_resistance`. Every simulated response includes adoption, resistance and undecided likelihoods; the validator checks that they sum to 1 within tolerance.
 
-## Future Adapters
+`PredictiveHypothesis` has `classification: predictive_hypothesis` and carries the required not-evidence warning. The `DecisionRecord` may summarize predictive hypotheses, but it must never convert them into evidence or facts.
 
-Future adapters should connect existing components through these contracts:
+## Structured Success Criteria
 
-- Alex writes `ProblemFrame`.
-- SynapMap reads approved `ProblemFrame` material and writes `SystemMap`.
-- D-Predict reads approved `SystemMap` inputs and writes `PredictiveHypothesis`.
-- FinOps reads approved assumptions through a future adapter and writes `FinancialScenario`.
-- VERTEX assembles `DecisionRecord`.
+Decision success criteria are structured objects with `criterion_id`, `metric`, `operator`, `target_value`, `unit`, `measurement_window`, `data_source` and `classification`.
 
-Adapters must not pass secrets, credentials, identifiable-person records or unapproved inputs into predictive processing.
+## Local Setup
 
+```bash
+python -m pip install -r requirements-contracts.txt
+python scripts/validate_contracts.py
+```

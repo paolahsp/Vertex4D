@@ -1,7 +1,4 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://vertex4d.local/contracts/v1/decision-record.schema.json",
-  "title": "VERTEX 4D DecisionRecord v1",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -33,37 +30,794 @@
     "owner_role",
     "review_date",
     "facilitator_approval",
-    "audit_trail"
+    "audit_trail",
+    "revision",
+    "updated_at",
+    "selected_alternative_id"
   ],
   "properties": {
-    "schema_version": { "type": "string", "const": "1.0.0" },
-    "artifact_type": { "type": "string", "const": "decision_record" },
-    "artifact_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
-    "project_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
-    "created_at": { "type": "string", "format": "date-time" },
-    "created_by_role": { "type": "string", "enum": ["founder", "facilitator", "system"] },
-    "status": { "type": "string", "enum": ["draft", "pending_review", "approved", "rejected", "superseded"] },
-    "provenance": { "type": "object" },
-    "human_approval": { "type": "object" },
-    "validation_errors": { "type": "array" },
-    "linked_upstream_artifact_ids": { "type": "object" },
-    "decision_question": { "type": "string" },
-    "alternatives_considered": { "type": "array" },
-    "evidence_summary": { "type": "array" },
-    "assumptions": { "type": "array" },
-    "predictive_hypotheses": { "type": "array" },
-    "financial_scenarios": { "type": "array" },
-    "risks": { "type": "array" },
-    "unknowns": { "type": "array" },
-    "contradictions": { "type": "array" },
-    "selected_decision": { "type": "object" },
-    "rationale": { "type": "string" },
-    "rejected_alternatives": { "type": "array" },
-    "next_experiment": { "type": "object" },
-    "success_criteria": { "type": "array" },
-    "owner_role": { "type": "string", "enum": ["founder", "facilitator", "admin"] },
-    "review_date": { "type": "string", "format": "date" },
-    "facilitator_approval": { "type": "object" },
-    "audit_trail": { "type": "array" }
-  }
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "artifact_type": {
+      "type": "string",
+      "const": "decision_record"
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "project_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "created_by_role": {
+      "type": "string",
+      "enum": [
+        "founder",
+        "facilitator",
+        "admin",
+        "system",
+        "alex",
+        "synapmap",
+        "d_predict",
+        "finops"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending_review",
+        "approved",
+        "rejected",
+        "superseded"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "source_label",
+        "ip_owner",
+        "external_components_used",
+        "notes"
+      ],
+      "properties": {
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "synthetic_fixture",
+            "user_supplied",
+            "imported",
+            "system_generated"
+          ]
+        },
+        "source_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ip_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "external_components_used": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "human_approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "state",
+        "approved_by_role",
+        "approved_at",
+        "notes"
+      ],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "approved_by_role": {
+          "type": "string",
+          "enum": [
+            "founder",
+            "facilitator",
+            "admin"
+          ]
+        },
+        "approved_at": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "validation_errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "linked_upstream_artifact_ids": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_record_id",
+        "problem_frame_id",
+        "system_map_id",
+        "predictive_hypothesis_id",
+        "financial_scenario_id"
+      ],
+      "properties": {
+        "project_record_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "problem_frame_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "system_map_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "predictive_hypothesis_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "financial_scenario_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        }
+      }
+    },
+    "decision_question": {
+      "type": "string",
+      "minLength": 1
+    },
+    "alternatives_considered": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "alternative_id",
+          "statement",
+          "classification"
+        ],
+        "properties": {
+          "alternative_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "evidence_summary": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "evidence_id",
+          "summary",
+          "classification",
+          "source_artifact_id",
+          "evidence_context"
+        ],
+        "properties": {
+          "evidence_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "source_artifact_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "evidence_context": {
+            "type": "string",
+            "const": "synthetic_fixture"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assumption_id",
+          "summary",
+          "classification",
+          "approval_state"
+        ],
+        "properties": {
+          "assumption_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "approval_state": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "approved",
+              "rejected",
+              "approved_for_system_mapping",
+              "approved_for_decision_record",
+              "approved_for_financial_processing",
+              "pending_founder_review",
+              "pending_financial_review"
+            ]
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "predictive_hypotheses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "hypothesis_id",
+          "summary",
+          "classification",
+          "not_evidence"
+        ],
+        "properties": {
+          "hypothesis_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "not_evidence": {
+            "type": "boolean",
+            "const": true
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "financial_scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "financial_scenario_id",
+          "summary",
+          "classification",
+          "uses_fixture_values"
+        ],
+        "properties": {
+          "financial_scenario_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "summary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "uses_fixture_values": {
+            "type": "boolean"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement",
+          "classification",
+          "source_refs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "unknowns": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement",
+          "classification",
+          "source_refs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "contradictions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "statement",
+          "classification",
+          "source_refs"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "source_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "selected_decision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "decision_id",
+        "statement",
+        "decision_type"
+      ],
+      "properties": {
+        "decision_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "decision_type": {
+          "type": "string",
+          "enum": [
+            "limited_pilot",
+            "continue_discovery",
+            "pause",
+            "full_launch"
+          ]
+        }
+      }
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1
+    },
+    "rejected_alternatives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "alternative_id",
+          "reason"
+        ],
+        "properties": {
+          "alternative_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "next_experiment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "experiment_id",
+        "statement",
+        "owner_role",
+        "measurement_window"
+      ],
+      "properties": {
+        "experiment_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "owner_role": {
+          "type": "string",
+          "enum": [
+            "founder",
+            "facilitator",
+            "admin"
+          ]
+        },
+        "measurement_window": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "success_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "criterion_id",
+          "metric",
+          "operator",
+          "target_value",
+          "unit",
+          "measurement_window",
+          "data_source",
+          "classification"
+        ],
+        "properties": {
+          "criterion_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "metric": {
+            "type": "string",
+            "minLength": 1
+          },
+          "operator": {
+            "type": "string",
+            "enum": [
+              ">=",
+              "<=",
+              ">",
+              "<",
+              "="
+            ]
+          },
+          "target_value": {
+            "type": "integer"
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "measurement_window": {
+            "type": "string",
+            "minLength": 1
+          },
+          "data_source": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "owner_role": {
+      "type": "string",
+      "enum": [
+        "founder",
+        "facilitator",
+        "admin"
+      ]
+    },
+    "review_date": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date"
+    },
+    "facilitator_approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "state",
+        "approved_by_role",
+        "approved_at",
+        "notes"
+      ],
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "approved_by_role": {
+          "type": "string",
+          "enum": [
+            "founder",
+            "facilitator",
+            "admin"
+          ]
+        },
+        "approved_at": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "audit_trail": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "event_id",
+          "timestamp",
+          "actor_role",
+          "action",
+          "artifact_refs"
+        ],
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "timestamp": {
+            "type": "string",
+            "minLength": 1,
+            "format": "date-time"
+          },
+          "actor_role": {
+            "type": "string",
+            "minLength": 1
+          },
+          "action": {
+            "type": "string",
+            "minLength": 1
+          },
+          "artifact_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updated_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "selected_alternative_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vertex4d.local/contracts/v1/decision-record.schema.json",
+  "title": "VERTEX 4D decision_record v1",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "approved"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "human_approval": {
+            "properties": {
+              "state": {
+                "const": "approved"
+              },
+              "approved_by_role": {
+                "type": "string"
+              },
+              "approved_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }
