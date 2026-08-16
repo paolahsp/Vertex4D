@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vertex4d.local/contracts/v1/problem-frame.schema.json",
+  "title": "VERTEX 4D ProblemFrame v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "artifact_id",
+    "project_id",
+    "created_at",
+    "created_by_role",
+    "status",
+    "provenance",
+    "human_approval",
+    "validation_errors",
+    "preceding_artifacts",
+    "original_challenge",
+    "reframed_problem",
+    "affected_users",
+    "needs",
+    "assumptions",
+    "tensions",
+    "evidence_references",
+    "unknowns",
+    "four_dimensions_analysis",
+    "approval_state"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "artifact_type": { "type": "string", "const": "problem_frame" },
+    "artifact_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+    "project_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "created_by_role": { "type": "string", "enum": ["alex", "founder", "facilitator", "system"] },
+    "status": { "type": "string", "enum": ["draft", "pending_review", "approved", "rejected", "superseded"] },
+    "provenance": { "type": "object" },
+    "human_approval": { "type": "object" },
+    "validation_errors": { "type": "array" },
+    "preceding_artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project_record_id"],
+      "properties": {
+        "project_record_id": { "type": "string" }
+      }
+    },
+    "original_challenge": { "type": "string" },
+    "reframed_problem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["statement", "classification", "confidence"],
+      "properties": {
+        "statement": { "type": "string" },
+        "classification": { "type": "string", "enum": ["fact", "inference", "hypothesis", "unknown"] },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+      }
+    },
+    "affected_users": { "type": "array" },
+    "needs": { "type": "array" },
+    "assumptions": { "type": "array" },
+    "tensions": { "type": "array" },
+    "evidence_references": { "type": "array" },
+    "unknowns": { "type": "array" },
+    "four_dimensions_analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["emotional", "contextual", "systemic", "problem_framing"],
+      "properties": {
+        "emotional": { "type": "object" },
+        "contextual": { "type": "object" },
+        "systemic": { "type": "object" },
+        "problem_framing": { "type": "object" }
+      }
+    },
+    "approval_state": { "type": "string", "enum": ["pending_founder_review", "approved_for_system_mapping", "rejected"] }
+  }
+}

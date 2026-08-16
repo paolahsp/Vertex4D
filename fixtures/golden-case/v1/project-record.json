@@ -1,0 +1,53 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "project_record",
+  "artifact_id": "project_record_recircle_v1",
+  "project_id": "vertex_recircle_kitchens_v1",
+  "created_at": "2026-08-16T09:00:00Z",
+  "created_by_role": "system",
+  "status": "approved",
+  "provenance": {
+    "source_kind": "synthetic_fixture",
+    "source_label": "VERTEX v1 golden case",
+    "ip_owner": "Paola Hintze",
+    "external_components_used": [],
+    "notes": "Synthetic fixture only. No external component code or private project data was used."
+  },
+  "human_approval": {
+    "required": true,
+    "state": "approved",
+    "approved_by_role": "facilitator",
+    "approved_at": "2026-08-16T09:05:00Z",
+    "notes": "Approved for contract validation and local fixture testing."
+  },
+  "validation_errors": [],
+  "project_name": "ReCircle Kitchens",
+  "venture_description": "A women-led impact venture exploring a reusable food-container service for independent cafes in Berlin.",
+  "challenge_statement": "Independent cafes want to reduce disposable packaging, but adoption may be limited by operational burden, customer behavior, washing logistics and uncertain unit economics.",
+  "venture_stage": "discovery",
+  "geography": {
+    "primary_city": "Berlin",
+    "country": "Germany",
+    "operating_scope": "local"
+  },
+  "impact_area": ["climate", "circular_economy", "food_systems", "gender_equity"],
+  "cohort_program_context": {
+    "program_name": "VERTEX 4D Synthetic Pilot Readiness Lab",
+    "cohort_name": "Golden Case v1",
+    "facilitator_role": "programme_facilitator",
+    "notes": "Fictional cohort context for deterministic validation."
+  },
+  "synthetic_data_declaration": {
+    "is_synthetic": true,
+    "contains_identifiable_people": false,
+    "approved_for_predictive_processing": true,
+    "statement": "All names, stakeholders, evidence notes and financial values are fictional and created only for VERTEX contract validation."
+  },
+  "current_artifact_references": {
+    "problem_frame_id": "problem_frame_recircle_v1",
+    "system_map_id": "system_map_recircle_v1",
+    "predictive_hypothesis_id": "predictive_hypothesis_recircle_v1",
+    "financial_scenario_id": "financial_scenario_recircle_v1",
+    "decision_record_id": "decision_record_recircle_v1"
+  }
+}

@@ -1,0 +1,163 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "problem_frame",
+  "artifact_id": "problem_frame_recircle_v1",
+  "project_id": "vertex_recircle_kitchens_v1",
+  "created_at": "2026-08-16T09:10:00Z",
+  "created_by_role": "alex",
+  "status": "approved",
+  "provenance": {
+    "source_kind": "synthetic_fixture",
+    "source_label": "Alex-style synthetic problem framing fixture",
+    "ip_owner": "Paola Hintze",
+    "external_components_used": [],
+    "notes": "Represents future Alex output; no Alex code or LLM call was used."
+  },
+  "human_approval": {
+    "required": true,
+    "state": "approved",
+    "approved_by_role": "founder",
+    "approved_at": "2026-08-16T09:20:00Z",
+    "notes": "Approved for system mapping."
+  },
+  "validation_errors": [],
+  "preceding_artifacts": {
+    "project_record_id": "project_record_recircle_v1"
+  },
+  "original_challenge": "Independent cafes want to reduce disposable packaging, but adoption may be limited by operational burden, customer behavior, washing logistics and uncertain unit economics.",
+  "reframed_problem": {
+    "statement": "The core problem is not container availability alone; it is whether a five-cafe operating loop can make reuse feel easier than disposable packaging for cafe teams and customers.",
+    "classification": "inference",
+    "confidence": 0.72
+  },
+  "affected_users": [
+    {
+      "user_group_id": "ug_cafe_operators",
+      "label": "Independent cafe operators",
+      "classification": "fact",
+      "evidence_refs": ["ev_cafe_ops_note"]
+    },
+    {
+      "user_group_id": "ug_takeaway_customers",
+      "label": "Takeaway customers",
+      "classification": "inference",
+      "evidence_refs": ["ev_customer_behavior_note"]
+    }
+  ],
+  "needs": [
+    {
+      "id": "need_low_friction_return",
+      "statement": "Customers need a return flow that is visible and low effort.",
+      "classification": "hypothesis",
+      "confidence": 0.64,
+      "evidence_refs": ["ev_customer_behavior_note"]
+    },
+    {
+      "id": "need_simple_cafe_workflow",
+      "statement": "Cafe staff need a workflow that does not slow peak-hour service.",
+      "classification": "hypothesis",
+      "confidence": 0.69,
+      "evidence_refs": ["ev_cafe_ops_note"]
+    }
+  ],
+  "assumptions": [
+    {
+      "assumption_id": "asm_deposit_acceptance",
+      "statement": "A small refundable deposit will not materially suppress first-time trial.",
+      "classification": "hypothesis",
+      "confidence": 0.52,
+      "approval_state": "approved",
+      "approved_for_predictive_processing": true,
+      "approved_for_financial_processing": true,
+      "evidence_refs": ["ev_customer_behavior_note"]
+    },
+    {
+      "assumption_id": "asm_washing_capacity",
+      "statement": "A shared washing pickup twice per week can support five cafes during a small pilot.",
+      "classification": "hypothesis",
+      "confidence": 0.58,
+      "approval_state": "approved",
+      "approved_for_predictive_processing": true,
+      "approved_for_financial_processing": true,
+      "evidence_refs": ["ev_washing_logistics_note"]
+    },
+    {
+      "assumption_id": "asm_staff_training",
+      "statement": "A fifteen-minute staff briefing is enough for cafe teams to explain the service.",
+      "classification": "hypothesis",
+      "confidence": 0.47,
+      "approval_state": "approved",
+      "approved_for_predictive_processing": true,
+      "approved_for_financial_processing": false,
+      "evidence_refs": ["ev_cafe_ops_note"]
+    }
+  ],
+  "tensions": [
+    {
+      "id": "ten_sustainability_vs_speed",
+      "statement": "Sustainability goals may conflict with fast counter service during rush periods.",
+      "classification": "inference",
+      "confidence": 0.7,
+      "evidence_refs": ["ev_cafe_ops_note"]
+    }
+  ],
+  "evidence_references": [
+    {
+      "evidence_id": "ev_cafe_ops_note",
+      "label": "Synthetic cafe operations note",
+      "source_type": "synthetic_interview_note",
+      "classification": "fact",
+      "contains_personal_data": false
+    },
+    {
+      "evidence_id": "ev_customer_behavior_note",
+      "label": "Synthetic takeaway behavior note",
+      "source_type": "synthetic_observation",
+      "classification": "fact",
+      "contains_personal_data": false
+    },
+    {
+      "evidence_id": "ev_washing_logistics_note",
+      "label": "Synthetic washing logistics note",
+      "source_type": "synthetic_market_note",
+      "classification": "fact",
+      "contains_personal_data": false
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "unk_repeat_return_rate",
+      "statement": "The repeat return rate after the first week is unknown.",
+      "classification": "unknown",
+      "confidence": 0,
+      "evidence_refs": []
+    }
+  ],
+  "four_dimensions_analysis": {
+    "emotional": {
+      "summary": "Cafe teams may feel proud of a visible sustainability move but anxious about queues and complaints.",
+      "classification": "inference",
+      "confidence": 0.61,
+      "evidence_refs": ["ev_cafe_ops_note"]
+    },
+    "contextual": {
+      "summary": "Berlin cafes operate in a context of high sustainability awareness and tight service constraints.",
+      "classification": "inference",
+      "confidence": 0.66,
+      "evidence_refs": ["ev_cafe_ops_note", "ev_customer_behavior_note"]
+    },
+    "systemic": {
+      "summary": "The reuse loop depends on cafes, customers, washing pickup, inventory buffers and deposit trust working together.",
+      "classification": "inference",
+      "confidence": 0.74,
+      "evidence_refs": ["ev_washing_logistics_note"]
+    },
+    "problem_framing": {
+      "summary": "The first test should measure operating friction and repeat behavior, not brand interest alone.",
+      "classification": "hypothesis",
+      "confidence": 0.68,
+      "evidence_refs": ["ev_cafe_ops_note", "ev_customer_behavior_note"]
+    }
+  },
+  "approval_state": "approved_for_system_mapping"
+}

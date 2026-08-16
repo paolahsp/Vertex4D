@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vertex4d.local/contracts/v1/predictive-hypothesis.schema.json",
+  "title": "VERTEX 4D PredictiveHypothesis v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "artifact_id",
+    "project_id",
+    "created_at",
+    "created_by_role",
+    "status",
+    "provenance",
+    "human_approval",
+    "validation_errors",
+    "preceding_artifacts",
+    "classification",
+    "warning",
+    "scenario_question",
+    "bounded_scenario_type",
+    "approved_input_references",
+    "assumptions_used",
+    "simulated_stakeholder_responses",
+    "adoption_signals",
+    "resistance_signals",
+    "possible_cascades",
+    "uncertainty",
+    "limitations",
+    "confidence",
+    "run_metadata"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "artifact_type": { "type": "string", "const": "predictive_hypothesis" },
+    "artifact_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+    "project_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "created_by_role": { "type": "string", "enum": ["d_predict", "system"] },
+    "status": { "type": "string", "enum": ["draft", "pending_review", "approved", "rejected", "superseded"] },
+    "provenance": { "type": "object" },
+    "human_approval": { "type": "object" },
+    "validation_errors": { "type": "array" },
+    "preceding_artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project_record_id", "problem_frame_id", "system_map_id"],
+      "properties": {
+        "project_record_id": { "type": "string" },
+        "problem_frame_id": { "type": "string" },
+        "system_map_id": { "type": "string" }
+      }
+    },
+    "classification": { "type": "string", "const": "predictive_hypothesis" },
+    "warning": {
+      "type": "string",
+      "const": "This output is a bounded simulation hypothesis. It is not direct evidence, a factual prediction or a conclusion about identifiable people."
+    },
+    "scenario_question": { "type": "string" },
+    "bounded_scenario_type": { "type": "string", "enum": ["stakeholder_adoption_resistance", "operational_readiness", "market_response", "learning_intervention"] },
+    "approved_input_references": { "type": "object" },
+    "assumptions_used": { "type": "array" },
+    "simulated_stakeholder_responses": { "type": "array" },
+    "adoption_signals": { "type": "array" },
+    "resistance_signals": { "type": "array" },
+    "possible_cascades": { "type": "array" },
+    "uncertainty": { "type": "object" },
+    "limitations": { "type": "array" },
+    "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+    "run_metadata": { "type": "object" }
+  }
+}

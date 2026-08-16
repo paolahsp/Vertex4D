@@ -1,0 +1,175 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "decision_record",
+  "artifact_id": "decision_record_recircle_v1",
+  "project_id": "vertex_recircle_kitchens_v1",
+  "created_at": "2026-08-16T10:45:00Z",
+  "created_by_role": "facilitator",
+  "status": "approved",
+  "provenance": {
+    "source_kind": "synthetic_fixture",
+    "source_label": "VERTEX final decision record golden case",
+    "ip_owner": "Paola Hintze",
+    "external_components_used": [],
+    "notes": "Synthetic decision record assembled from fixture artifacts only."
+  },
+  "human_approval": {
+    "required": true,
+    "state": "approved",
+    "approved_by_role": "facilitator",
+    "approved_at": "2026-08-16T11:00:00Z",
+    "notes": "Approved as the final fixture artifact."
+  },
+  "validation_errors": [],
+  "linked_upstream_artifact_ids": {
+    "project_record_id": "project_record_recircle_v1",
+    "problem_frame_id": "problem_frame_recircle_v1",
+    "system_map_id": "system_map_recircle_v1",
+    "predictive_hypothesis_id": "predictive_hypothesis_recircle_v1",
+    "financial_scenario_id": "financial_scenario_recircle_v1"
+  },
+  "decision_question": "Should ReCircle Kitchens move from discovery into a broader launch or run a limited five-cafe pilot first?",
+  "alternatives_considered": [
+    {
+      "alternative_id": "alt_full_launch",
+      "statement": "Launch across a large cafe network immediately.",
+      "classification": "hypothesis"
+    },
+    {
+      "alternative_id": "alt_limited_pilot",
+      "statement": "Run a limited five-cafe pilot focused on adoption, resistance and unit-economics learning.",
+      "classification": "inference"
+    },
+    {
+      "alternative_id": "alt_continue_desk_research",
+      "statement": "Continue research without operating a pilot.",
+      "classification": "inference"
+    }
+  ],
+  "evidence_summary": [
+    {
+      "evidence_id": "ev_cafe_ops_note",
+      "summary": "Synthetic operations evidence shows service speed and staff burden are central constraints.",
+      "classification": "fact",
+      "source_artifact_id": "problem_frame_recircle_v1"
+    },
+    {
+      "evidence_id": "ev_washing_logistics_note",
+      "summary": "Synthetic logistics evidence identifies washing reliability as a required pilot condition.",
+      "classification": "fact",
+      "source_artifact_id": "system_map_recircle_v1"
+    }
+  ],
+  "assumptions": [
+    {
+      "assumption_id": "asm_deposit_acceptance",
+      "summary": "Deposit acceptance is approved but still hypothetical.",
+      "classification": "hypothesis",
+      "approval_state": "approved"
+    },
+    {
+      "assumption_id": "asm_washing_capacity",
+      "summary": "Shared washing capacity is approved but still hypothetical.",
+      "classification": "hypothesis",
+      "approval_state": "approved"
+    }
+  ],
+  "predictive_hypotheses": [
+    {
+      "hypothesis_id": "predictive_hypothesis_recircle_v1",
+      "summary": "Staff explanation burden may become the strongest resistance point in a five-cafe pilot.",
+      "classification": "predictive_hypothesis",
+      "not_evidence": true
+    }
+  ],
+  "financial_scenarios": [
+    {
+      "financial_scenario_id": "financial_scenario_recircle_v1",
+      "summary": "Fixture values suggest the pilot needs a small cash buffer and should be treated as learning, not proof of viability.",
+      "classification": "hypothesis",
+      "uses_fixture_values": true
+    }
+  ],
+  "risks": [
+    {
+      "id": "risk_staff_burden",
+      "statement": "Staff burden could suppress adoption even if cafe owners like the concept.",
+      "classification": "hypothesis",
+      "source_refs": ["predictive_hypothesis_recircle_v1"]
+    }
+  ],
+  "unknowns": [
+    {
+      "id": "unk_return_rate_decision",
+      "statement": "Repeat return rate and container loss remain unknown.",
+      "classification": "unknown",
+      "source_refs": ["unk_repeat_return_rate", "unk_container_loss"]
+    }
+  ],
+  "contradictions": [
+    {
+      "id": "ctr_interest_vs_operations",
+      "statement": "Sustainability interest may be high while operational willingness remains uncertain.",
+      "classification": "inference",
+      "source_refs": ["ten_sustainability_vs_speed", "sig_peak_hour_explanation"]
+    }
+  ],
+  "selected_decision": {
+    "decision_id": "dec_limited_pilot",
+    "statement": "Run a limited five-cafe pilot before any broader launch.",
+    "decision_type": "limited_pilot"
+  },
+  "rationale": "The evidence and approved assumptions justify a bounded pilot, while the predictive hypothesis and financial fixture values preserve enough uncertainty to rule out a full launch.",
+  "rejected_alternatives": [
+    {
+      "alternative_id": "alt_full_launch",
+      "reason": "Too much uncertainty remains around staff burden, returns and fixture-only economics."
+    },
+    {
+      "alternative_id": "alt_continue_desk_research",
+      "reason": "The next critical unknowns require observed pilot behavior."
+    }
+  ],
+  "next_experiment": {
+    "experiment_id": "exp_five_cafe_six_week_pilot",
+    "statement": "Run a six-week pilot with five cafes, measuring first-time uptake, repeat returns, staff explanation time and container loss.",
+    "owner_role": "founder",
+    "measurement_window": "six weeks"
+  },
+  "success_criteria": [
+    "At least 25 percent of eligible takeaway orders choose the reusable option in week six.",
+    "At least 70 percent of containers are returned within seven days.",
+    "Median staff explanation time stays under 20 seconds.",
+    "Container loss stays below 10 percent over the pilot."
+  ],
+  "owner_role": "founder",
+  "review_date": "2026-10-01",
+  "facilitator_approval": {
+    "state": "approved",
+    "approved_by_role": "facilitator",
+    "approved_at": "2026-08-16T11:00:00Z",
+    "notes": "Approved for synthetic golden-case validation."
+  },
+  "audit_trail": [
+    {
+      "event_id": "audit_decision_created",
+      "timestamp": "2026-08-16T10:45:00Z",
+      "actor_role": "system",
+      "action": "assembled_synthetic_decision_record",
+      "artifact_refs": [
+        "project_record_recircle_v1",
+        "problem_frame_recircle_v1",
+        "system_map_recircle_v1",
+        "predictive_hypothesis_recircle_v1",
+        "financial_scenario_recircle_v1"
+      ]
+    },
+    {
+      "event_id": "audit_facilitator_approved",
+      "timestamp": "2026-08-16T11:00:00Z",
+      "actor_role": "facilitator",
+      "action": "approved_limited_pilot_decision_fixture",
+      "artifact_refs": ["decision_record_recircle_v1"]
+    }
+  ]
+}

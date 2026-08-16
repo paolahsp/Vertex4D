@@ -1,0 +1,57 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vertex4d.local/contracts/v1/system-map.schema.json",
+  "title": "VERTEX 4D SystemMap v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "artifact_id",
+    "project_id",
+    "created_at",
+    "created_by_role",
+    "status",
+    "provenance",
+    "human_approval",
+    "validation_errors",
+    "preceding_artifacts",
+    "stakeholders",
+    "relationships",
+    "tensions",
+    "dependencies",
+    "evidence_references",
+    "unknowns",
+    "system_boundaries",
+    "approved_assumptions"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "1.0.0" },
+    "artifact_type": { "type": "string", "const": "system_map" },
+    "artifact_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+    "project_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_-]*$" },
+    "created_at": { "type": "string", "format": "date-time" },
+    "created_by_role": { "type": "string", "enum": ["synapmap", "founder", "facilitator", "system"] },
+    "status": { "type": "string", "enum": ["draft", "pending_review", "approved", "rejected", "superseded"] },
+    "provenance": { "type": "object" },
+    "human_approval": { "type": "object" },
+    "validation_errors": { "type": "array" },
+    "preceding_artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project_record_id", "problem_frame_id"],
+      "properties": {
+        "project_record_id": { "type": "string" },
+        "problem_frame_id": { "type": "string" }
+      }
+    },
+    "stakeholders": { "type": "array" },
+    "relationships": { "type": "array" },
+    "tensions": { "type": "array" },
+    "dependencies": { "type": "array" },
+    "evidence_references": { "type": "array" },
+    "unknowns": { "type": "array" },
+    "system_boundaries": { "type": "object" },
+    "approved_assumptions": { "type": "array" }
+  }
+}

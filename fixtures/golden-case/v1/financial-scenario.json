@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0.0",
+  "artifact_type": "financial_scenario",
+  "artifact_id": "financial_scenario_recircle_v1",
+  "project_id": "vertex_recircle_kitchens_v1",
+  "created_at": "2026-08-16T10:20:00Z",
+  "created_by_role": "finops",
+  "status": "approved",
+  "provenance": {
+    "source_kind": "synthetic_fixture",
+    "source_label": "FinOps contract placeholder fixture",
+    "ip_owner": "Paola Hintze",
+    "external_components_used": [],
+    "notes": "Contract for future deterministic FinOps adapter. No FinOps code or calculation engine was imported."
+  },
+  "human_approval": {
+    "required": true,
+    "state": "approved",
+    "approved_by_role": "facilitator",
+    "approved_at": "2026-08-16T10:30:00Z",
+    "notes": "Approved as fixture values for decision-record testing only."
+  },
+  "validation_errors": [],
+  "preceding_artifacts": {
+    "project_record_id": "project_record_recircle_v1",
+    "problem_frame_id": "problem_frame_recircle_v1",
+    "system_map_id": "system_map_recircle_v1"
+  },
+  "approved_assumption_references": ["asm_deposit_acceptance", "asm_washing_capacity"],
+  "currency": "EUR",
+  "scenario_name": "Five-cafe limited pilot fixture",
+  "time_horizon": "six weeks",
+  "pricing_assumptions": [
+    {
+      "assumption_id": "fin_price_container_fee",
+      "label": "Service fee per container use",
+      "value": 0.45,
+      "unit": "EUR per use",
+      "is_fixture_value": true,
+      "source_assumption_ref": "asm_deposit_acceptance"
+    }
+  ],
+  "cost_assumptions": [
+    {
+      "assumption_id": "fin_washing_cost",
+      "label": "Washing and handling cost per use",
+      "value": 0.28,
+      "unit": "EUR per use",
+      "is_fixture_value": true,
+      "source_assumption_ref": "asm_washing_capacity"
+    },
+    {
+      "assumption_id": "fin_setup_buffer",
+      "label": "Pilot setup buffer",
+      "value": 900,
+      "unit": "EUR",
+      "is_fixture_value": true,
+      "source_assumption_ref": "asm_washing_capacity"
+    }
+  ],
+  "volume_assumptions": [
+    {
+      "assumption_id": "fin_container_uses",
+      "label": "Total pilot container uses",
+      "value": 1800,
+      "unit": "uses",
+      "is_fixture_value": true,
+      "source_assumption_ref": "asm_deposit_acceptance"
+    }
+  ],
+  "revenue_projection": {
+    "value": 810,
+    "unit": "EUR",
+    "is_fixture_value": true,
+    "classification": "hypothesis",
+    "calculation_note": "Fixture value only; future FinOps adapter must recalculate deterministically from approved inputs."
+  },
+  "cost_projection": {
+    "value": 1404,
+    "unit": "EUR",
+    "is_fixture_value": true,
+    "classification": "hypothesis",
+    "calculation_note": "Fixture value only; includes handling cost and setup buffer."
+  },
+  "cash_requirement": {
+    "value": 594,
+    "unit": "EUR",
+    "is_fixture_value": true,
+    "classification": "hypothesis",
+    "calculation_note": "Fixture gap between projected cost and revenue."
+  },
+  "sustainability_indicators": [
+    {
+      "indicator_id": "sus_waste_reduction_learning",
+      "statement": "The pilot may produce useful learning on packaging reduction before reaching financial sustainability.",
+      "classification": "inference",
+      "confidence": 0.6
+    }
+  ],
+  "sensitivity_notes": [
+    {
+      "note_id": "sens_return_rate",
+      "statement": "Container loss and return rates may dominate pilot economics.",
+      "classification": "unknown"
+    }
+  ],
+  "uncertainty": {
+    "level": "high",
+    "drivers": ["fixture values", "no actual pilot transactions", "unknown container loss"],
+    "unknowns_preserved": ["unk_container_loss", "unk_repeat_return_rate"]
+  },
+  "approval_state": "approved_for_decision_record"
+}
