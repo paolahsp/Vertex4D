@@ -9,18 +9,7 @@
     <link rel="stylesheet" href="/static/css/vertex4d.css">
     <script src="/static/js/prefs.js" defer></script>
     <style>
-        :root {
-            --panel: rgba(255, 253, 248, 0.74);
-            --panel-strong: rgba(255, 253, 248, 0.9);
-            --ink: var(--v4d-ink, #181810);
-            --muted: var(--v4d-muted, #6E6660);
-            --line: var(--v4d-line, rgba(24, 24, 16, 0.14));
-            --blue: var(--v4d-cobalt, #1946D1);
-            --coral: var(--v4d-coral-text, #C13521);
-            --olive: var(--v4d-olive-text, #5F6320);
-            --paper: var(--v4d-paper, #F4EBDC);
-            --white: var(--v4d-white, #FFFDF8);
-        }
+        :root { --panel: var(--glass); --panel-strong: var(--glass2); --ink: var(--fg); --muted: var(--fg2); --line: var(--edge); --blue: var(--act); --coral: var(--risk-text); --olive: var(--evidence-text); }
 
         body {
             margin: 0;
@@ -56,7 +45,7 @@
             gap: 8px;
             padding: 10px 12px;
             text-decoration: none;
-            text-transform: uppercase;
+            text-transform: none;
         }
 
         .gp-brand {
@@ -96,7 +85,7 @@
             font-weight: 700;
             letter-spacing: 0;
             margin: 0;
-            text-transform: uppercase;
+            text-transform: none;
         }
 
         .gp-main {
@@ -156,7 +145,7 @@
             font-size: 12px;
             font-weight: 700;
             padding: 9px 10px;
-            text-transform: uppercase;
+            text-transform: none;
         }
 
         .gp-metrics {
@@ -185,7 +174,7 @@
             font-size: 12px;
             font-weight: 700;
             margin-top: 10px;
-            text-transform: uppercase;
+            text-transform: none;
         }
 
         .gp-banner {
@@ -253,7 +242,7 @@
             font-family: var(--font-mono), monospace;
             font-size: 11px;
             font-weight: 700;
-            text-transform: uppercase;
+            text-transform: none;
         }
 
         .gp-status {
@@ -263,7 +252,7 @@
             font-size: 11px;
             font-weight: 700;
             padding: 5px 7px;
-            text-transform: uppercase;
+            text-transform: none;
         }
 
         .gp-stage h2,
@@ -324,7 +313,7 @@
             display: block;
             font-size: 13px;
             margin-bottom: 7px;
-            text-transform: uppercase;
+            text-transform: none;
         }
 
         .gp-mini p {
@@ -371,7 +360,7 @@
             font-weight: 700;
             padding: 11px 13px;
             text-decoration: none;
-            text-transform: uppercase;
+            text-transform: none;
         }
 
         .gp-button.secondary {

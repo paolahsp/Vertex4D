@@ -14,8 +14,8 @@
         .sgp-brand { align-items: center; display: flex; gap: 12px; }
         .sgp-mark { align-items: center; border: 1px solid var(--blue); color: var(--blue); display: inline-flex; font-family: var(--font-mono); font-size: 12px; font-weight: 800; height: 32px; justify-content: center; width: 32px; }
         .sgp-title-small { font-family: var(--font-display); font-size: clamp(19px,2.2vw,28px); font-weight: 700; line-height: 1; margin: 0; }
-        .sgp-kicker, .sgp-subtitle { color: var(--coral); font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: 0; margin: 0; text-transform: uppercase; }
-        .sgp-link { border: 1px solid var(--line); color: var(--blue); display: inline-flex; font-size: 12px; font-weight: 800; margin-left: 8px; padding: 10px 12px; text-decoration: none; text-transform: uppercase; }
+        .sgp-kicker, .sgp-subtitle { color: var(--coral); font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: 0; margin: 0; text-transform: none; }
+        .sgp-link { border: 1px solid var(--line); color: var(--blue); display: inline-flex; font-size: 12px; font-weight: 800; margin-left: 8px; padding: 10px 12px; text-decoration: none; text-transform: none; }
         .sgp-main { margin: 0 auto; max-width: 1440px; padding: clamp(22px,4vw,48px); }
         .sgp-hero { display: grid; gap: 24px; grid-template-columns: minmax(0,1.1fr) minmax(320px,0.9fr); margin-bottom: 24px; }
         .sgp-panel, .sgp-card, .sgp-step, .sgp-aside { background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 44px rgba(24,24,16,0.09), inset 0 1px 0 rgba(255,253,248,0.72); backdrop-filter: blur(18px) saturate(1.05); }
@@ -26,17 +26,17 @@
         .sgp-run-form { display: grid; gap: 10px; grid-template-columns: repeat(2,minmax(0,1fr)); margin-top: 22px; max-width: 760px; }
         .sgp-field { display: grid; gap: 6px; }
         .sgp-field.full { grid-column: 1 / -1; }
-        .sgp-field label { color: var(--coral); font-family: var(--font-mono); font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .sgp-field label { color: var(--coral); font-family: var(--font-mono); font-size: 10px; font-weight: 800; text-transform: none; }
         .sgp-field input, .sgp-field select, .sgp-field textarea { background: var(--glass2); border: 1px solid var(--line); color: var(--ink); font: inherit; min-height: 42px; padding: 0 10px; }
         .sgp-field textarea { line-height: 1.4; min-height: 82px; padding: 10px; resize: vertical; }
         .sgp-checks { align-items: center; display: flex; flex-wrap: wrap; gap: 14px; grid-column: 1 / -1; }
         .sgp-checks label { align-items: center; color: var(--muted); display: inline-flex; font-size: 13px; gap: 8px; }
-        .sgp-button { align-items: center; background: var(--blue); border: 1px solid var(--blue); color: #fff; display: inline-flex; font-size: 13px; font-weight: 800; min-height: 42px; padding: 0 14px; text-decoration: none; text-transform: uppercase; }
+        .sgp-button { align-items: center; background: var(--blue); border: 1px solid var(--blue); color: #fff; display: inline-flex; font-size: 13px; font-weight: 800; min-height: 42px; padding: 0 14px; text-decoration: none; text-transform: none; }
         .sgp-button.secondary { background: transparent; color: var(--blue); }
         .sgp-aside { display: grid; gap: 12px; padding: 18px; }
         .sgp-stat { background: var(--panel-strong); border: 1px solid var(--line); padding: 16px; }
         .sgp-stat strong { display: block; font-family: var(--font-display); font-size: 34px; line-height: 1; }
-        .sgp-stat span { color: var(--muted); display: block; font-size: 12px; font-weight: 800; margin-top: 8px; text-transform: uppercase; }
+        .sgp-stat span { color: var(--muted); display: block; font-size: 12px; font-weight: 800; margin-top: 8px; text-transform: none; }
         .sgp-layout { display: grid; gap: 24px; grid-template-columns: minmax(0,1.4fr) minmax(300px,0.8fr); }
         .sgp-steps { display: grid; gap: 14px; }
         .sgp-step { display: grid; gap: 16px; grid-template-columns: 54px minmax(0,1fr) auto; padding: 18px; }
@@ -46,8 +46,8 @@
         .sgp-number { align-items: center; background: var(--panel-strong); border: 1px solid var(--line); color: var(--blue); display: inline-flex; font-family: var(--font-mono); font-size: 13px; font-weight: 800; height: 54px; justify-content: center; width: 54px; }
         .sgp-step h2 { font-family: var(--font-display); font-size: clamp(24px,3vw,34px); line-height: 1.05; margin: 0; }
         .sgp-step p { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 8px 0 0; }
-        .sgp-step-meta { color: var(--coral); font-family: var(--font-mono); font-size: 11px; font-weight: 800; text-transform: uppercase; }
-        .sgp-step-action { align-self: center; border: 1px solid var(--line); color: var(--blue); font-size: 12px; font-weight: 800; padding: 10px 12px; text-decoration: none; text-transform: uppercase; white-space: nowrap; }
+        .sgp-step-meta { color: var(--coral); font-family: var(--font-mono); font-size: 11px; font-weight: 800; text-transform: none; }
+        .sgp-step-action { align-self: center; border: 1px solid var(--line); color: var(--blue); font-size: 12px; font-weight: 800; padding: 10px 12px; text-decoration: none; text-transform: none; white-space: nowrap; }
         .sgp-card { padding: 22px; }
         .sgp-card h2 { font-family: var(--font-display); font-size: 30px; line-height: 1.05; margin: 10px 0 12px; }
         .sgp-card p, .sgp-card li { color: var(--muted); font-size: 14px; line-height: 1.55; }

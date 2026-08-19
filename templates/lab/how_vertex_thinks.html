@@ -11,11 +11,11 @@
         :root { --panel: var(--glass); --panel-strong: var(--glass2); --ink: var(--fg); --muted: var(--fg2); --line: var(--edge); --blue: var(--act); --coral: var(--risk-text); --olive: var(--evidence-text); }
         body { margin: 0; min-height: 100vh; color: var(--ink); }
         .think-header { align-items: center; background: color-mix(in srgb, var(--bg) 84%, transparent); border-bottom: 1px solid var(--line); display: flex; gap: 18px; justify-content: space-between; padding: 18px clamp(18px,4vw,44px); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(18px); }
-        .think-link { align-items: center; border: 1px solid var(--line); color: var(--blue); display: inline-flex; font-size: 12px; font-weight: 800; gap: 8px; margin-left: 8px; padding: 10px 12px; text-decoration: none; text-transform: uppercase; }
+        .think-link { align-items: center; border: 1px solid var(--line); color: var(--blue); display: inline-flex; font-size: 12px; font-weight: 800; gap: 8px; margin-left: 8px; padding: 10px 12px; text-decoration: none; text-transform: none; }
         .think-brand { align-items: center; display: flex; gap: 12px; min-width: 0; }
         .think-mark { align-items: center; border: 1px solid var(--blue); color: var(--blue); display: inline-flex; flex: 0 0 auto; font-family: var(--font-mono), monospace; font-size: 12px; font-weight: 800; height: 32px; justify-content: center; width: 32px; }
         .think-brand-title { font-family: var(--font-display); font-size: clamp(19px,2.2vw,28px); font-weight: 700; line-height: 1; margin: 0; }
-        .think-kicker, .think-brand-subtitle { color: var(--coral); font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: 0; margin: 0; text-transform: uppercase; }
+        .think-kicker, .think-brand-subtitle { color: var(--coral); font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: 0; margin: 0; text-transform: none; }
         .think-main { margin: 0 auto; max-width: 1440px; padding: clamp(22px,4vw,48px); }
         .think-hero { display: grid; gap: 24px; grid-template-columns: minmax(0,1.05fr) minmax(300px,0.95fr); margin-bottom: 24px; }
         .think-panel, .think-card, .think-step, .think-note { background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 44px rgba(24,24,16,0.09), inset 0 1px 0 rgba(255,253,248,0.72); backdrop-filter: blur(18px) saturate(1.05); }
