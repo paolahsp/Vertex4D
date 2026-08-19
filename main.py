@@ -104,6 +104,64 @@ def get_user_role(user: dict) -> str:
     return role if role in VALID_APPROVER_ROLES else "founder"
 
 
+# --- Program control over elevated roles ---
+# A facilitator can sign DecisionRecords and read every team's run in the cohort
+# dashboard, so the role must be granted by the program, never self-selected.
+ELEVATED_ROLES = {"facilitator", "admin"}
+
+
+def facilitator_email_allowlist() -> set[str]:
+    raw = os.getenv("VERTEX4D_FACILITATOR_EMAILS", "")
+    return {item.strip().lower() for item in raw.split(",") if item.strip()}
+
+
+def facilitator_invite_code() -> str:
+    return os.getenv("VERTEX4D_FACILITATOR_INVITE_CODE", "").strip()
+
+
+def program_role_control_configured() -> bool:
+    return bool(facilitator_email_allowlist() or facilitator_invite_code())
+
+
+def authorize_member_roles(requested_members: list[dict], invite_code: str) -> tuple[list[dict], str | None]:
+    """Resolve requested member roles against program authorization.
+
+    Elevated roles are refused with an explicit error rather than silently
+    downgraded, so nobody believes they hold an authority they were not granted.
+    """
+    allowlist = facilitator_email_allowlist()
+    expected_code = facilitator_invite_code()
+    supplied_code = str(invite_code or "").strip()
+    resolved = []
+
+    for member in requested_members:
+        email = str(member.get("email") or "").strip()
+        role = str(member.get("role") or "founder").strip().lower()
+
+        if role not in VALID_APPROVER_ROLES:
+            return [], f"Unknown role '{member.get('role')}' requested for {email or 'a member'}."
+
+        if role in ELEVATED_ROLES:
+            if not program_role_control_configured():
+                return [], (
+                    f"The {role} role is not available on this deployment yet. "
+                    "A program administrator must configure VERTEX4D_FACILITATOR_EMAILS "
+                    "or VERTEX4D_FACILITATOR_INVITE_CODE before a facilitator can be registered."
+                )
+            authorized = email.lower() in allowlist or (
+                bool(expected_code) and supplied_code == expected_code
+            )
+            if not authorized:
+                return [], (
+                    f"{email or 'This member'} is not authorized for the {role} role. "
+                    "A facilitator must be on the program allowlist or register with a valid program invite code."
+                )
+
+        resolved.append({"name": member.get("name"), "email": email, "role": role})
+
+    return resolved, None
+
+
 def utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
@@ -435,16 +493,21 @@ async def register(
     member3_name: str = Form(None),
     member3_email: str = Form(None),
     member3_role: str = Form("founder"),
+    facilitator_invite_code: str = Form(""),
     challenge_desc: str = Form(None),
     photo_url: str = Form(None)
 ):
     # Collect members
-    members = [{"name": member1_name, "email": member1_email.strip(), "role": member1_role}]
+    requested_members = [{"name": member1_name, "email": member1_email.strip(), "role": member1_role}]
     if member2_name and member2_email:
-        members.append({"name": member2_name, "email": member2_email.strip(), "role": member2_role})
+        requested_members.append({"name": member2_name, "email": member2_email.strip(), "role": member2_role})
     if member3_name and member3_email:
-        members.append({"name": member3_name, "email": member3_email.strip(), "role": member3_role})
-    
+        requested_members.append({"name": member3_name, "email": member3_email.strip(), "role": member3_role})
+
+    members, role_error = authorize_member_roles(requested_members, facilitator_invite_code)
+    if role_error:
+        return templates.TemplateResponse(request, "auth/register.html", {"error": role_error})
+
     success, message, team_id = database.create_team(team_name, password, members, challenge_desc, photo_url)
     
     if success:

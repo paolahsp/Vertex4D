@@ -176,13 +176,34 @@ def main() -> None:
         founder_email = "founder-smoke@example.com"
         facilitator_email = "facilitator-smoke@example.com"
         password = "smoke-password"
+
+        # The facilitator role must survive the real program-authorization gate,
+        # not be handed to the test directly. An unauthorized request is refused.
+        requested_members = [
+            {"name": "Founder Smoke", "email": founder_email, "role": "founder"},
+            {"name": "Facilitator Smoke", "email": facilitator_email, "role": "facilitator"},
+        ]
+        os.environ.pop("VERTEX4D_FACILITATOR_EMAILS", None)
+        os.environ.pop("VERTEX4D_FACILITATOR_INVITE_CODE", None)
+        unauthorized, unauthorized_error = app_main.authorize_member_roles(requested_members, "")
+        assert not unauthorized and unauthorized_error, "facilitator must be refused with no program control configured"
+        print(f"OK    facilitator refused without program control: {unauthorized_error}")
+
+        os.environ["VERTEX4D_FACILITATOR_EMAILS"] = facilitator_email
+        impostor, impostor_error = app_main.authorize_member_roles(
+            [{"name": "Impostor", "email": "impostor-smoke@example.com", "role": "facilitator"}], ""
+        )
+        assert not impostor and impostor_error, "off-allowlist email must be refused the facilitator role"
+        print(f"OK    off-allowlist facilitator refused: {impostor_error}")
+
+        members, role_error = app_main.authorize_member_roles(requested_members, "")
+        assert role_error is None, role_error
+        assert [item["role"] for item in members] == ["founder", "facilitator"], members
+
         success, message, team_id = app_main.database.create_team(
             team_name,
             password,
-            [
-                {"name": "Founder Smoke", "email": founder_email, "role": "founder"},
-                {"name": "Facilitator Smoke", "email": facilitator_email, "role": "facilitator"},
-            ],
+            members,
             "Smoke final decision venture",
             None,
         )
