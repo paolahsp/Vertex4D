@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Start Golden Path | VERTEX 4D</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/static/css/vertex4d.css">
+    <style>
+        :root { --panel: rgba(255,253,248,0.78); --panel-strong: rgba(255,253,248,0.94); --ink: var(--v4d-ink,#181810); --muted: var(--v4d-muted,#776F68); --line: var(--v4d-line,rgba(24,24,16,0.14)); --blue: var(--v4d-cobalt,#1946D1); --coral: var(--v4d-coral,#E74530); --olive: var(--v4d-olive,#A4A760); }
+        body { color: var(--ink); margin: 0; min-height: 100vh; }
+        .sgp-header { align-items: center; background: rgba(244,235,220,0.84); border-bottom: 1px solid var(--line); display: flex; gap: 18px; justify-content: space-between; padding: 18px clamp(18px,4vw,44px); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(18px); }
+        .sgp-brand { align-items: center; display: flex; gap: 12px; }
+        .sgp-mark { align-items: center; border: 1px solid var(--blue); color: var(--blue); display: inline-flex; font-family: "Courier New",monospace; font-size: 12px; font-weight: 800; height: 32px; justify-content: center; width: 32px; }
+        .sgp-title-small { font-family: Georgia,"Times New Roman",serif; font-size: clamp(19px,2.2vw,28px); font-weight: 700; line-height: 1; margin: 0; }
+        .sgp-kicker, .sgp-subtitle { color: var(--coral); font-family: "Courier New",monospace; font-size: 11px; font-weight: 800; letter-spacing: 0; margin: 0; text-transform: uppercase; }
+        .sgp-link { border: 1px solid var(--line); color: var(--blue); display: inline-flex; font-size: 12px; font-weight: 800; margin-left: 8px; padding: 10px 12px; text-decoration: none; text-transform: uppercase; }
+        .sgp-main { margin: 0 auto; max-width: 1440px; padding: clamp(22px,4vw,48px); }
+        .sgp-hero { display: grid; gap: 24px; grid-template-columns: minmax(0,1.1fr) minmax(320px,0.9fr); margin-bottom: 24px; }
+        .sgp-panel, .sgp-card, .sgp-step, .sgp-aside { background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 44px rgba(24,24,16,0.09), inset 0 1px 0 rgba(255,253,248,0.72); backdrop-filter: blur(18px) saturate(1.05); }
+        .sgp-panel { padding: clamp(24px,4vw,44px); }
+        .sgp-title { font-family: Georgia,"Times New Roman",serif; font-size: clamp(44px,7vw,92px); line-height: 0.96; margin: 12px 0 18px; max-width: 900px; }
+        .sgp-copy { color: var(--muted); font-size: clamp(15px,1.8vw,18px); line-height: 1.55; margin: 0; max-width: 760px; }
+        .sgp-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+        .sgp-run-form { display: grid; gap: 10px; grid-template-columns: repeat(2,minmax(0,1fr)); margin-top: 22px; max-width: 760px; }
+        .sgp-field { display: grid; gap: 6px; }
+        .sgp-field.full { grid-column: 1 / -1; }
+        .sgp-field label { color: var(--coral); font-family: "Courier New",monospace; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .sgp-field input, .sgp-field select { background: rgba(255,253,248,0.86); border: 1px solid var(--line); color: var(--ink); font: inherit; min-height: 42px; padding: 0 10px; }
+        .sgp-checks { align-items: center; display: flex; flex-wrap: wrap; gap: 14px; grid-column: 1 / -1; }
+        .sgp-checks label { align-items: center; color: var(--muted); display: inline-flex; font-size: 13px; gap: 8px; }
+        .sgp-button { align-items: center; background: var(--blue); border: 1px solid var(--blue); color: #fff; display: inline-flex; font-size: 13px; font-weight: 800; min-height: 42px; padding: 0 14px; text-decoration: none; text-transform: uppercase; }
+        .sgp-button.secondary { background: transparent; color: var(--blue); }
+        .sgp-aside { display: grid; gap: 12px; padding: 18px; }
+        .sgp-stat { background: var(--panel-strong); border: 1px solid var(--line); padding: 16px; }
+        .sgp-stat strong { display: block; font-family: Georgia,"Times New Roman",serif; font-size: 34px; line-height: 1; }
+        .sgp-stat span { color: var(--muted); display: block; font-size: 12px; font-weight: 800; margin-top: 8px; text-transform: uppercase; }
+        .sgp-layout { display: grid; gap: 24px; grid-template-columns: minmax(0,1.4fr) minmax(300px,0.8fr); }
+        .sgp-steps { display: grid; gap: 14px; }
+        .sgp-step { display: grid; gap: 16px; grid-template-columns: 54px minmax(0,1fr) auto; padding: 18px; }
+        .sgp-step:nth-child(1), .sgp-step:nth-child(4) { border-left: 5px solid var(--blue); }
+        .sgp-step:nth-child(2), .sgp-step:nth-child(5) { border-left: 5px solid var(--coral); }
+        .sgp-step:nth-child(3) { border-left: 5px solid var(--olive); }
+        .sgp-number { align-items: center; background: var(--panel-strong); border: 1px solid var(--line); color: var(--blue); display: inline-flex; font-family: "Courier New",monospace; font-size: 13px; font-weight: 800; height: 54px; justify-content: center; width: 54px; }
+        .sgp-step h2 { font-family: Georgia,"Times New Roman",serif; font-size: clamp(24px,3vw,34px); line-height: 1.05; margin: 0; }
+        .sgp-step p { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 8px 0 0; }
+        .sgp-step-meta { color: var(--coral); font-family: "Courier New",monospace; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        .sgp-step-action { align-self: center; border: 1px solid var(--line); color: var(--blue); font-size: 12px; font-weight: 800; padding: 10px 12px; text-decoration: none; text-transform: uppercase; white-space: nowrap; }
+        .sgp-card { padding: 22px; }
+        .sgp-card h2 { font-family: Georgia,"Times New Roman",serif; font-size: 30px; line-height: 1.05; margin: 10px 0 12px; }
+        .sgp-card p, .sgp-card li { color: var(--muted); font-size: 14px; line-height: 1.55; }
+        .sgp-card ul { margin: 12px 0 0; padding-left: 18px; }
+        @media (max-width: 1050px) { .sgp-hero, .sgp-layout { grid-template-columns: 1fr; } }
+        @media (max-width: 720px) { .sgp-header { align-items: flex-start; flex-direction: column; } .sgp-link { margin: 4px 6px 0 0; } .sgp-run-form { grid-template-columns: 1fr; } .sgp-step { grid-template-columns: 46px minmax(0,1fr); } .sgp-step-action { grid-column: 2; width: fit-content; } }
+    </style>
+</head>
+<body class="app-shell glass-workbench">
+    <header class="sgp-header">
+        <div class="sgp-brand"><span class="sgp-mark">SL</span><div><p class="sgp-title-small">Srsly Labs</p><p class="sgp-subtitle">Start Golden Path</p></div></div>
+        <nav><a class="sgp-link" href="/dashboard/lab">Back to 4D Lab</a><a class="sgp-link" href="/dashboard/lab/golden-path">View contract chain</a></nav>
+    </header>
+    <main class="sgp-main">
+        <section class="sgp-hero">
+            <article class="sgp-panel"><p class="sgp-kicker">Guided decision journey</p><h1 class="sgp-title">Start with the idea. Finish with a decision.</h1><p class="sgp-copy">This is the usable first version of the VERTEX 4D Golden Path: move from problem framing to system mapping, adoption resistance, financial viability and a traceable decision record.</p><div class="sgp-run-form" aria-label="Run setup"><div class="sgp-field full"><label for="run-title-input">Project title</label><input id="run-title-input" value="VERTEX Golden Path run"></div><div class="sgp-field"><label for="run-stage-input">Stage</label><select id="run-stage-input"><option value="idea">Idea</option><option value="discovery">Discovery</option><option value="prototype">Prototype</option><option value="pilot">Pilot</option><option value="launched">Launched</option></select></div><div class="sgp-field"><label for="run-scope-input">Scope</label><select id="run-scope-input"><option value="local">Local</option><option value="regional">Regional</option><option value="national">National</option><option value="international">International</option></select></div><div class="sgp-field"><label for="run-city-input">Primary city</label><input id="run-city-input" placeholder="Mexico City"></div><div class="sgp-field"><label for="run-country-input">Country</label><input id="run-country-input" placeholder="Mexico"></div><div class="sgp-checks"><label><input id="run-synthetic-input" type="checkbox"> Synthetic case</label><label><input id="run-predictive-input" type="checkbox" checked> Approved for D-Predict</label><label><input id="run-identifiable-input" type="checkbox"> Contains identifiable people</label><label><input id="run-consent-predictive-input" type="checkbox"> Consent allows D-Predict</label></div><div class="sgp-field"><label for="run-consent-basis-input">Consent basis</label><select id="run-consent-basis-input"><option value="explicit_consent">Explicit consent</option><option value="institutional_dpa">Institutional DPA</option><option value="anonymized_before_processing">Anonymized before processing</option></select></div><div class="sgp-field"><label for="run-consent-ref-input">Consent record</label><input id="run-consent-ref-input" placeholder="consent_form_batch_001"></div></div><div class="sgp-actions"><button class="sgp-button" type="button" id="create-run-btn">Create run</button><a class="sgp-button" data-run-link href="/dashboard/lab/alex">Start with Alex</a><a class="sgp-button secondary" href="/dashboard/lab/how-vertex-thinks">How VERTEX thinks</a></div><p class="sgp-copy" id="run-status" style="margin-top:16px;font-size:14px">No active run yet. Create one to connect the five artifacts.</p></article>
+            <aside class="sgp-aside" aria-label="Golden Path readiness"><div class="sgp-stat"><strong>5</strong><span>Decision stages</span></div><div class="sgp-stat"><strong>1</strong><span>Golden case wired</span></div><div class="sgp-stat"><strong>Billie</strong><span>Financial layer active</span></div></aside>
+        </section>
+        <section class="sgp-layout">
+            <div class="sgp-steps" aria-label="Golden Path steps">
+                <article class="sgp-step"><span class="sgp-number">01</span><div><p class="sgp-step-meta">Alex / ProblemFrame</p><h2>Define the real problem.</h2><p>Use Socratic challenge to expose assumptions, tensions and the question the team should actually answer.</p></div><a class="sgp-step-action" data-run-link href="/dashboard/lab/alex">Open Alex</a></article>
+                <article class="sgp-step"><span class="sgp-number">02</span><div><p class="sgp-step-meta">SynapMap / SystemMap</p><h2>Map the system around the idea.</h2><p>Turn stakeholders, evidence, dependencies and context into a map that can feed predictive and financial work.</p></div><a class="sgp-step-action" data-run-link href="/dashboard/lab/synapmap">Open SynapMap</a></article>
+                <article class="sgp-step"><span class="sgp-number">Gate</span><div><p class="sgp-step-meta">Approval Gate / Assumptions</p><h2>Approve what can feed prediction and finance.</h2><p>Choose which assumptions are strong enough for D-Predict, Billie, or both before downstream models consume them.</p></div><a class="sgp-step-action" data-run-link href="/dashboard/lab/assumption-approval">Approve assumptions</a></article>
+                <article class="sgp-step"><span class="sgp-number">03</span><div><p class="sgp-step-meta">D-Predict / PredictiveHypothesis</p><h2>Explore adoption and resistance.</h2><p>Turn approved SystemMap inputs into a bounded stakeholder hypothesis with explicit uncertainty labels.</p></div><a class="sgp-step-action" data-run-link href="/dashboard/lab/d-predict">Open D-Predict</a></article>
+                <article class="sgp-step"><span class="sgp-number">04</span><div><p class="sgp-step-meta">Billie / FinancialScenario</p><h2>Ask whether the numbers survive.</h2><p>Use pricing, unit economics, break-even and 10-year projection to translate the behavior scenario into viability signals.</p></div><a class="sgp-step-action" data-run-link href="/dashboard/lab/billie">Open Billie</a></article>
+                <article class="sgp-step"><span class="sgp-number">05</span><div><p class="sgp-step-meta">DecisionRecord</p><h2>Commit with traceability.</h2><p>Capture the decision, upstream artifacts, risks, unknowns and success criteria so the team can revisit the choice later.</p></div><a class="sgp-step-action" data-run-link href="/dashboard/lab/decision-record">Create record</a></article>
+            </div>
+            <aside class="sgp-card"><p class="sgp-kicker">Smallest golden path</p><h2>What is ready for the first delivery?</h2><p>The first version does not need every adapter fully automated. It needs one complete, believable path that teaches the method and produces contract-backed artifacts.</p><ul><li>Alex and SynapMap remain the human-readable front of problem and system work.</li><li>D-Predict is represented as a bounded adoption/resistance hypothesis in the golden case.</li><li>Billie is the live financial layer for price, margin and projection.</li><li>DecisionRecord is the final traceable output.</li></ul></aside>
+        </section>
+    </main>
+<script>
+(function () {
+    const storageKey = "vertex_current_run_id";
+    const status = document.getElementById("run-status");
+    const createButton = document.getElementById("create-run-btn");
+
+    function updateLinks(runId) {
+        document.querySelectorAll("[data-run-link]").forEach((link) => {
+            const url = new URL(link.getAttribute("href"), window.location.origin);
+            if (runId) url.searchParams.set("run_id", runId);
+            link.setAttribute("href", url.pathname + url.search);
+        });
+    }
+
+    function setRun(runId) {
+        if (runId) {
+            localStorage.setItem(storageKey, runId);
+            status.textContent = `Active run: ${runId}. The next artifacts will be connected to this chain.`;
+        } else {
+            status.textContent = "No active run yet. Create one to connect the five artifacts.";
+        }
+        updateLinks(runId);
+    }
+
+    async function createRun() {
+        createButton.disabled = true;
+        status.textContent = "Creating Golden Path run...";
+        try {
+            const response = await fetch("/api/vertex/runs", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    title: document.getElementById("run-title-input").value || "VERTEX Golden Path run",
+                    venture_stage: document.getElementById("run-stage-input").value,
+                    operating_scope: document.getElementById("run-scope-input").value,
+                    primary_city: document.getElementById("run-city-input").value || "Unknown",
+                    country: document.getElementById("run-country-input").value || "Unknown",
+                    is_synthetic: document.getElementById("run-synthetic-input").checked,
+                    approved_for_predictive_processing: document.getElementById("run-predictive-input").checked,
+                    contains_identifiable_people: document.getElementById("run-identifiable-input").checked,
+                    consent_basis: document.getElementById("run-consent-basis-input").value,
+                    consent_record_ref: document.getElementById("run-consent-ref-input").value,
+                    allows_predictive_processing: document.getElementById("run-consent-predictive-input").checked
+                })
+            });
+            if (response.status === 401) {
+                window.location.href = "/register";
+                return;
+            }
+            const result = await response.json();
+            if (!response.ok || !result.created) {
+                throw new Error((result.errors && result.errors[0] && result.errors[0].message) || result.detail || "Run could not be created");
+            }
+            setRun(result.run.run_id);
+        } catch (error) {
+            status.textContent = `Run not created: ${error.message}`;
+        } finally {
+            createButton.disabled = false;
+        }
+    }
+
+    createButton.addEventListener("click", createRun);
+    setRun(new URLSearchParams(window.location.search).get("run_id") || localStorage.getItem(storageKey));
+}());
+</script>
+</body>
+</html>

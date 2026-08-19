@@ -566,24 +566,26 @@ textarea::placeholder {
     width: 54%;
 }
 
-.visual-billie {
+.visual-billie,
+.visual-finops {
     align-items: end;
     display: grid;
     gap: 8px;
     grid-template-columns: repeat(5, 1fr);
 }
 
-.visual-billie span {
+.visual-billie span,
+.visual-finops span {
     background: rgba(25, 70, 209, 0.14);
     border: 1px solid rgba(25, 70, 209, 0.28);
     display: block;
 }
 
-.visual-billie span:nth-child(1) { height: 36px; }
-.visual-billie span:nth-child(2) { height: 58px; background: rgba(231, 69, 48, 0.16); border-color: rgba(231, 69, 48, 0.32); }
-.visual-billie span:nth-child(3) { height: 48px; }
-.visual-billie span:nth-child(4) { height: 76px; background: rgba(164, 167, 96, 0.18); border-color: rgba(164, 167, 96, 0.36); }
-.visual-billie span:nth-child(5) { height: 64px; }
+.visual-billie span:nth-child(1), .visual-finops span:nth-child(1) { height: 36px; }
+.visual-billie span:nth-child(2), .visual-finops span:nth-child(2) { height: 58px; background: rgba(231, 69, 48, 0.16); border-color: rgba(231, 69, 48, 0.32); }
+.visual-billie span:nth-child(3), .visual-finops span:nth-child(3) { height: 48px; }
+.visual-billie span:nth-child(4), .visual-finops span:nth-child(4) { height: 76px; background: rgba(164, 167, 96, 0.18); border-color: rgba(164, 167, 96, 0.36); }
+.visual-billie span:nth-child(5), .visual-finops span:nth-child(5) { height: 64px; }
 
 .bg-dots {
     background-color: rgba(255, 253, 248, 0.48) !important;

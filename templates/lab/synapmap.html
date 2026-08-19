@@ -493,7 +493,7 @@ RULES:
             const height = document.getElementById('system-map-container').clientHeight;
 
             // PREPARE DATA FOR D3
-            // 1. Create a Set of valid Node IDs for validation
+            // 1. Viability a Set of valid Node IDs for validation
             const nodeIds = new Set(data.nodes.map(n => n.id));
 
             // 2. Map nodes (shallow copy to avoid mutating original data)
@@ -658,7 +658,130 @@ RULES:
             container.innerHTML = html || '<p class="text-center text-medium-grey">No analysis</p>';
         }
 
-        function saveCurrentMap() {
+
+        function getVertexRunId() {
+            return new URLSearchParams(window.location.search).get('run_id') || localStorage.getItem('vertex_current_run_id');
+        }
+
+        async function loadRunArtifact(artifactType) {
+            const runId = getVertexRunId();
+            if (!runId) return null;
+            const response = await fetch(`/api/vertex/runs/${encodeURIComponent(runId)}/artifacts/${artifactType}`);
+            if (!response.ok) return null;
+            const result = await response.json();
+            return result.artifact || null;
+        }
+
+        function safeId(value, fallback) {
+            return String(value || fallback).toLowerCase().replace(/[^a-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || fallback;
+        }
+
+        function classificationItem(id, statement, evidenceId, classification = 'hypothesis', confidence = 0.45) {
+            return { id, statement: statement || 'Requires review', classification, confidence, evidence_refs: [evidenceId] };
+        }
+
+        function mapRole(category) {
+            if (category === 'stakeholder') return 'partner';
+            if (category === 'decision') return 'facilitator';
+            if (category === 'activity') return 'operator';
+            return 'partner';
+        }
+
+        function mapRelationshipType(type) {
+            if (type === 'information') return 'information_flow';
+            if (type === 'resource') return 'resource_flow';
+            if (type === 'decision') return 'approval';
+            return 'dependency';
+        }
+
+        function buildSystemMapArtifact(projectRecord, problemFrame) {
+            const runId = getVertexRunId();
+            const now = new Date().toISOString();
+            const evidenceId = `ev_synapmap_${safeId(runId, 'runless')}`;
+            const rawNodes = currentAnalysis?.system_map?.nodes || [];
+            const rawEdges = currentAnalysis?.system_map?.edges || [];
+            const nodes = rawNodes.length ? rawNodes : [{ id: 'primary_stakeholder', label: 'Primary stakeholder', category: 'stakeholder' }];
+            const stakeholders = nodes.map((node, index) => ({
+                stakeholder_id: safeId(node.id, `stakeholder_${index + 1}`),
+                label: node.label || node.id || `Stakeholder ${index + 1}`,
+                role: mapRole(node.category),
+                influence: 'medium',
+                interest: 'medium',
+                incentives: ['Needs explicit validation in the Golden Path run'],
+                evidence_refs: [evidenceId],
+                is_identifiable_person: false
+            }));
+            const stakeholderIds = new Set(stakeholders.map(item => item.stakeholder_id));
+            const relationships = (rawEdges.length ? rawEdges : [{ from: stakeholders[0].stakeholder_id, to: stakeholders[0].stakeholder_id, type: 'dependency', label: 'Relationship requires review' }]).map((edge, index) => {
+                const from = safeId(edge.from, stakeholders[0].stakeholder_id);
+                const to = safeId(edge.to, stakeholders[0].stakeholder_id);
+                return {
+                    relationship_id: `rel_synapmap_${index + 1}`,
+                    from_stakeholder_id: stakeholderIds.has(from) ? from : stakeholders[0].stakeholder_id,
+                    to_stakeholder_id: stakeholderIds.has(to) ? to : stakeholders[0].stakeholder_id,
+                    relationship_type: mapRelationshipType(edge.type),
+                    label: edge.label || edge.type || 'Relationship requires review',
+                    strength: 'medium',
+                    evidence_refs: [evidenceId]
+                };
+            });
+            const insights = currentAnalysis?.insights || {};
+            const tensions = (insights.conflicts?.length ? insights.conflicts : insights.risks?.length ? insights.risks : ['No explicit system tension recorded yet.']).slice(0, 6).map((item, index) => classificationItem(`ten_synapmap_${index + 1}`, item, evidenceId));
+            const dependencies = (insights.bottlenecks?.length ? insights.bottlenecks : rawEdges.map(edge => edge.label).filter(Boolean).length ? rawEdges.map(edge => edge.label).filter(Boolean) : ['Dependencies require review.']).slice(0, 8).map((item, index) => classificationItem(`dep_synapmap_${index + 1}`, item, evidenceId));
+            const unknowns = (insights.opportunities?.length ? insights.opportunities : ['Which stakeholder response most changes the decision?']).slice(0, 6).map((item, index) => ({ id: `unk_synapmap_${index + 1}`, statement: item, classification: 'unknown', confidence: 0, evidence_refs: [evidenceId] }));
+            const approvedAssumptions = (problemFrame?.assumptions || [{ assumption_id: 'asm_placeholder', statement: 'ProblemFrame assumptions are missing.', approved_for_predictive_processing: false, approved_for_financial_processing: false, approval_state: 'pending' }]).map((item) => ({
+                assumption_id: item.assumption_id,
+                source_artifact_id: problemFrame?.artifact_id || 'missing_upstream_problem_frame',
+                statement: item.statement,
+                approved_for_predictive_processing: Boolean(item.approved_for_predictive_processing),
+                approved_for_financial_processing: Boolean(item.approved_for_financial_processing),
+                approval_state: item.approval_state || 'pending'
+            }));
+            return {
+                schema_version: '1.0.0',
+                artifact_type: 'system_map',
+                artifact_id: `system_map_${safeId(runId, Date.now())}`,
+                project_id: projectRecord?.project_id || problemFrame?.project_id || `project_${safeId(runId, 'runless')}`,
+                created_at: now,
+                created_by_role: 'synapmap',
+                status: 'draft',
+                provenance: { source_kind: 'user_supplied', source_label: 'SynapMap generated system map', ip_owner: 'Paola Hintze', external_components_used: [], notes: 'Mapped from SynapMap D3/RACI analysis into a SystemMap draft.' },
+                human_approval: { required: true, state: 'pending', approved_by_role: 'facilitator', approved_at: now, notes: 'Pending facilitator review.' },
+                validation_errors: [],
+                preceding_artifacts: { project_record_id: projectRecord?.artifact_id || 'missing_upstream_project_record', problem_frame_id: problemFrame?.artifact_id || 'missing_upstream_problem_frame' },
+                stakeholders,
+                relationships,
+                tensions,
+                dependencies,
+                evidence_references: [{ evidence_id: evidenceId, label: 'SynapMap session output', source_type: 'synthetic_observation', classification: 'hypothesis', contains_personal_data: false, evidence_context: 'synthetic_fixture' }],
+                unknowns,
+                system_boundaries: { included: ['Current mapped stakeholder system'], excluded: ['Unmapped external market'], time_horizon: 'pilot decision window', geography: 'team-defined geography' },
+                approved_assumptions: approvedAssumptions,
+                revision: 1,
+                updated_at: now
+            };
+        }
+
+        async function saveSystemMapArtifactToRun() {
+            const runId = getVertexRunId();
+            if (!runId) return false;
+            const projectRecord = await loadRunArtifact('project_record');
+            const problemFrame = await loadRunArtifact('problem_frame');
+            const artifact = buildSystemMapArtifact(projectRecord, problemFrame);
+            const response = await fetch(`/api/vertex/runs/${encodeURIComponent(runId)}/artifacts/system_map/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(artifact)
+            });
+            const result = await response.json();
+            if (!response.ok || !result.saved) {
+                setStatus(`SystemMap not saved to run: ${((result.errors || [])[0] || {}).message || result.detail || response.statusText}`, 'error');
+                return false;
+            }
+            setStatus(`SystemMap saved to ${runId}`, 'success');
+            return true;
+        }
+        async function saveCurrentMap() {
             if (!currentAnalysis) {
                 setStatus('No map to save', 'error');
                 return;
@@ -671,7 +794,8 @@ RULES:
             };
 
             localStorage.setItem('synapmap_current', JSON.stringify(mapData));
-            setStatus('Map saved', 'success');
+            setStatus('Map saved locally', 'success');
+            await saveSystemMapArtifactToRun();
             setTimeout(() => setStatus(''), 2000);
         }
 
