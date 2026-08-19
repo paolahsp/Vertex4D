@@ -1,13 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Vertex 4D by Srsly Labs</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <script>
         tailwind.config = {
             theme: {
@@ -21,14 +19,15 @@
                     },
                     fontFamily: {
                         sans: ["Inter", "Arial", "sans-serif"],
-                        serif: ["Source Serif 4", "Georgia", "serif"],
-                        mono: ["Space Mono", "Courier New", "monospace"]
+                        serif: ["Bricolage Grotesque", "sans-serif"],
+                        mono: ["Space Mono", var(--font-mono), "monospace"]
                     }
                 }
             }
         }
     </script>
     <link rel="stylesheet" href="/static/css/vertex4d.css">
+    <script src="/static/js/prefs.js" defer></script>
 </head>
 
 <body class="bg-paper text-ink">

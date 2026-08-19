@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -7,6 +7,7 @@
     <title>VERTEX 4D Golden Path | Srsly Labs</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/static/css/vertex4d.css">
+    <script src="/static/js/prefs.js" defer></script>
     <style>
         :root {
             --panel: rgba(255, 253, 248, 0.74);
@@ -71,7 +72,7 @@
             color: var(--blue);
             display: inline-flex;
             flex: 0 0 auto;
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono), monospace;
             font-size: 12px;
             font-weight: 700;
             height: 32px;
@@ -80,7 +81,7 @@
         }
 
         .gp-brand-title {
-            font-family: "Source Serif 4", Georgia, serif;
+            font-family: var(--font-display), serif;
             font-size: clamp(19px, 2.2vw, 28px);
             font-weight: 700;
             line-height: 1;
@@ -90,7 +91,7 @@
         .gp-brand-subtitle,
         .gp-kicker {
             color: var(--coral);
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono), monospace;
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 0;
@@ -126,7 +127,7 @@
         }
 
         .gp-title {
-            font-family: "Source Serif 4", Georgia, serif;
+            font-family: var(--font-display), serif;
             font-size: clamp(42px, 7vw, 92px);
             line-height: 0.95;
             margin: 12px 0 18px;
@@ -173,7 +174,7 @@
 
         .gp-metric strong {
             display: block;
-            font-family: "Source Serif 4", Georgia, serif;
+            font-family: var(--font-display), serif;
             font-size: 38px;
             line-height: 1;
         }
@@ -249,7 +250,7 @@
 
         .gp-stage-label {
             color: var(--blue);
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono), monospace;
             font-size: 11px;
             font-weight: 700;
             text-transform: uppercase;
@@ -268,7 +269,7 @@
         .gp-stage h2,
         .gp-card h2,
         .gp-card h3 {
-            font-family: "Source Serif 4", Georgia, serif;
+            font-family: var(--font-display), serif;
             margin: 0;
         }
 
@@ -280,7 +281,7 @@
 
         .gp-artifact {
             color: var(--muted);
-            font-family: "Courier New", monospace;
+            font-family: var(--font-mono), monospace;
             font-size: 11px;
             margin: 10px 0 0;
             overflow-wrap: anywhere;

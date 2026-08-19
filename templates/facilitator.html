@@ -1,33 +1,34 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Facilitator Dashboard | VERTEX 4D</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/static/css/vertex4d.css">
+    <script src="/static/js/prefs.js" defer></script>
     <style>
-        :root { --panel: rgba(255,253,248,0.88); --ink: var(--v4d-ink,#181810); --muted: var(--v4d-muted,#6E6660); --line: var(--v4d-line,rgba(24,24,16,0.14)); --blue: var(--v4d-cobalt,#1946D1); --coral: var(--v4d-coral-text,#C13521); --olive: var(--v4d-olive-text,#5F6320); }
+        :root { --panel: var(--glass); --panel-strong: var(--glass2); --ink: var(--fg); --muted: var(--fg2); --line: var(--edge); --blue: var(--act); --coral: var(--risk-text); --olive: var(--evidence-text); }
         body { color: var(--ink); margin: 0; min-height: 100vh; }
         .fd-header { align-items: center; background: rgba(244,235,220,0.86); border-bottom: 1px solid var(--line); display: flex; gap: 18px; justify-content: space-between; padding: 18px clamp(18px,4vw,44px); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(18px); }
         .fd-brand { align-items: center; display: flex; gap: 12px; }
-        .fd-mark { align-items: center; border: 1px solid var(--blue); color: var(--blue); display: inline-flex; font-family: "Courier New",monospace; font-size: 12px; font-weight: 800; height: 32px; justify-content: center; width: 32px; }
-        .fd-title-small { font-family: "Source Serif 4",Georgia,serif; font-size: 24px; font-weight: 700; line-height: 1; margin: 0; }
-        .fd-kicker { color: var(--coral); font-family: "Courier New",monospace; font-size: 11px; font-weight: 800; letter-spacing: 0; margin: 0; text-transform: uppercase; }
+        .fd-mark { align-items: center; border: 1px solid var(--blue); color: var(--blue); display: inline-flex; font-family: var(--font-mono); font-size: 12px; font-weight: 800; height: 32px; justify-content: center; width: 32px; }
+        .fd-title-small { font-family: var(--font-display); font-size: 24px; font-weight: 700; line-height: 1; margin: 0; }
+        .fd-kicker { color: var(--coral); font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: 0; margin: 0; text-transform: uppercase; }
         .fd-link { border: 1px solid var(--line); color: var(--blue); display: inline-flex; font-size: 12px; font-weight: 800; margin-left: 8px; padding: 10px 12px; text-decoration: none; text-transform: uppercase; }
         .fd-main { margin: 0 auto; max-width: 1440px; padding: clamp(22px,4vw,48px); }
         .fd-hero { display: grid; gap: 16px; grid-template-columns: minmax(0,1fr) repeat(4,minmax(130px,180px)); margin-bottom: 18px; }
         .fd-panel, .fd-stat, .fd-table-wrap { background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 44px rgba(24,24,16,0.08), inset 0 1px 0 rgba(255,253,248,0.72); backdrop-filter: blur(18px) saturate(1.05); }
         .fd-panel { padding: 22px; }
-        .fd-panel h1 { font-family: "Source Serif 4",Georgia,serif; font-size: clamp(36px,5vw,64px); line-height: 0.98; margin: 8px 0 12px; }
+        .fd-panel h1 { font-family: var(--font-display); font-size: clamp(36px,5vw,64px); line-height: 0.98; margin: 8px 0 12px; }
         .fd-copy { color: var(--muted); font-size: 15px; line-height: 1.5; margin: 0; max-width: 780px; }
         .fd-stat { padding: 18px; }
-        .fd-stat strong { display: block; font-family: "Source Serif 4",Georgia,serif; font-size: 38px; line-height: 1; }
+        .fd-stat strong { display: block; font-family: var(--font-display); font-size: 38px; line-height: 1; }
         .fd-stat span { color: var(--muted); display: block; font-size: 11px; font-weight: 800; margin-top: 8px; text-transform: uppercase; }
         .fd-table-wrap { overflow-x: auto; }
         table { border-collapse: collapse; min-width: 1120px; width: 100%; }
         th, td { border-bottom: 1px solid var(--line); padding: 14px; text-align: left; vertical-align: top; }
-        th { color: var(--coral); font-family: "Courier New",monospace; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+        th { color: var(--coral); font-family: var(--font-mono); font-size: 11px; font-weight: 800; text-transform: uppercase; }
         td { font-size: 14px; }
         .fd-cell-title { display: block; font-weight: 800; margin-bottom: 4px; }
         .fd-muted { color: var(--muted); }

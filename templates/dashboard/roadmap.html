@@ -1,17 +1,15 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html class="light" lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Vertex 4D Dashboard - Levels</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
         rel="stylesheet" />
     <style type="text/tailwindcss">
-        @import url('https://api.fontshare.com/v2/css?f[]=clash-display@700&display=swap');
+        
         
         .material-symbols-outlined {
             font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -38,7 +36,7 @@
                     },
                     fontFamily: {
                         "display": ["Inter", "sans-serif"],
-                        "heading": ["Source Serif 4", "serif"],
+                        "heading": ["Bricolage Grotesque", "sans-serif"],
                     },
                     borderRadius: {
                         "DEFAULT": "0.25rem",
@@ -51,6 +49,7 @@
         }
     </script>
     <link rel="stylesheet" href="/static/css/vertex4d.css">
+    <script src="/static/js/prefs.js" defer></script>
 </head>
 
 <body class="font-display bg-background-light dark:bg-background-dark text-near-black dark:text-white">

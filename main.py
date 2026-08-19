@@ -933,6 +933,28 @@ async def vertex_golden_case(user: dict = Depends(get_current_user)):
         raise HTTPException(status_code=401, detail="Not authenticated")
     return build_vertex_golden_case_view_model()
 
+@app.get("/api/user/preferences")
+async def get_user_preferences(user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    email = user.get("member_email")
+    return {"prefs": database.get_user_prefs(email)}
+
+
+@app.post("/api/user/preferences")
+async def save_user_preferences(request: Request, payload: dict = Body(...), user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    email = user.get("member_email")
+    if not email:
+        raise HTTPException(status_code=400, detail="Current session does not include a member email")
+    prefs = database.upsert_user_prefs(email, payload)
+    session_user = dict(user)
+    session_user["prefs"] = prefs
+    request.session["user"] = session_user
+    return {"saved": True, "prefs": prefs}
+
+
 @app.post("/api/billie/financial-scenario/validate")
 async def validate_billie_financial_scenario(
     payload: dict = Body(...),

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html class="light" lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 
 <head>
     <meta charset="utf-8" />
@@ -7,10 +7,8 @@
     <title>Sketch Phase | Vertex 4D</title>
     <link rel="icon" href="/favicon.ico">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
     <style type="text/tailwindcss">
-        @import url('https://api.fontshare.com/v2/css?f[]=clash-display@700&display=swap');
+        
         
         .noise-texture {
             position: relative;
@@ -57,7 +55,7 @@
                     },
                     fontFamily: {
                         "display": ["Inter", "sans-serif"],
-                        "heading": ["Source Serif 4", "serif"],
+                        "heading": ["Bricolage Grotesque", "sans-serif"],
                     },
                     borderRadius: {
                         "DEFAULT": "1rem",
@@ -70,6 +68,7 @@
         }
     </script>
     <link rel="stylesheet" href="/static/css/vertex4d.css">
+    <script src="/static/js/prefs.js" defer></script>
 </head>
 
 <body class="font-display bg-background-light dark:bg-background-dark text-stone-900 dark:text-stone-100 noise-texture">

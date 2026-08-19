@@ -101,6 +101,15 @@ def init_database():
             FOREIGN KEY (run_id) REFERENCES runs (run_id)
         )
     ''')
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS user_prefs (
+            email TEXT PRIMARY KEY,
+            theme TEXT NOT NULL DEFAULT 'dark',
+            motion TEXT NOT NULL DEFAULT 'full',
+            focus TEXT NOT NULL DEFAULT 'off',
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
     conn.commit()
     conn.close()
 
@@ -109,6 +118,58 @@ def hash_password(password: str) -> str:
     return hashlib.sha256(password.encode()).hexdigest()
 
 VALID_MEMBER_ROLES = {"founder", "facilitator", "admin"}
+
+
+VALID_PREFS = {
+    "theme": {"dark", "light"},
+    "motion": {"full", "reduced", "none"},
+    "focus": {"on", "off"},
+}
+DEFAULT_PREFS = {"theme": "dark", "motion": "full", "focus": "off"}
+
+
+def normalize_user_prefs(prefs: dict | None) -> dict:
+    normalized = dict(DEFAULT_PREFS)
+    if isinstance(prefs, dict):
+        for key, allowed in VALID_PREFS.items():
+            value = str(prefs.get(key) or "").strip().lower()
+            if value in allowed:
+                normalized[key] = value
+    return normalized
+
+
+def get_user_prefs(email: str | None) -> dict:
+    if not email:
+        return dict(DEFAULT_PREFS)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT theme, motion, focus FROM user_prefs WHERE email = ?", (email,))
+    row = cursor.fetchone()
+    conn.close()
+    if not row:
+        return dict(DEFAULT_PREFS)
+    return normalize_user_prefs(dict(row))
+
+
+def upsert_user_prefs(email: str, prefs: dict) -> dict:
+    normalized = normalize_user_prefs(prefs)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        '''
+        INSERT INTO user_prefs (email, theme, motion, focus)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(email) DO UPDATE SET
+            theme = excluded.theme,
+            motion = excluded.motion,
+            focus = excluded.focus,
+            updated_at = CURRENT_TIMESTAMP
+        ''',
+        (email, normalized["theme"], normalized["motion"], normalized["focus"]),
+    )
+    conn.commit()
+    conn.close()
+    return normalized
 
 
 def normalize_member_role(role: str | None) -> str:
@@ -133,6 +194,7 @@ def login_data_for_email(email: str) -> dict | None:
     cursor.execute("SELECT name, email, role FROM team_members WHERE team_id = ?", (team_id,))
     members = [dict(row) for row in cursor.fetchall()]
     conn.close()
+    member_email = member["email"] if "email" in member.keys() else None
     return {
         "team_id": team["id"],
         "team_name": team["team_name"],
@@ -140,7 +202,8 @@ def login_data_for_email(email: str) -> dict | None:
         "photo_url": team["photo_url"],
         "role": normalize_member_role(member["role"] if "role" in member.keys() else "founder"),
         "member_name": member["name"] if "name" in member.keys() else None,
-        "member_email": member["email"] if "email" in member.keys() else None,
+        "member_email": member_email,
+        "prefs": get_user_prefs(member_email),
         "members": members,
     }
 

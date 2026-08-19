@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html class="light" lang="en">
+<html class="light" lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 
 
 
@@ -18,9 +18,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
 
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
 
 
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
@@ -174,6 +172,7 @@
     </style>
 
     <link rel="stylesheet" href="/static/css/vertex4d.css">
+    <script src="/static/js/prefs.js" defer></script>
 
 </head>
 
@@ -1338,4 +1337,3 @@ Do not include markdown formatting (like \`\`\`json) in your response, just the 
 
 
 </html>
-
