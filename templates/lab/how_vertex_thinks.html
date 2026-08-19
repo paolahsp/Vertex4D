@@ -5,22 +5,22 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>How VERTEX Thinks | Srsly Labs</title>
     <link rel="icon" href="/favicon.ico">
-    <link rel="stylesheet" href="/static/css/vertex4d.css">
-    <script src="/static/js/prefs.js" defer></script>
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
     <style>
         :root { --panel: var(--glass); --panel-strong: var(--glass2); --ink: var(--fg); --muted: var(--fg2); --line: var(--edge); --blue: var(--act); --coral: var(--risk-text); --olive: var(--evidence-text); }
         body { margin: 0; min-height: 100vh; color: var(--ink); }
-        .think-header { align-items: center; background: color-mix(in srgb, var(--bg) 84%, transparent); border-bottom: 1px solid var(--line); display: flex; gap: 18px; justify-content: space-between; padding: 18px clamp(18px,4vw,44px); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(18px); }
+        .think-header { align-items: center; background: color-mix(in srgb, var(--bg) 84%, transparent); border-bottom: 1px solid var(--line); display: flex; gap: 18px; justify-content: space-between; padding: 18px clamp(22px,2.8vw,30px); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(18px); }
         .think-link { align-items: center; border: 1px solid var(--line); color: var(--blue); display: inline-flex; font-size: 12px; font-weight: 800; gap: 8px; margin-left: 8px; padding: 10px 12px; text-decoration: none; text-transform: none; }
         .think-brand { align-items: center; display: flex; gap: 12px; min-width: 0; }
         .think-mark { align-items: center; border: 1px solid var(--blue); color: var(--blue); display: inline-flex; flex: 0 0 auto; font-family: var(--font-mono), monospace; font-size: 12px; font-weight: 800; height: 32px; justify-content: center; width: 32px; }
         .think-brand-title { font-family: var(--font-display); font-size: clamp(19px,2.2vw,28px); font-weight: 700; line-height: 1; margin: 0; }
         .think-kicker, .think-brand-subtitle { color: var(--coral); font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: 0; margin: 0; text-transform: none; }
-        .think-main { margin: 0 auto; max-width: 1440px; padding: clamp(22px,4vw,48px); }
+        .think-main { margin: 0 auto; max-width: 1440px; padding: clamp(22px,2.8vw,30px); }
         .think-hero { display: grid; gap: 24px; grid-template-columns: minmax(0,1.05fr) minmax(300px,0.95fr); margin-bottom: 24px; }
-        .think-panel, .think-card, .think-step, .think-note { background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 44px rgba(24,24,16,0.09), inset 0 1px 0 rgba(255,253,248,0.72); backdrop-filter: blur(18px) saturate(1.05); }
-        .think-panel { padding: clamp(24px,4vw,44px); }
-        .think-title { font-family: var(--font-display); font-size: clamp(44px,7vw,90px); line-height: 0.96; margin: 12px 0 18px; max-width: 860px; }
+        .think-panel, .think-card, .think-step, .think-note { background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 44px rgba(24,24,16,0.09), inset 0 1px 0 var(--glass2); backdrop-filter: blur(18px) saturate(1.05); }
+        .think-panel { padding: clamp(22px,2.8vw,30px); }
+        .think-title { font-family: var(--font-display); font-size: clamp(30px,4.2vw,46px); line-height: 0.96; margin: 12px 0 18px; max-width: 860px; }
         .think-copy { color: var(--muted); font-size: clamp(15px,1.8vw,18px); line-height: 1.55; margin: 0; max-width: 760px; }
         .think-path { display: grid; gap: 12px; }
         .think-step { align-items: center; display: grid; gap: 14px; grid-template-columns: 42px minmax(0,1fr); padding: 16px; }
@@ -35,8 +35,8 @@
         .think-card h2 { font-family: var(--font-display); font-size: 28px; line-height: 1.08; margin: 14px 0 12px; }
         .think-card p, .think-card li, .think-note p { color: var(--muted); font-size: 14px; line-height: 1.55; }
         .think-card ul { margin: 12px 0 0; padding-left: 18px; }
-        .think-note { align-items: center; border-left: 5px solid var(--blue); display: grid; gap: 24px; grid-template-columns: minmax(0,1.2fr) minmax(260px,0.8fr); padding: clamp(22px,4vw,34px); }
-        .think-note h2 { font-family: var(--font-display); font-size: clamp(30px,4vw,52px); line-height: 1; margin: 8px 0 12px; }
+        .think-note { align-items: center; border-left: 5px solid var(--blue); display: grid; gap: 24px; grid-template-columns: minmax(0,1.2fr) minmax(260px,0.8fr); padding: clamp(19px,2.2vw,24px); }
+        .think-note h2 { font-family: var(--font-display); font-size: clamp(26px,3.4vw,38px); line-height: 1; margin: 8px 0 12px; }
         .think-equation { background: var(--panel-strong); border: 1px solid var(--line); color: var(--ink); display: grid; font-family: var(--font-mono); font-size: clamp(15px,2vw,18px); font-weight: 800; gap: 10px; line-height: 1.45; padding: 20px; }
         .think-equation span { color: var(--coral); }
         @media (max-width: 980px) { .think-hero, .think-note { grid-template-columns: 1fr; } .think-grid { grid-template-columns: 1fr; } }

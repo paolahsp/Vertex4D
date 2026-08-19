@@ -29,6 +29,19 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 # Templates
 templates = Jinja2Templates(directory="templates")
 
+# Static assets are cached hard by browsers. Without a version in the URL a
+# returning user keeps the previous stylesheet and never sees a redesign --
+# which in a cohort means everyone who logged in before still sees the old app.
+def _asset_version() -> str:
+    newest = 0.0
+    for path in (Path(__file__).resolve().parent / "static").rglob("*"):
+        if path.suffix in {".css", ".js"}:
+            newest = max(newest, path.stat().st_mtime)
+    return str(int(newest))
+
+
+templates.env.globals["asset_v"] = _asset_version()
+
 BASE_DIR = Path(__file__).resolve().parent
 GOLDEN_CASE_DIR = BASE_DIR / "fixtures" / "golden-case" / "v1"
 FINANCIAL_SCENARIO_SCHEMA_PATH = BASE_DIR / "contracts" / "v1" / "financial-scenario.schema.json"

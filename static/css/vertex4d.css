@@ -5,7 +5,9 @@
     --lav: #B2A4FF;
     --coral: #FF6B6B;
     --mint: #66FFB2;
-    --radius: 8px;
+    --radius: 16px;      /* paneles */
+    --radius-ui: 11px;   /* botones, inputs */
+    --radius-chip: 8px;  /* chips y etiquetas */
     --font-display: "Bricolage Grotesque", "Manrope", system-ui, sans-serif;
     --font-body: "Manrope", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     --font-mono: "JetBrains Mono", "Courier New", monospace;
@@ -20,7 +22,7 @@ html[data-theme="dark"] {
     --edge: rgba(178, 164, 255, .20);
     --edge2: rgba(178, 164, 255, .32);
     --fg: #E4DFF2;
-    --fg2: #A79CC4;
+    --fg2: #B6ACD2;
     --fg3: #8A80A6;
     --act: #B2A4FF;
     --actfill: #5b13ec;
@@ -143,16 +145,18 @@ body, .app-shell, .auth-shell, .site-shell, .glass-workbench {
 }
 
 .btn, .button, .app-button, .sgp-button, .fd-link, .sgp-link, .sgp-step-action,
-.tab, .nav, .app-nav-link, .ghost-button, .primary-button {
+.tab, .nav, .app-nav-link, .ghost-button, .primary-button,
+.aa-button, .gp-button, .think-button, .fd-button, .dr-button {
     align-items: center;
-    border-radius: var(--radius) !important;
+    border-radius: var(--radius-ui) !important;
     display: inline-flex;
     gap: .45rem;
     min-height: 40px;
     text-decoration: none;
     transition: border-color 160ms ease, background 160ms ease, color 160ms ease, transform 160ms ease;
 }
-.btn, .button, .app-button, .sgp-button, .primary-button, .btn.primary, .tab.active {
+.btn, .button, .app-button, .sgp-button, .primary-button, .btn.primary, .tab.active,
+.aa-button, .gp-button, .think-button, .fd-button, .dr-button, .b1 {
     background: var(--actfill) !important;
     border: 1px solid var(--actfill) !important;
     color: var(--acttext) !important;
@@ -172,7 +176,7 @@ button:disabled, .btn:disabled { cursor: not-allowed; opacity: .52; }
 .chip, .pill, .tag, .badge, .contract-badge, .fd-pill, .gp-status {
     background: var(--hypothesis-chip) !important;
     border: 1px solid color-mix(in srgb, var(--lav) 42%, transparent) !important;
-    border-radius: var(--radius) !important;
+    border-radius: var(--radius-chip) !important;
     color: var(--hypothesis-text) !important;
     display: inline-flex;
     font-size: 11px;
@@ -208,7 +212,7 @@ header, .app-header, .site-nav, .sgp-header, .head, .fd-header, .side {
 input, textarea, select {
     background: var(--glass2) !important;
     border: 1px solid var(--edge) !important;
-    border-radius: var(--radius) !important;
+    border-radius: var(--radius-ui) !important;
     color: var(--fg) !important;
     font: inherit;
 }
@@ -226,17 +230,32 @@ a { color: var(--act); }
     color: var(--fg2) !important;
 }
 .text-primary, .hover\:text-primary:hover { color: var(--act) !important; }
-.text-cyber-lavender, .text-hyper-coral { color: var(--risk-text) !important; }
-.text-electric-mint { color: var(--evidence-text) !important; }
+.text-cyber-lavender, .text-hyper-coral, .text-coral-text { color: var(--risk-text) !important; }
+.text-electric-mint, .text-olive-text { color: var(--evidence-text) !important; }
+[class*="bg-coral-text"] { background: var(--actfill) !important; }
 .text-background-dark, .text-stone-900, .text-gray-900, .text-near-black { color: var(--fg) !important; }
 .text-white, .text-stone-100 { color: var(--acttext) !important; }
 .bg-primary { background: var(--actfill) !important; }
 .bg-white, .bg-white\/80, .bg-white\/30, .bg-gray-50, .bg-gray-100,
 .bg-stone-100, .bg-background-light { background: var(--glass) !important; }
+/* vapor-grey sigue valiendo el crema viejo en los config de Tailwind, así que
+   sobre tema oscuro daba burbujas claras con texto claro encima: 1:1. */
+[class*="bg-electric-mint"] { background: var(--mint) !important; }
+[class*="bg-electric-mint"] *, [class*="bg-electric-mint"] { color: #0c3d26 !important; }
+[class*="bg-hyper-coral"]:not(button):not(a) { background: var(--coral) !important; }
+[class*="bg-hyper-coral"]:not(button):not(a) * { color: #3d0f0f !important; }
+
+[class*="bg-vapor-grey"], [class*="bg-background-light"], [class*="bg-stone-50"] {
+    background: var(--glass) !important;
+}
 .border-stone-100, .border-stone-200, .border-gray-200, .border-gray-300,
 .border-vapor-grey, .border-primary { border-color: var(--edge) !important; }
 .shadow-lg, .shadow-2xl, .shadow-sm, .shadow-md, .shadow-xl { box-shadow: var(--shadow) !important; }
-.rounded-full, .rounded-3xl, .rounded-2xl, .rounded-xl, .rounded-lg, .rounded-md, .rounded { border-radius: var(--radius) !important; }
+.rounded-3xl, .rounded-2xl { border-radius: var(--radius) !important; }
+.rounded-xl, .rounded-lg { border-radius: var(--radius-ui) !important; }
+.rounded-md, .rounded { border-radius: var(--radius-chip) !important; }
+/* circles must stay circles: avatars, knobs and icon buttons */
+.rounded-full { border-radius: 999px !important; }
 
 .brand-mark, .mark {
     background: var(--glass) !important;
@@ -254,30 +273,99 @@ a { color: var(--act); }
     align-items: center;
     background: var(--glass2);
     border: 1px solid var(--edge);
-    border-radius: var(--radius);
+    border-radius: var(--radius-ui);
     bottom: 14px;
     box-shadow: var(--shadow);
     display: flex;
+    flex-wrap: wrap;
     gap: 6px;
-    padding: 6px;
+    padding: 5px;
     position: fixed;
     right: 14px;
-    z-index: 999;
+    z-index: 60;
+}
+/* Docked into a header it is part of the layout, so it stops covering content. */
+.pref-panel.is-docked {
+    background: transparent;
+    border: 0;
+    bottom: auto;
+    box-shadow: none;
+    margin-left: auto;
+    padding: 0;
+    position: static;
+    right: auto;
+}
+.pref-group {
+    align-items: center;
+    background: var(--glass);
+    border: 1px solid var(--edge);
+    border-radius: var(--radius-ui);
+    display: inline-flex;
+    gap: 2px;
+    overflow: hidden;
+    padding: 3px;
+}
+.pref-label {
+    color: var(--fg2);
+    font: 600 10.5px/1 var(--font-body);
+    padding: 0 6px 0 4px;
+    white-space: nowrap;
 }
 .pref-panel button {
     background: transparent;
     border: 1px solid transparent;
-    border-radius: calc(var(--radius) - 2px);
+    border-radius: calc(var(--radius-ui) - 4px);
     color: var(--fg2);
     cursor: pointer;
-    font: 700 11px/1 var(--font-mono);
-    min-height: 30px;
-    padding: 0 8px;
+    font: 600 10.5px/1 var(--font-body) !important;
+    min-height: 26px;
+    padding: 0 9px;
+    white-space: nowrap;
 }
+.pref-panel button:hover { color: var(--fg); }
 .pref-panel button[aria-pressed="true"] {
     background: var(--actfill);
     border-color: var(--actfill);
     color: var(--acttext);
+}
+
+
+/* ── Distribución ────────────────────────────────────────────────
+   Estos rieles laterales son grids cuyas filas se estiran para igualar
+   la altura de la columna principal. Con tarjetas de 53px de contenido
+   eso deja 300px de vacío dentro de cada una. Que las filas midan
+   lo que mide su contenido y se apilen arriba. */
+.sgp-aside, .fd-aside, .gp-aside, .think-aside, .aa-aside,
+.sgp-steps, .think-grid, .think-path, .side, .tally, .rail, .snap {
+    align-content: start;
+}
+.sgp-stat, .fd-stat, .gp-mini, .mini, .think-note {
+    align-self: start;
+}
+/* El riel tampoco debe estirarse para igualar la columna principal:
+   si lo hace, queda un panel de 1100px con 280px de contenido dentro. */
+.sgp-hero > .sgp-aside, .fd-hero > .fd-aside, .think-hero > .think-aside,
+.aa-hero > .aa-aside, .sgp-layout > .sgp-card, .gp-hero > .gp-aside,
+.aa-hero > .aa-card, .wizard > .question, .wizard > .card {
+    align-self: start;
+}
+/* Las etiquetas desbordaban su celda del grid y se montaban sobre la vecina.
+   Que se ajusten a la celda y partan palabra si hace falta. */
+.aa-field, .sgp-field, .field {
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+}
+/* El select imponía un ancho mínimo de 183px dentro de una celda de 141px,
+   y la etiqueta heredaba esa pista y se montaba sobre la columna vecina. */
+.aa-field > *, .sgp-field > *, .field > * { max-width: 100%; min-width: 0; }
+.aa-field label, .sgp-field label, .field label {
+    display: block;
+    overflow-wrap: anywhere;
+}
+
+/* Filas que se reparten una altura sobrante en lugar de medir su contenido. */
+.gp-timeline, .gp-metrics, .wizard, .aa-hero, .aa-controls, .think-path {
+    align-content: start;
 }
 
 [data-focus="on"] .dim { opacity: .34; filter: saturate(.45); }
@@ -299,15 +387,43 @@ a { color: var(--act); }
     transition: none !important;
 }
 @media (prefers-reduced-motion: reduce) {
-    * { animation: none !important; scroll-behavior: auto !important; transition: none !important; }
+    :root:not([data-motion="full"]) * {
+        animation: none !important; scroll-behavior: auto !important; transition: none !important;
+    }
 }
 
 pre, code { background: color-mix(in srgb, var(--bg2) 72%, transparent) !important; color: var(--fg) !important; }
+/* La tabla de cohorte es más ancha que su panel: debe hacer scroll dentro,
+   no empujar celdas fuera de la pantalla. */
+.fd-table-wrap, .table, .table-wrap { overflow-x: auto; }
+.fd-table-wrap table, .table table { min-width: max-content; }
+
 table { color: var(--fg); }
 th, td { border-color: var(--edge) !important; }
 canvas { background: transparent; }
 
+/* El control anclado no debe ensanchar el encabezado: en pantallas estrechas
+   empujaba la cabecera a 515px y desbordaba toda la página a lo ancho. */
+.pref-panel.is-docked { min-width: 0; }
+header, .head, .sgp-header, .fd-header, .gp-header, .think-header, .aa-header {
+    flex-wrap: wrap;
+}
+
+@media (max-width: 900px) {
+    .pref-panel.is-docked {
+        justify-content: flex-start;
+        margin-left: 0;
+        order: 99;
+        width: 100%;
+    }
+}
+
 @media (max-width: 740px) {
     body { font-size: 13.8px; }
-    .pref-panel { left: 10px; right: 10px; justify-content: center; }
+    /* El riel pasa a fila horizontal en móvil pero sin envolver: ocho enlaces
+       de 46px empujaban la página a 515px de ancho en una pantalla de 390. */
+    .side { flex-wrap: wrap; gap: 10px; }
+    .pref-panel:not(.is-docked) { left: 10px; right: 10px; justify-content: center; }
+    .pref-label { display: none; }
+    .pref-panel button { padding: 0 7px; }
 }

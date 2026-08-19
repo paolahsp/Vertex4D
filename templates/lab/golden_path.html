@@ -6,8 +6,8 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>VERTEX 4D Golden Path | Srsly Labs</title>
     <link rel="icon" href="/favicon.ico">
-    <link rel="stylesheet" href="/static/css/vertex4d.css">
-    <script src="/static/js/prefs.js" defer></script>
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
     <style>
         :root { --panel: var(--glass); --panel-strong: var(--glass2); --ink: var(--fg); --muted: var(--fg2); --line: var(--edge); --blue: var(--act); --coral: var(--risk-text); --olive: var(--evidence-text); }
 
@@ -23,12 +23,12 @@
 
         .gp-header {
             align-items: center;
-            background: rgba(244, 235, 220, 0.82);
+            background: color-mix(in srgb, var(--bg) 84%, transparent);
             border-bottom: 1px solid var(--line);
             display: flex;
             gap: 24px;
             justify-content: space-between;
-            padding: 18px clamp(18px, 4vw, 44px);
+            padding: 18px clamp(22px,2.8vw,30px);
             position: sticky;
             top: 0;
             z-index: 10;
@@ -91,7 +91,7 @@
         .gp-main {
             margin: 0 auto;
             max-width: 1440px;
-            padding: clamp(22px, 4vw, 48px);
+            padding: clamp(22px,2.8vw,30px);
         }
 
         .gp-hero {
@@ -107,17 +107,17 @@
         .gp-banner {
             background: var(--panel);
             border: 1px solid var(--line);
-            box-shadow: 0 18px 44px rgba(24, 24, 16, 0.09), inset 0 1px 0 rgba(255, 253, 248, 0.72);
+            box-shadow: 0 18px 44px rgba(24, 24, 16, 0.09), inset 0 1px 0 var(--glass2);
             backdrop-filter: blur(18px) saturate(1.05);
         }
 
         .gp-panel {
-            padding: clamp(24px, 4vw, 44px);
+            padding: clamp(22px,2.8vw,30px);
         }
 
         .gp-title {
             font-family: var(--font-display), serif;
-            font-size: clamp(42px, 7vw, 92px);
+            font-size: clamp(30px,4.2vw,46px);
             line-height: 0.95;
             margin: 12px 0 18px;
             max-width: 920px;
@@ -286,7 +286,7 @@
         }
 
         .gp-card h2 {
-            font-size: clamp(25px, 3vw, 38px);
+            font-size: clamp(19px,2.2vw,24px);
             line-height: 1.05;
             margin: 8px 0 12px;
         }
@@ -328,7 +328,7 @@
         }
 
         .gp-list-item {
-            background: rgba(255, 253, 248, 0.58);
+            background: var(--glass2);
             border: 1px solid var(--line);
             padding: 13px;
         }

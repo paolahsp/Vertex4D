@@ -5,22 +5,22 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Assumption Approval | VERTEX 4D</title>
     <link rel="icon" href="/favicon.ico">
-    <link rel="stylesheet" href="/static/css/vertex4d.css">
-    <script src="/static/js/prefs.js" defer></script>
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
     <style>
         :root { --panel: var(--glass); --panel-strong: var(--glass2); --ink: var(--fg); --muted: var(--fg2); --line: var(--edge); --blue: var(--act); --coral: var(--risk-text); --olive: var(--evidence-text); }
         body { color: var(--ink); margin: 0; min-height: 100vh; }
-        .aa-header { align-items: center; background: rgba(244,235,220,0.9); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 18px; padding: 18px clamp(18px,4vw,44px); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(16px); }
+        .aa-header { align-items: center; background: color-mix(in srgb, var(--bg) 84%, transparent); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 18px; padding: 18px clamp(22px,2.8vw,30px); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(16px); }
         .aa-brand { display: flex; align-items: center; gap: 12px; }
         .aa-mark { align-items: center; border: 1px solid var(--blue); color: var(--blue); display: inline-flex; font-family: var(--font-mono); font-size: 12px; font-weight: 800; height: 32px; justify-content: center; width: 32px; }
         .aa-title-small { font-family: var(--font-display); font-size: clamp(19px,2.2vw,28px); font-weight: 700; line-height: 1; margin: 0; }
         .aa-kicker, .aa-subtitle { color: var(--coral); font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: 0; margin: 0; text-transform: none; }
         .aa-link { border: 1px solid var(--line); color: var(--blue); display: inline-flex; font-size: 12px; font-weight: 800; margin-left: 8px; padding: 10px 12px; text-decoration: none; text-transform: none; }
-        .aa-main { margin: 0 auto; max-width: 1280px; padding: clamp(22px,4vw,48px); }
+        .aa-main { margin: 0 auto; max-width: 1280px; padding: clamp(22px,2.8vw,30px); }
         .aa-hero { display: grid; gap: 22px; grid-template-columns: minmax(0,1.2fr) minmax(260px,0.55fr); margin-bottom: 22px; }
         .aa-panel, .aa-card, .aa-row { background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 44px rgba(24,24,16,0.08); }
-        .aa-panel { padding: clamp(22px,4vw,38px); }
-        .aa-title { font-family: var(--font-display); font-size: clamp(38px,6vw,74px); line-height: .98; margin: 12px 0 16px; }
+        .aa-panel { padding: clamp(19px,2.2vw,24px); }
+        .aa-title { font-family: var(--font-display); font-size: clamp(30px,4.2vw,46px); line-height: .98; margin: 12px 0 16px; }
         .aa-copy { color: var(--muted); font-size: 15px; line-height: 1.55; margin: 0; max-width: 760px; }
         .aa-card { padding: 18px; }
         .aa-card strong { display: block; font-family: var(--font-display); font-size: 28px; line-height: 1; }
@@ -28,7 +28,7 @@
         .aa-controls { align-items: end; display: grid; gap: 12px; grid-template-columns: repeat(4,minmax(0,1fr)); margin-top: 20px; }
         .aa-field { display: grid; gap: 6px; }
         .aa-field label { color: var(--coral); font-family: var(--font-mono); font-size: 10px; font-weight: 800; text-transform: none; }
-        .aa-field input, .aa-field select { background: rgba(255,253,248,0.94); border: 1px solid var(--line); color: var(--ink); font: inherit; min-height: 42px; padding: 0 10px; }
+        .aa-field input, .aa-field select { background: var(--glass2); border: 1px solid var(--line); color: var(--ink); font: inherit; min-height: 42px; padding: 0 10px; }
         .aa-button { align-items: center; background: var(--blue); border: 1px solid var(--blue); color: #fff; cursor: pointer; display: inline-flex; font-size: 13px; font-weight: 800; justify-content: center; min-height: 42px; padding: 0 14px; text-transform: none; }
         .aa-button.secondary { background: transparent; color: var(--blue); }
         .aa-button:disabled { cursor: not-allowed; opacity: .55; }

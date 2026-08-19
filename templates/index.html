@@ -11,7 +11,7 @@
             theme: {
                 extend: {
                     colors: {
-                        paper: "#F4EBDC",
+                        paper: "var(--bg)",
                         ink: "#181810",
                         cobalt: "#1946D1",
                         coral: "#E74530",
@@ -26,8 +26,8 @@
             }
         }
     </script>
-    <link rel="stylesheet" href="/static/css/vertex4d.css">
-    <script src="/static/js/prefs.js" defer></script>
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
 </head>
 
 <body class="bg-paper text-ink">

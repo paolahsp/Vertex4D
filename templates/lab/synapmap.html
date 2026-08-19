@@ -73,8 +73,8 @@
             z-index: 1000;
         }
     </style>
-    <link rel="stylesheet" href="/static/css/vertex4d.css">
-    <script src="/static/js/prefs.js" defer></script>
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
 </head>
 
 <body class="font-display bg-background-light text-near-black">
@@ -584,7 +584,7 @@ RULES:
                     if (d.category === 'decision') return '#A4A760';
                     return '#181810';
                 })
-                .attr('stroke', '#FFFDF8')
+                .attr('stroke', 'var(--acttext)')
                 .attr('stroke-width', 3)
                 .style('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))');
 

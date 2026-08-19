@@ -73,27 +73,62 @@
     });
   }
 
+  // Dock into the page header when there is one. A floating overlay sits on top
+  // of content and, on a working screen, ends up covering the thing you are reading.
+  const HEADER_SELECTORS = [
+    "[data-pref-slot]", ".sgp-header", ".fd-header", ".gp-header", ".think-header",
+    ".aa-header", ".head", ".app-header", ".site-nav", "body > header", "main > header",
+  ];
+
+  function findHost() {
+    for (const sel of HEADER_SELECTORS) {
+      const el = document.querySelector(sel);
+      if (el) return el;
+    }
+    return null;
+  }
+
+  function group(label, buttons) {
+    const g = document.createElement("div");
+    g.className = "pref-group";
+    const l = document.createElement("span");
+    l.className = "pref-label";
+    l.textContent = label;
+    g.append(l, ...buttons);
+    return g;
+  }
+
   function mountControls() {
     if (document.querySelector(".pref-panel")) return;
     const panel = document.createElement("aside");
     panel.className = "pref-panel";
-    panel.setAttribute("aria-label", "Display preferences");
+    panel.setAttribute("aria-label", "Preferencias de visualización");
+
     const focusButton = document.createElement("button");
     focusButton.type = "button";
-    focusButton.textContent = "Focus";
+    focusButton.textContent = "Enfoque";
     focusButton.dataset.prefKey = "focus";
     focusButton.dataset.prefValue = "on";
-    focusButton.setAttribute("aria-label", "toggle focus mode");
+    focusButton.setAttribute("aria-label", "activar o desactivar el modo enfoque");
     focusButton.addEventListener("click", () => setPref("focus", root.dataset.focus === "on" ? "off" : "on"));
+
     panel.append(
-      button("Dark", "theme", "dark"),
-      button("Light", "theme", "light"),
-      button("Move", "motion", "full"),
-      button("Calm", "motion", "reduced"),
-      button("Still", "motion", "none"),
-      focusButton
+      group("Tema", [button("Oscuro", "theme", "dark"), button("Claro", "theme", "light")]),
+      group("Movimiento", [
+        button("Completo", "motion", "full"),
+        button("Reducido", "motion", "reduced"),
+        button("Ninguno", "motion", "none"),
+      ]),
+      group("", [focusButton])
     );
-    document.body.append(panel);
+
+    const host = findHost();
+    if (host) {
+      panel.classList.add("is-docked");
+      host.append(panel);
+    } else {
+      document.body.append(panel);
+    }
     updateControls(clean({ ...readLocal(), ...root.dataset }));
   }
 
