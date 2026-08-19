@@ -54,6 +54,8 @@
             <div class="fd-stat"><strong>{{ metrics.totals.complete }}</strong><span>DecisionRecords</span></div>
             <div class="fd-stat"><strong>{{ metrics.totals.stakeholder_delta }}</strong><span>New stakeholders</span></div>
             <div class="fd-stat"><strong>{{ metrics.totals.ai_calls }}</strong><span>LLM calls</span></div>
+            <div class="fd-stat"><strong>{{ metrics.totals.would_pay_rate }}%</strong><span>Would pay ({{ metrics.totals.feedback_captured }} answered)</span></div>
+            <div class="fd-stat"><strong>{{ metrics.totals.would_recommend_rate }}%</strong><span>Would recommend</span></div>
         </section>
         <section class="fd-table-wrap" aria-label="Run metrics table">
             <table>
@@ -65,6 +67,7 @@
                         <th>Stakeholder delta</th>
                         <th>Price delta</th>
                         <th>Decision</th>
+                        <th>Pilot feedback</th>
                         <th>AI</th>
                     </tr>
                 </thead>
@@ -77,10 +80,11 @@
                         <td><span class="fd-cell-title">{{ run.initial_stakeholder_count }} -> {{ run.mapped_stakeholder_count }}</span><span class="fd-pill {% if run.stakeholder_delta > 0 %}ok{% else %}warn{% endif %}">+{{ run.stakeholder_delta }}</span><div class="fd-muted">{% if run.new_stakeholders %}{{ run.new_stakeholders | join(', ') }}{% else %}none yet{% endif %}</div></td>
                         <td><span class="fd-cell-title">{{ run.intuition_price or 'n/a' }} {{ run.price_currency }} -> {{ run.billie_price or 'n/a' }} {{ run.price_currency }}</span><span class="fd-pill {% if run.price_changed %}ok{% else %}warn{% endif %}">{% if run.price_changed %}changed{% else %}pending{% endif %}</span></td>
                         <td>{{ run.decision or 'not closed yet' }}</td>
+                        <td>{% if run.feedback_captured %}<span class="fd-cell-title">Pay: {{ run.would_pay }} / Rec: {{ run.would_recommend }}</span><span class="fd-muted">answered by {{ run.feedback_role }}</span>{% if run.feedback_note %}<div class="fd-muted">{{ run.feedback_note }}</div>{% endif %}{% else %}<span class="fd-pill warn">not answered</span>{% endif %}</td>
                         <td><span class="fd-cell-title">{{ run.ai_calls }} calls</span><span class="fd-muted">{{ run.ai_tokens }} tokens</span></td>
                     </tr>
                     {% else %}
-                    <tr><td colspan="7">No runs yet.</td></tr>
+                    <tr><td colspan="8">No runs yet.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

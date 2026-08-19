@@ -280,18 +280,41 @@ def stakeholder_label(item: dict) -> str:
 
 
 def first_pricing_value(financial_scenario: dict | None) -> float | None:
+    """Headline price of a FinancialScenario.
+
+    Matching on label text alone is brittle: it works for Billie's own
+    "Suggested price" but silently returns nothing for any scenario worded
+    differently (the golden case included), which would blank the price-change
+    metric without any error. Prefer Billie's stable assumption_id, then fall
+    back to the first pricing assumption by position -- the same one Billie's UI
+    treats as the price -- and only then to label text.
+    """
     if not financial_scenario:
         return None
-    for item in financial_scenario.get("pricing_assumptions") or []:
-        if not isinstance(item, dict):
-            continue
+    items = [item for item in (financial_scenario.get("pricing_assumptions") or []) if isinstance(item, dict)]
+    if not items:
+        return None
+
+    def numeric(item: dict) -> float | None:
+        try:
+            return float(item.get("value"))
+        except (TypeError, ValueError):
+            return None
+
+    for item in items:
+        if str(item.get("assumption_id") or "") == "fin_price_suggested":
+            value = numeric(item)
+            if value is not None:
+                return value
+
+    for item in items:
         label = str(item.get("label") or "").lower()
-        if "suggested" in label or "price" in label:
-            try:
-                return float(item.get("value"))
-            except (TypeError, ValueError):
-                return None
-    return None
+        if "suggested" in label:
+            value = numeric(item)
+            if value is not None:
+                return value
+
+    return numeric(items[0])
 
 
 def build_facilitator_metrics(user: dict) -> dict:
@@ -303,12 +326,13 @@ def build_facilitator_metrics(user: dict) -> dict:
     events_by_run = database.list_events_for_runs(run_ids)
     ai_usage_by_run = database.get_ai_usage_by_runs(run_ids)
     rows = []
-    totals = {"runs": len(runs), "complete": 0, "stakeholder_delta": 0, "ai_calls": 0}
+    totals = {"runs": len(runs), "complete": 0, "stakeholder_delta": 0, "ai_calls": 0, "would_pay": 0, "would_recommend": 0, "feedback_captured": 0}
 
     for run in runs:
         run_id = run["run_id"]
         events = events_by_run.get(run_id, [])
         baseline = latest_event_payload(events, "metric_baseline_captured")
+        feedback = latest_event_payload(events, "pilot_feedback_captured")
         problem_frame = artifacts.load_artifact(run_id, "problem_frame")
         system_map = artifacts.load_artifact(run_id, "system_map")
         financial_scenario = artifacts.load_artifact(run_id, "financial_scenario")
@@ -332,6 +356,12 @@ def build_facilitator_metrics(user: dict) -> dict:
             totals["complete"] += 1
         totals["stakeholder_delta"] += stakeholder_delta
         totals["ai_calls"] += ai_usage["calls"]
+        if feedback:
+            totals["feedback_captured"] += 1
+            if feedback.get("would_pay") == "yes":
+                totals["would_pay"] += 1
+            if feedback.get("would_recommend") == "yes":
+                totals["would_recommend"] += 1
         rows.append({
             "run_id": run_id,
             "team_name": run.get("team_name") or user.get("team_name") or "Team",
@@ -354,9 +384,17 @@ def build_facilitator_metrics(user: dict) -> dict:
             "decision": ((decision_record or {}).get("selected_decision") or {}).get("statement") or "",
             "ai_calls": ai_usage["calls"],
             "ai_tokens": ai_usage["tokens"],
+            "feedback_captured": bool(feedback),
+            "would_pay": feedback.get("would_pay") or "",
+            "would_recommend": feedback.get("would_recommend") or "",
+            "feedback_note": feedback.get("note") or "",
+            "feedback_role": feedback.get("respondent_role") or "",
         })
 
     totals["completion_rate"] = round((totals["complete"] / totals["runs"] * 100), 1) if totals["runs"] else 0
+    answered = totals["feedback_captured"]
+    totals["would_pay_rate"] = round((totals["would_pay"] / answered * 100), 1) if answered else 0
+    totals["would_recommend_rate"] = round((totals["would_recommend"] / answered * 100), 1) if answered else 0
     return {"role": role, "include_all": include_all, "runs": rows, "totals": totals}
 def build_vertex_golden_case_view_model():
     artifacts = load_vertex_golden_case()
@@ -847,6 +885,40 @@ async def save_vertex_assumption_approvals(run_id: str, payload: dict = Body(...
         "problem_frame": artifacts.artifact_summary(next_problem),
         "system_map": artifacts.artifact_summary(next_system),
     }
+
+
+PILOT_FEEDBACK_CHOICES = {"yes", "no", "maybe"}
+
+
+@app.post("/api/vertex/runs/{run_id}/pilot-feedback")
+async def save_vertex_pilot_feedback(run_id: str, payload: dict = Body(...), user: dict = Depends(get_current_user)):
+    """Capture pilot validation metrics 4 and 5 once a run has a DecisionRecord.
+
+    The respondent role is recorded because "would you pay" is a founder's
+    answer, not the facilitator's, even though the facilitator signs the record.
+    """
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    get_current_run_or_404(run_id, user)
+
+    if artifacts.load_artifact(run_id, "decision_record") is None:
+        raise HTTPException(status_code=409, detail="Pilot feedback opens once the run has a saved DecisionRecord.")
+
+    def choice(field: str) -> str:
+        value = str(payload.get(field) or "").strip().lower()
+        if value not in PILOT_FEEDBACK_CHOICES:
+            raise HTTPException(status_code=422, detail=f"{field} must be one of: yes, no, maybe")
+        return value
+
+    feedback = {
+        "would_pay": choice("would_pay"),
+        "would_recommend": choice("would_recommend"),
+        "note": str(payload.get("note") or "").strip()[:2000],
+        "respondent_role": get_user_role(user),
+        "captured_at": utc_now_iso(),
+    }
+    database.record_event(get_team_id(user), "pilot_feedback_captured", feedback, run_id)
+    return {"saved": True, "feedback": feedback}
 
 
 @app.get("/api/vertex/runs/{run_id}/artifacts/{artifact_type}")

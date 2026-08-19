@@ -221,6 +221,11 @@ def main() -> None:
                     "title": "Golden Path smoke",
                     "challenge_statement": "A pilot needs a traceable final decision.",
                     "is_synthetic": True,
+                    # Pilot metric baseline: the founder's "before", captured at t=0.
+                    "baseline_problem_statement": "Cafes will not reuse containers because it is inconvenient.",
+                    "baseline_stakeholders": "cafe owners, customers",
+                    "baseline_intuition_price": 0.2,
+                    "baseline_price_currency": "EUR",
                 },
             ),
             "create run",
@@ -255,7 +260,38 @@ def main() -> None:
         loaded = assert_ok(client.get(f"/api/vertex/runs/{run_id}/artifacts/decision_record"), "load decision")["artifact"]
         assert loaded["facilitator_approval"]["approved_by_role"] == "facilitator"
         assert loaded["predictive_hypotheses"][0]["not_evidence"] is True
+
+        # Pilot validation metrics 4 and 5. "Would you pay" is the founder's
+        # answer even though the facilitator signs the record, so the respondent
+        # role is recorded rather than assumed.
+        bad_choice = client.post(
+            f"/api/vertex/runs/{run_id}/pilot-feedback",
+            json={"would_pay": "sometimes", "would_recommend": "yes"},
+        )
+        assert bad_choice.status_code == 422, bad_choice.status_code
+
+        app_main.app.dependency_overrides[app_main.get_current_user] = lambda: founder_user
+        feedback = assert_ok(
+            client.post(
+                f"/api/vertex/runs/{run_id}/pilot-feedback",
+                json={"would_pay": "yes", "would_recommend": "maybe", "note": "Billie changed the price."},
+            ),
+            "pilot feedback",
+        )["feedback"]
+        assert feedback["respondent_role"] == "founder", feedback
+
+        metrics = assert_ok(client.get("/api/vertex/facilitator/metrics"), "facilitator metrics")
+        row = next(item for item in metrics["runs"] if item["run_id"] == run_id)
+        assert row["feedback_captured"] is True and row["would_pay"] == "yes", row
+        assert row["baseline_captured"] is True, row
+        assert row["problem_changed"] is True, row
+        assert row["stakeholder_delta"] > 0, row
+        assert row["billie_price"] is not None, "price metric must resolve for any FinancialScenario, not only Billie's wording"
+        assert row["price_changed"] is True, row
+        assert metrics["totals"]["would_pay_rate"] == 100.0, metrics["totals"]
+
         print(f"GOLDEN PATH SMOKE PASS: {run_id} -> {loaded['artifact_id']} ({loaded['selected_decision']['decision_type']})")
+        print(f"PILOT METRICS PASS: baseline={row['baseline_captured']} pay={row['would_pay']} recommend={row['would_recommend']}")
 
 
 if __name__ == "__main__":

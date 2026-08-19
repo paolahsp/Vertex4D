@@ -390,12 +390,65 @@
       $("contract-badge").textContent = "Saved";
       $("contract-badge").className = "badge ok";
       $("contract-status").textContent = "Final record saved with facilitator approval normalized by the server.";
+      showPilotFeedback();
     } catch (error) {
       status.textContent = error.message;
       status.className = "copy status-bad";
       $("contract-badge").textContent = "Rejected";
       $("contract-badge").className = "badge bad";
       saveButton.disabled = false;
+    }
+  }
+
+  function showPilotFeedback() {
+    const card = $("pilot-feedback-card");
+    if (card) card.hidden = false;
+  }
+
+  async function revealPilotFeedbackIfRecordExists() {
+    // decision_record is not part of artifactTypes (those are the upstream five),
+    // so ask for it directly. A missing record is the normal case, not an error.
+    try {
+      const response = await fetch(`/api/vertex/runs/${encodeURIComponent(runId)}/artifacts/decision_record`);
+      if (response.ok) showPilotFeedback();
+    } catch (error) {
+      /* the panel simply stays closed */
+    }
+  }
+
+  async function sendPilotFeedback() {
+    const button = $("send-feedback");
+    const note = $("feedback-status");
+    const wouldPay = $("would-pay").value;
+    const wouldRecommend = $("would-recommend").value;
+    if (!wouldPay || !wouldRecommend) {
+      note.textContent = "Answer both questions before sending.";
+      note.className = "copy status-bad";
+      return;
+    }
+    button.disabled = true;
+    note.textContent = "Sending...";
+    note.className = "copy";
+    try {
+      const response = await fetch(`/api/vertex/runs/${encodeURIComponent(runId)}/pilot-feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          would_pay: wouldPay,
+          would_recommend: wouldRecommend,
+          note: $("feedback-note").value
+        })
+      });
+      const result = await response.json();
+      if (!response.ok || !result.saved) {
+        throw new Error(result.detail || "Feedback was not recorded");
+      }
+      note.textContent = "Recorded. Thank you — this is what tells the program whether the method worked.";
+      note.className = "copy status-ok";
+    } catch (error) {
+      note.textContent = error.message;
+      note.className = "copy status-bad";
+      button.disabled = false;
     }
   }
 
@@ -413,6 +466,7 @@
       const loaded = await Promise.all(artifactTypes.map((type) => loadArtifact(type)));
       artifactTypes.forEach((type, index) => { state[typeToState(type)] = loaded[index]; });
       renderChain();
+      await revealPilotFeedbackIfRecordExists();
       status.textContent = userRole === "facilitator" ? "Ready. Facilitator session can close the DecisionRecord." : "Ready to preview. Final save requires facilitator role.";
       status.className = "copy status-ok";
     } catch (error) {
@@ -425,5 +479,6 @@
 
   buildButton.addEventListener("click", createDraft);
   saveButton.addEventListener("click", saveDraft);
+  $("send-feedback").addEventListener("click", sendPilotFeedback);
   init();
 }());
