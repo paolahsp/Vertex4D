@@ -3,6 +3,7 @@ import sqlite3
 from datetime import datetime
 import hashlib
 import os
+import json
 
 DATABASE_PATH = os.getenv("VERTEX4D_DATABASE_PATH", "vertex4d.db")
 
@@ -311,6 +312,85 @@ def list_runs(team_id: int) -> list[dict]:
         run["artifacts"] = {row["artifact_type"]: dict(row) for row in cursor.fetchall()}
     conn.close()
     return runs
+
+
+def list_runs_for_facilitator(team_id: int, include_all: bool = False) -> list[dict]:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    if include_all:
+        cursor.execute(
+            """
+            SELECT runs.*, teams.team_name
+            FROM runs
+            JOIN teams ON teams.id = runs.team_id
+            ORDER BY runs.created_at DESC
+            """
+        )
+    else:
+        cursor.execute(
+            """
+            SELECT runs.*, teams.team_name
+            FROM runs
+            JOIN teams ON teams.id = runs.team_id
+            WHERE runs.team_id = ?
+            ORDER BY runs.created_at DESC
+            """,
+            (team_id,),
+        )
+    runs = [dict(row) for row in cursor.fetchall()]
+    for run in runs:
+        cursor.execute("SELECT artifact_type, artifact_id, status, updated_at FROM run_artifacts WHERE run_id = ?", (run["run_id"],))
+        run["artifacts"] = {row["artifact_type"]: dict(row) for row in cursor.fetchall()}
+    conn.close()
+    return runs
+
+
+def list_events_for_runs(run_ids: list[str]) -> dict[str, list[dict]]:
+    if not run_ids:
+        return {}
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    placeholders = ",".join("?" for _ in run_ids)
+    cursor.execute(
+        f"SELECT run_id, event_type, payload_json, created_at FROM events WHERE run_id IN ({placeholders}) ORDER BY created_at ASC",
+        run_ids,
+    )
+    grouped = {run_id: [] for run_id in run_ids}
+    for row in cursor.fetchall():
+        payload = {}
+        try:
+            payload = json.loads(row["payload_json"] or "{}")
+        except json.JSONDecodeError:
+            payload = {"unparseable": True}
+        grouped.setdefault(row["run_id"], []).append({
+            "event_type": row["event_type"],
+            "payload": payload,
+            "created_at": row["created_at"],
+        })
+    conn.close()
+    return grouped
+
+
+def get_ai_usage_by_runs(run_ids: list[str]) -> dict[str, dict]:
+    if not run_ids:
+        return {}
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    placeholders = ",".join("?" for _ in run_ids)
+    cursor.execute(
+        f"""
+        SELECT run_id, COUNT(*) AS calls, COALESCE(SUM(tokens), 0) AS tokens
+        FROM ai_usage
+        WHERE run_id IN ({placeholders})
+        GROUP BY run_id
+        """,
+        run_ids,
+    )
+    usage = {run_id: {"calls": 0, "tokens": 0} for run_id in run_ids}
+    for row in cursor.fetchall():
+        usage[row["run_id"]] = {"calls": int(row["calls"] or 0), "tokens": int(row["tokens"] or 0)}
+    conn.close()
+    return usage
 
 
 def upsert_run_artifact(run_id: str, artifact_type: str, artifact_id: str, path: str, status: str) -> None:

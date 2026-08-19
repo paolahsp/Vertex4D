@@ -174,6 +174,132 @@ def artifact_response(run_id: str, artifact_type: str, artifact: dict) -> dict:
         "artifact": artifact,
         "summary": artifacts.artifact_summary(artifact),
     }
+
+
+def split_founder_list(raw: str | None) -> list[str]:
+    if not raw:
+        return []
+    items = []
+    for chunk in str(raw).replace(";", "\n").replace(",", "\n").splitlines():
+        value = chunk.strip()
+        if value:
+            items.append(value)
+    return items
+
+
+def build_metric_baseline(payload: dict) -> dict:
+    price_raw = payload.get("baseline_intuition_price")
+    try:
+        intuition_price = float(price_raw) if str(price_raw or "").strip() else None
+    except (TypeError, ValueError):
+        intuition_price = None
+    stakeholders = split_founder_list(payload.get("baseline_stakeholders"))
+    return {
+        "source": "start_golden_path",
+        "initial_problem_statement": str(payload.get("baseline_problem_statement") or "").strip(),
+        "initial_stakeholders": stakeholders,
+        "initial_stakeholder_count": len(stakeholders),
+        "intuition_price": intuition_price,
+        "intuition_price_currency": str(payload.get("baseline_price_currency") or payload.get("currency") or "").strip().upper(),
+        "intuition_pricing_note": str(payload.get("baseline_pricing_note") or "").strip(),
+    }
+
+
+def latest_event_payload(events: list[dict], event_type: str) -> dict:
+    for event in reversed(events):
+        if event.get("event_type") == event_type:
+            payload = event.get("payload")
+            return payload if isinstance(payload, dict) else {}
+    return {}
+
+
+def stakeholder_label(item: dict) -> str:
+    for key in ("name", "label", "stakeholder_name", "title", "stakeholder_id"):
+        value = item.get(key) if isinstance(item, dict) else None
+        if value:
+            return str(value).strip()
+    return ""
+
+
+def first_pricing_value(financial_scenario: dict | None) -> float | None:
+    if not financial_scenario:
+        return None
+    for item in financial_scenario.get("pricing_assumptions") or []:
+        if not isinstance(item, dict):
+            continue
+        label = str(item.get("label") or "").lower()
+        if "suggested" in label or "price" in label:
+            try:
+                return float(item.get("value"))
+            except (TypeError, ValueError):
+                return None
+    return None
+
+
+def build_facilitator_metrics(user: dict) -> dict:
+    role = get_user_role(user)
+    team_id = get_team_id(user)
+    include_all = role in {"facilitator", "admin"}
+    runs = database.list_runs_for_facilitator(team_id, include_all=include_all)
+    run_ids = [run["run_id"] for run in runs]
+    events_by_run = database.list_events_for_runs(run_ids)
+    ai_usage_by_run = database.get_ai_usage_by_runs(run_ids)
+    rows = []
+    totals = {"runs": len(runs), "complete": 0, "stakeholder_delta": 0, "ai_calls": 0}
+
+    for run in runs:
+        run_id = run["run_id"]
+        events = events_by_run.get(run_id, [])
+        baseline = latest_event_payload(events, "metric_baseline_captured")
+        problem_frame = artifacts.load_artifact(run_id, "problem_frame")
+        system_map = artifacts.load_artifact(run_id, "system_map")
+        financial_scenario = artifacts.load_artifact(run_id, "financial_scenario")
+        decision_record = artifacts.load_artifact(run_id, "decision_record")
+
+        initial_problem = baseline.get("initial_problem_statement") or ""
+        final_problem = ((problem_frame or {}).get("reframed_problem") or {}).get("statement") or ""
+        initial_stakeholders = baseline.get("initial_stakeholders") or []
+        mapped_stakeholders = [stakeholder_label(item) for item in ((system_map or {}).get("stakeholders") or [])]
+        mapped_stakeholders = [item for item in mapped_stakeholders if item]
+        initial_set = {str(item).strip().lower() for item in initial_stakeholders if str(item).strip()}
+        mapped_set = {item.lower() for item in mapped_stakeholders}
+        new_stakeholders = sorted(mapped_set - initial_set)
+        stakeholder_delta = max(0, len(mapped_set) - len(initial_set))
+        intuition_price = baseline.get("intuition_price")
+        billie_price = first_pricing_value(financial_scenario)
+        price_changed = intuition_price is not None and billie_price is not None and round(float(intuition_price), 2) != round(float(billie_price), 2)
+        ai_usage = ai_usage_by_run.get(run_id, {"calls": 0, "tokens": 0})
+        complete = decision_record is not None
+        if complete:
+            totals["complete"] += 1
+        totals["stakeholder_delta"] += stakeholder_delta
+        totals["ai_calls"] += ai_usage["calls"]
+        rows.append({
+            "run_id": run_id,
+            "team_name": run.get("team_name") or user.get("team_name") or "Team",
+            "title": run.get("title"),
+            "stage": run.get("stage"),
+            "created_at": run.get("created_at"),
+            "artifacts_saved": len(run.get("artifacts") or {}),
+            "baseline_captured": bool(baseline),
+            "initial_problem": initial_problem,
+            "final_problem": final_problem,
+            "problem_changed": bool(initial_problem and final_problem and initial_problem.strip().lower() != final_problem.strip().lower()),
+            "initial_stakeholder_count": len(initial_set),
+            "mapped_stakeholder_count": len(mapped_set),
+            "stakeholder_delta": stakeholder_delta,
+            "new_stakeholders": new_stakeholders[:5],
+            "intuition_price": intuition_price,
+            "billie_price": billie_price,
+            "price_currency": baseline.get("intuition_price_currency") or (financial_scenario or {}).get("currency") or "",
+            "price_changed": price_changed,
+            "decision": ((decision_record or {}).get("selected_decision") or {}).get("statement") or "",
+            "ai_calls": ai_usage["calls"],
+            "ai_tokens": ai_usage["tokens"],
+        })
+
+    totals["completion_rate"] = round((totals["complete"] / totals["runs"] * 100), 1) if totals["runs"] else 0
+    return {"role": role, "include_all": include_all, "runs": rows, "totals": totals}
 def build_vertex_golden_case_view_model():
     artifacts = load_vertex_golden_case()
     project = artifacts["project_record"]
@@ -509,9 +635,12 @@ async def create_vertex_run(payload: dict = Body(...), user: dict = Depends(get_
         return JSONResponse(status_code=422, content={"created": False, "errors": errors})
     path = artifacts.save_artifact(run_id, "project_record", project_record)
     database.upsert_run_artifact(run_id, "project_record", project_record["artifact_id"], str(path), project_record["status"])
+    baseline = build_metric_baseline(payload)
     database.record_event(team_id, "run_created", {"title": title, "project_record_id": project_record["artifact_id"]}, run_id)
+    if any([baseline["initial_problem_statement"], baseline["initial_stakeholders"], baseline["intuition_price"] is not None]):
+        database.record_event(team_id, "metric_baseline_captured", baseline, run_id)
     run = database.get_run(run_id, team_id)
-    return {"created": True, "run": run, "project_record": artifacts.artifact_summary(project_record)}
+    return {"created": True, "run": run, "project_record": artifacts.artifact_summary(project_record), "baseline": baseline}
 
 
 @app.get("/api/vertex/runs")
@@ -724,6 +853,21 @@ async def get_billie_financial_scenario(artifact_id: str, user: dict = Depends(g
     if not target.exists():
         raise HTTPException(status_code=404, detail="FinancialScenario draft not found")
     return json.loads(target.read_text(encoding="utf-8"))
+
+@app.get("/dashboard/facilitator", response_class=HTMLResponse)
+async def facilitator_dashboard(request: Request, user: dict = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    metrics = build_facilitator_metrics(user)
+    return templates.TemplateResponse(request, "facilitator.html", {"user": user, "metrics": metrics})
+
+
+@app.get("/api/vertex/facilitator/metrics")
+async def facilitator_metrics(user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    return build_facilitator_metrics(user)
+
 
 @app.get("/dashboard/orbit", response_class=HTMLResponse)
 async def orbit(request: Request):

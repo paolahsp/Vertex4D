@@ -46,6 +46,12 @@
                         <span class="material-symbols-outlined text-base">arrow_back</span>
                         Workspace
                     </a>
+                    {% if user and user.role in ['facilitator', 'admin'] %}
+                    <a href="/dashboard/facilitator" class="app-nav-link hidden items-center gap-2 sm:inline-flex">
+                        <span class="material-symbols-outlined text-base">monitoring</span>
+                        Facilitator
+                    </a>
+                    {% endif %}
                     <span class="hidden h-5 border-l border-stone-300 sm:block"></span>
                     <div class="brand-lockup">
                         <span class="brand-mark">SL</span>
