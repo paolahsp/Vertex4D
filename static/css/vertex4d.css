@@ -4,9 +4,14 @@
     --v4d-cobalt: #1946D1;
     --v4d-coral: #E74530;
     --v4d-olive: #A4A760;
+    /* Text-safe tones. The brand coral (3.36:1) and olive (2.15:1) fail WCAG AA
+       on paper, and they are the colours every 11px uppercase kicker uses.
+       Keep the bright tones for fills and stripes; use these for any text. */
+    --v4d-coral-text: #C13521;
+    --v4d-olive-text: #5F6320;
     --v4d-sand: #F3DFBF;
     --v4d-white: #FFFDF8;
-    --v4d-muted: #776F68;
+    --v4d-muted: #6E6660;
     --v4d-line: rgba(24, 24, 16, 0.14);
     --v4d-blue-line: rgba(25, 70, 209, 0.22);
     --v4d-glass: rgba(255, 253, 248, 0.62);
@@ -134,11 +139,11 @@ h6,
 
 .text-cyber-lavender,
 .text-hyper-coral {
-    color: var(--v4d-coral) !important;
+    color: var(--v4d-coral-text) !important;
 }
 
 .text-electric-mint {
-    color: var(--v4d-olive) !important;
+    color: var(--v4d-olive-text) !important;
 }
 
 .text-background-dark,
@@ -257,7 +262,7 @@ select {
 
 input::placeholder,
 textarea::placeholder {
-    color: rgba(119, 111, 104, 0.76) !important;
+    color: var(--v4d-muted) !important;
 }
 
 .brand-lockup {
@@ -303,7 +308,7 @@ textarea::placeholder {
 .vertex-product-label,
 .vertex-kicker,
 .app-kicker {
-    color: var(--v4d-coral);
+    color: var(--v4d-coral-text);
     font-family: "Courier New", monospace;
     font-size: 0.72rem;
     font-weight: 700;
@@ -459,7 +464,7 @@ textarea::placeholder {
 }
 
 .lab-hub-card[data-index]::after {
-    color: var(--v4d-coral);
+    color: var(--v4d-coral-text);
     content: attr(data-index);
     font-family: "Courier New", monospace;
     font-size: 0.8rem;
@@ -511,12 +516,12 @@ textarea::placeholder {
 
 .lab-hub-visual .node.coral {
     border-color: var(--v4d-coral);
-    color: var(--v4d-coral);
+    color: var(--v4d-coral-text);
 }
 
 .lab-hub-visual .node.olive {
     border-color: var(--v4d-olive);
-    color: var(--v4d-olive);
+    color: var(--v4d-olive-text);
 }
 
 .visual-map .line:nth-child(1) {
@@ -810,7 +815,7 @@ textarea::placeholder {
 .eyebrow,
 .map-note,
 .vertex-kicker {
-    color: var(--v4d-coral);
+    color: var(--v4d-coral-text);
     font-family: "Space Mono", "Courier New", monospace;
     font-size: 0.72rem;
     font-weight: 700;
@@ -982,7 +987,7 @@ textarea::placeholder {
 }
 
 .service-list span {
-    color: var(--v4d-coral);
+    color: var(--v4d-coral-text);
     font-family: "Space Mono", "Courier New", monospace;
     font-weight: 700;
 }

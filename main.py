@@ -648,13 +648,6 @@ async def synapmap(request: Request):
         return RedirectResponse(url="/login")
     return templates.TemplateResponse(request, "lab/synapmap.html", {"user": user})
 
-@app.get("/dashboard/lab/synapmap-test", response_class=HTMLResponse)
-async def synapmap_test(request: Request):
-    user = get_current_user(request)
-    if not user:
-        return RedirectResponse(url="/login")
-    return templates.TemplateResponse(request, "lab/synapmap_simple.html", {"user": user})
-
 
 @app.get("/dashboard/lab/alex", response_class=HTMLResponse)
 async def alex(request: Request):
