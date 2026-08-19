@@ -13,3 +13,5 @@ env/
 .env
 .DS_Store
 Thumbs.db
+# Local runtime data
+.vertex_runtime/

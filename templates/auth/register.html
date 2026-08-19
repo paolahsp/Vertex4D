@@ -123,7 +123,7 @@
                     <!-- Members -->
                     <div class="sm:col-span-6 pt-4 border-t border-gray-200">
                         <h3 class="text-lg font-medium leading-6 text-gray-900">Team Members</h3>
-                        <p class="mt-1 text-sm text-gray-500">Add up to 3 members.</p>
+                        <p class="mt-1 text-sm text-gray-500">Add up to 3 members. Assign a facilitator if this team needs to close DecisionRecords.</p>
                     </div>
 
                     <!-- Member 1 -->
@@ -141,6 +141,16 @@
                         <div class="mt-1">
                             <input type="email" name="member1_email" id="member1_email" required
                                 class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                    </div>
+                    <div class="sm:col-span-6">
+                        <label for="member1_role" class="block text-sm font-medium text-gray-700 ml-1">Member 1 Role</label>
+                        <div class="mt-1">
+                            <select name="member1_role" id="member1_role" class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                                <option value="founder" selected>Founder</option>
+                                <option value="facilitator">Facilitator</option>
+                                <option value="admin">Admin</option>
+                            </select>
                         </div>
                     </div>
 
@@ -161,6 +171,16 @@
                                 class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
                         </div>
                     </div>
+                    <div class="sm:col-span-6">
+                        <label for="member2_role" class="block text-sm font-medium text-gray-700 ml-1">Member 2 Role</label>
+                        <div class="mt-1">
+                            <select name="member2_role" id="member2_role" class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                                <option value="founder" selected>Founder</option>
+                                <option value="facilitator">Facilitator</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
 
                     <!-- Member 3 -->
                     <div class="sm:col-span-3">
@@ -177,6 +197,16 @@
                         <div class="mt-1">
                             <input type="email" name="member3_email" id="member3_email"
                                 class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                    </div>
+                    <div class="sm:col-span-6">
+                        <label for="member3_role" class="block text-sm font-medium text-gray-700 ml-1">Member 3 Role</label>
+                        <div class="mt-1">
+                            <select name="member3_role" id="member3_role" class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                                <option value="founder" selected>Founder</option>
+                                <option value="facilitator">Facilitator</option>
+                                <option value="admin">Admin</option>
+                            </select>
                         </div>
                     </div>
                 </div>
