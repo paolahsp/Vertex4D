@@ -199,7 +199,10 @@
     "currency": {
       "type": "string",
       "enum": [
-        "EUR"
+        "EUR",
+        "USD",
+        "MXN",
+        "GBP"
       ]
     },
     "scenario_name": {
@@ -240,8 +243,7 @@
             "minLength": 1
           },
           "is_fixture_value": {
-            "type": "boolean",
-            "const": true
+            "type": "boolean"
           },
           "source_assumption_ref": {
             "type": "string",
@@ -281,8 +283,7 @@
             "minLength": 1
           },
           "is_fixture_value": {
-            "type": "boolean",
-            "const": true
+            "type": "boolean"
           },
           "source_assumption_ref": {
             "type": "string",
@@ -322,8 +323,7 @@
             "minLength": 1
           },
           "is_fixture_value": {
-            "type": "boolean",
-            "const": true
+            "type": "boolean"
           },
           "source_assumption_ref": {
             "type": "string",
@@ -352,8 +352,7 @@
           "minLength": 1
         },
         "is_fixture_value": {
-          "type": "boolean",
-          "const": true
+          "type": "boolean"
         },
         "classification": {
           "type": "string",
@@ -390,8 +389,7 @@
           "minLength": 1
         },
         "is_fixture_value": {
-          "type": "boolean",
-          "const": true
+          "type": "boolean"
         },
         "classification": {
           "type": "string",
@@ -428,8 +426,7 @@
           "minLength": 1
         },
         "is_fixture_value": {
-          "type": "boolean",
-          "const": true
+          "type": "boolean"
         },
         "classification": {
           "type": "string",

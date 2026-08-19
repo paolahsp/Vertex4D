@@ -140,7 +140,8 @@ def validate_official_schemas(schemas, fixtures) -> None:
 
 
 def validate_common(kind: str, artifact: dict) -> None:
-    require(artifact["schema_version"] == "1.0.0", f"{kind}: schema_version mismatch")
+    allowed_versions = {"1.0.0", "1.1.0"} if kind == "project_record" else {"1.0.0"}
+    require(artifact["schema_version"] in allowed_versions, f"{kind}: schema_version mismatch")
     require(artifact["artifact_type"] == kind, f"{kind}: artifact_type mismatch")
     require(isinstance(artifact["revision"], int) and artifact["revision"] > 0, f"{kind}: revision must be positive")
     created = datetime.fromisoformat(artifact["created_at"].replace("Z", "+00:00"))
@@ -158,11 +159,26 @@ def validate_common(kind: str, artifact: dict) -> None:
         require(approval["state"] != "approved", f"{kind}: pending/rejected cannot carry approved gate")
 
 
+def validate_project_privacy(project: dict) -> None:
+    declaration = project["synthetic_data_declaration"]
+    if declaration["contains_identifiable_people"] is not True:
+        return
+    consent = declaration.get("privacy_consent")
+    require(isinstance(consent, dict), "ProjectRecord identifiable people require privacy_consent")
+    require(consent.get("consent_record_ref"), "ProjectRecord identifiable people require consent_record_ref")
+    if declaration["approved_for_predictive_processing"] is True:
+        require(
+            consent.get("allows_predictive_processing") is True,
+            "ProjectRecord identifiable people cannot be approved for predictive processing without explicit predictive consent",
+        )
+
+
 def validate_business_rules(fixtures) -> None:
     for kind, artifact in fixtures.items():
         validate_common(kind, artifact)
     require(len({artifact["project_id"] for artifact in fixtures.values()}) == 1, "all artifacts must use one project_id")
     project = fixtures["project_record"]
+    validate_project_privacy(project)
     problem = fixtures["problem_frame"]
     system = fixtures["system_map"]
     predictive = fixtures["predictive_hypothesis"]
@@ -354,6 +370,32 @@ def run_negative_tests(schemas, fixtures) -> list[str]:
             "wrong array item type",
             lambda f: f["problem_frame"]["needs"].append("bad item"),
             "schema validation failed",
+        ),
+
+        (
+            "identifiable people require privacy consent",
+            lambda f: (
+                f["project_record"].__setitem__("schema_version", "1.1.0"),
+                f["project_record"]["synthetic_data_declaration"].__setitem__("contains_identifiable_people", True),
+                f["project_record"]["synthetic_data_declaration"].__setitem__("approved_for_predictive_processing", False),
+            ),
+            "ProjectRecord identifiable people require privacy_consent",
+        ),
+        (
+            "identifiable people cannot enable predictive processing without explicit consent",
+            lambda f: (
+                f["project_record"].__setitem__("schema_version", "1.1.0"),
+                f["project_record"]["synthetic_data_declaration"].__setitem__("contains_identifiable_people", True),
+                f["project_record"]["synthetic_data_declaration"].__setitem__("approved_for_predictive_processing", True),
+                f["project_record"]["synthetic_data_declaration"].__setitem__("privacy_consent", {
+                    "consent_basis": "explicit_consent",
+                    "consent_record_ref": "consent_fixture_001",
+                    "granted_by_role": "founder",
+                    "granted_at": f["project_record"]["created_at"],
+                    "allows_predictive_processing": False,
+                }),
+            ),
+            "ProjectRecord identifiable people cannot be approved for predictive processing without explicit predictive consent",
         ),
         (
             "unresolved artifact reference",
