@@ -331,6 +331,12 @@
     setText("metric-criteria", String(draft.success_criteria.length));
     setText("decision-type", draft.selected_decision.decision_type);
     setText("review-date", draft.review_date);
+    setText("verdict-title", draft.selected_decision.statement);
+    setText("verdict-yes", draft.rationale);
+    setText("verdict-but", (draft.risks[0] && draft.risks[0].statement) || "Keep the strongest risk visible before scale-up.");
+    setText("verdict-measure", (draft.success_criteria[0] && `${draft.success_criteria[0].metric} ${draft.success_criteria[0].operator} ${draft.success_criteria[0].target_value} ${draft.success_criteria[0].unit}`) || "Define one observable success criterion.");
+    setText("verdict-chain", `${draft.linked_upstream_artifact_ids ? Object.keys(draft.linked_upstream_artifact_ids).length : 0} upstream artifacts linked`);
+    setText("verdict-owner", `Owner: ${draft.owner_role} - review ${draft.review_date}`);
     $("decision-list").innerHTML = `<div class="item decision"><strong>${escapeHtml(draft.selected_decision.statement)}</strong><p>${escapeHtml(draft.rationale)}</p><div class="tagrow"><span class="tag">${escapeHtml(draft.selected_alternative_id)}</span><span class="tag">facilitator approval required</span></div></div>`;
     $("risk-list").innerHTML = [...draft.risks, ...draft.unknowns, ...draft.contradictions].map(card).join("");
     $("criteria-list").innerHTML = draft.success_criteria.map((item) => `<div class="item"><strong>${escapeHtml(item.metric)}</strong><p>${escapeHtml(item.operator)} ${escapeHtml(item.target_value)} ${escapeHtml(item.unit)} / ${escapeHtml(item.measurement_window)}</p><div class="tagrow"><span class="tag">${escapeHtml(item.criterion_id)}</span></div></div>`).join("");
