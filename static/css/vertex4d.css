@@ -225,6 +225,7 @@ input:focus, textarea:focus, select:focus {
 
 a { color: var(--act); }
 .copy, .sgp-copy, .fd-copy, .text-stone-600, .text-gray-600, .text-gray-700,
+.text-gray-400, .text-gray-500, .text-stone-300,
 .text-medium-grey, .text-stone-500, .text-stone-400, .fd-muted,
 .metric span, .mini span, .range span, .row p, .contract-item p, .signal p, .response p {
     color: var(--fg2) !important;
@@ -496,6 +497,9 @@ canvas { background: transparent; }
     border: 1px solid var(--edge);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
+    /* aspect-ratio junto a min-height impone un ancho mínimo: 300px de alto por
+       1.22 son 366px, y en una pantalla de 375 eso desbordaba el contenedor. */
+    max-width: 100%;
     min-height: 420px;
     overflow: hidden;
     position: relative;
