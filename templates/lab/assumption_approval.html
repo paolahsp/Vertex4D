@@ -36,7 +36,7 @@
         .aa-row { display: grid; gap: 14px; grid-template-columns: minmax(0,1fr) 130px 130px; padding: 16px; }
         .aa-row h2 { font-family: var(--font-display); font-size: clamp(20px,2.4vw,28px); line-height: 1.05; margin: 0 0 8px; }
         .aa-meta { color: var(--muted); font-size: 12px; line-height: 1.45; }
-        .aa-check { align-items: center; border-left: 1px solid var(--line); display: flex; gap: 10px; justify-content: center; min-height: 64px; }
+        .aa-check { align-items: center; border-left: 1px solid var(--line); display: flex; gap: 10px; justify-content: center; min-height: 64px; }.aa-approval-actions{align-items:center;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}.v4-item .aa-check{border-left:0;min-height:0}
         .aa-check input { height: 20px; width: 20px; }
         .aa-check span { color: var(--ink); font-size: 12px; font-weight: 800; text-transform: none; }
         .aa-status { color: var(--muted); font-size: 14px; line-height: 1.55; margin-top: 14px; }
@@ -48,27 +48,28 @@
 <body class="app-shell glass-workbench">
 {% include "_icon_sprite.html" %}
     <header class="aa-header v4-bar">
-        <div class="aa-brand"><span class="aa-mark">SL</span><div><p class="aa-title-small">Srsly Labs</p><p class="aa-subtitle">Assumption Approval</p></div></div>
-        <nav><a class="aa-link" data-run-link href="/dashboard/lab/synapmap">Back to SynapMap</a><a class="aa-link" data-run-link href="/dashboard/lab/billie">Open Billie</a></nav>
+        <a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Srsly Labs</i></span></a>
+        <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-approval"/></svg> Approval Gate</span>
+        <nav><a class="aa-link v4-navlink" data-run-link href="/dashboard/lab/synapmap">Back to SynapMap</a><a class="aa-link v4-navlink" data-run-link href="/dashboard/lab/d-predict">Open D-Predict</a></nav>
     </header>
-    <main class="aa-main">
-        {% with stage = 3 %}{% include "lab/_path_bar.html" %}{% endwith %}
-<section class="aa-hero">
-            <article class="aa-panel">
-                <p class="aa-kicker">Governance gate</p>
-                <h1 class="aa-title">Choose which assumptions can carry weight.</h1>
-                <p class="aa-copy">This step turns rough assumptions into approved inputs. Mark only the assumptions you are willing to use for behavior exploration, financial modeling, or both.</p>
-                <div class="aa-controls">
+    <main class="aa-main v4-main">
+        <section class="v4-head">
+            <div class="focusable">
+                <p class="v4-eyebrow"><s></s>Etapa 3 de 6 &middot; Aprobaci&oacute;n</p>
+                <h1 class="v4-h1">Choose which assumptions<br><em>can carry weight.</em></h1>
+                <p class="v4-lede">Mark only the assumptions you are willing to let D-Predict or Billie consume. This is a governance gate, not a cleanup screen.</p>
+                <div class="aa-controls v4-next">
                     <div class="aa-field"><label for="approver-role-display">Approver role</label><input id="approver-role-display" value="{{ user.get('role', 'founder') }}" disabled></div>
                     <div class="aa-field"><label for="approval-note">Approval note</label><input id="approval-note" value="Approved for bounded VERTEX processing."></div>
                     <button class="aa-button" id="save-approvals" type="button" disabled>Save approvals</button>
-                    <a class="aa-button secondary" data-run-link href="/dashboard/lab/billie">Continue to Billie</a>
+                    <a class="aa-button secondary" data-run-link href="/dashboard/lab/d-predict">Continue to D-Predict</a>
                 </div>
                 <p class="aa-status" id="approval-status">Loading active run...</p>
-            </article>
-            <aside class="aa-card"><strong id="approval-counts">0 / 0</strong><span>Approved for finance / predictive</span></aside>
+            </div>
+            <aside class="v4-tally"><div class="v4-t"><b id="approval-counts">0 / 0</b><span>Finance / predictive</span></div><div class="v4-t up"><b>Gate</b><span>Human approval</span></div><div class="v4-t"><b>03</b><span>Golden Path stage</span></div></aside>
         </section>
-        <section class="aa-table" id="assumption-list" aria-label="Assumptions for approval"></section>
+        {% with stage = 3 %}{% include "lab/_path_bar.html" %}{% endwith %}
+        <section class="aa-table v4-panel" id="assumption-list" aria-label="Assumptions for approval"></section>
     </main>
 <script>
 (function () {
@@ -119,20 +120,19 @@
     function render() {
         const assumptions = mergedAssumptions();
         if (!assumptions.length) {
-            list.innerHTML = '<article class="aa-row"><div><h2>No assumptions found</h2><p class="aa-meta">Return to Alex and save a ProblemFrame before approving assumptions.</p></div></article>';
+            list.innerHTML = '<article class="v4-empty"><b>No assumptions found.</b><br>Return to Alex and save a ProblemFrame before approving assumptions.</article>';
             saveButton.disabled = true;
             return;
         }
-        list.innerHTML = assumptions.map((item, index) => `
-            <article class="aa-row assumption-row" data-id="${escapeHtml(item.assumption_id)}">
-                <div>
-                    <p class="aa-kicker">${escapeHtml(item.approval_state || "pending")}</p>
-                    <h2>${escapeHtml(item.statement)}</h2>
-                    <p class="aa-meta">${escapeHtml(item.assumption_id)} - ${escapeHtml(item.classification || "hypothesis")} - confidence ${Number(item.confidence || 0).toFixed(2)}</p>
-                </div>
-                <label class="aa-check"><input class="predictive-toggle" type="checkbox" ${item.approved_for_predictive_processing ? "checked" : ""}><span>D-Predict</span></label>
-                <label class="aa-check"><input class="finance-toggle" type="checkbox" ${item.approved_for_financial_processing ? "checked" : ""}><span>Billie</span></label>
-            </article>`).join("");
+        list.innerHTML = assumptions.map((item) => {
+            const stateClass = (item.classification || "hypothesis") === "risk" ? "v4-rk" : (item.approval_state === "approved" ? "v4-ev" : "v4-hy");
+            return `
+            <article class="v4-item ${stateClass} assumption-row" data-id="${escapeHtml(item.assumption_id)}">
+                <span class="v4-sig"></span>
+                <p><b>${escapeHtml(item.statement)}</b><br>${escapeHtml(item.assumption_id)} - ${escapeHtml(item.classification || "hypothesis")} - confidence ${Number(item.confidence || 0).toFixed(2)}</p>
+                <div class="aa-approval-actions"><span class="v4-chip">${escapeHtml(item.approval_state || "pending")}</span><label class="aa-check"><input class="predictive-toggle" type="checkbox" ${item.approved_for_predictive_processing ? "checked" : ""}><span>D-Predict</span></label><label class="aa-check"><input class="finance-toggle" type="checkbox" ${item.approved_for_financial_processing ? "checked" : ""}><span>Billie</span></label></div>
+            </article>`;
+        }).join("");
         list.querySelectorAll("input").forEach((input) => input.addEventListener("change", syncCounts));
         syncCounts();
         status.textContent = `${assumptions.length} assumptions loaded. Approval updates ProblemFrame and SystemMap together.`;
