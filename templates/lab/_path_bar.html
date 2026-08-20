@@ -16,7 +16,7 @@
     <h2>Golden Path</h2>
     <p>problema · sistema · comportamiento · números · decisión</p>
   </div>
-  <div class="v4-track"><i style="width: {{ ((stage - 1) / 5 * 100) | round(1) }}%"></i></div>
+  <div class="v4-track"><i style="--fill: {{ ((stage - 1) / 5 * 100) | round(1) }}%"></i></div>
   <nav class="v4-stations" aria-label="Etapas del Golden Path">
     {% for name, artifact, href in stations %}
       {% set n = loop.index %}

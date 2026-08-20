@@ -501,7 +501,7 @@ header, .head, .sgp-header, .fd-header, .gp-header, .think-header, .aa-header {
 .v4-rowcap h2 { font: 600 16px/1.2 var(--font-display) !important; margin: 0; }
 .v4-rowcap p { color: var(--fg2); font: 400 10.5px/1.4 var(--font-mono); margin: 0; }
 .v4-track { background: var(--track); border-radius: 3px; height: 3px; margin: 0 20px; position: relative; }
-.v4-track i { background: var(--act); border-radius: 3px; bottom: 0; left: 0; position: absolute; top: 0; transition: width .6s cubic-bezier(.22,.61,.36,1); }
+.v4-track i { background: var(--act); border-radius: 3px; bottom: 0; left: 0; position: absolute; top: 0; width: var(--fill, 0%); }
 .v4-stations { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); margin-top: -8px; }
 .v4-st {
     align-items: center; color: inherit; display: flex; flex-direction: column;
@@ -553,3 +553,74 @@ header, .head, .sgp-header, .fd-header, .gp-header, .think-header, .aa-header {
 .v4-navlink, .v4-bar nav { align-items: center; display: inline-flex; gap: 8px; }
 .v4-bar nav a { font-size: 12.5px; }
 .v4-runtag { align-items: center; display: inline-flex; gap: 7px; }
+
+/* ══════════════════════════════════════════════════════════════
+   MOVIMIENTO QUE SOSTIENE LA ATENCIÓN
+   VERTEX navega con recargas completas: cada pantalla es un
+   documento nuevo. Sin entrada, nada avisa de que la vista cambió
+   y el ojo tiene que buscar dónde empezar a leer. La entrada es
+   escalonada en orden de lectura, dura menos de medio segundo en
+   total y ocurre una sola vez. Ningún bucle.
+   ══════════════════════════════════════════════════════════════ */
+@keyframes v4-enter {
+    from { opacity: 0; transform: translateY(9px); }
+    to   { opacity: 1; transform: none; }
+}
+@keyframes v4-fade { from { opacity: 0 } to { opacity: 1 } }
+
+[data-motion="full"] .v4-bar,
+[data-motion="full"] .v4-head,
+[data-motion="full"] .v4-path,
+[data-motion="full"] .content > *,
+[data-motion="full"] .sgp-main > *,
+[data-motion="full"] .gp-main > *,
+[data-motion="full"] .think-main > *,
+[data-motion="full"] .fd-main > *,
+[data-motion="full"] .aa-main > * {
+    animation: v4-enter .3s cubic-bezier(.22,.61,.36,1) both;
+}
+[data-motion="full"] .v4-bar   { animation-delay: 0ms; }
+[data-motion="full"] .v4-head  { animation-delay: 60ms; }
+[data-motion="full"] .v4-path  { animation-delay: 115ms; }
+[data-motion="full"] .content > *:nth-child(1),
+[data-motion="full"] .sgp-main > *:nth-child(1) { animation-delay: 130ms; }
+[data-motion="full"] .content > *:nth-child(2),
+[data-motion="full"] .sgp-main > *:nth-child(2) { animation-delay: 175ms; }
+[data-motion="full"] .content > *:nth-child(n+3),
+[data-motion="full"] .sgp-main > *:nth-child(n+3) { animation-delay: 215ms; }
+
+/* En "reducido" el contenido aparece sin desplazarse: mismo aviso de
+   cambio de pantalla, sin nada que viaje por el campo visual. */
+[data-motion="reduced"] .v4-bar,
+[data-motion="reduced"] .v4-head,
+[data-motion="reduced"] .v4-path,
+[data-motion="reduced"] .content > * {
+    animation: v4-fade .16s linear both;
+}
+
+/* Feedback de acción: sin él no sabes si tu clic registró, y esa duda
+   cuesta más atención que el propio movimiento. */
+[data-motion="full"] .btn:active,
+[data-motion="full"] .button:active,
+[data-motion="full"] .b1:active,
+[data-motion="full"] .aa-button:active,
+[data-motion="full"] .tab:active { transform: translateY(1px) scale(.985); }
+
+/* Confirmación al guardar un artefacto: un solo destello, y para. */
+@keyframes v4-confirm {
+    0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 55%, transparent); }
+    100% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--ok) 0%, transparent); }
+}
+[data-motion="full"] .v4-confirm { animation: v4-confirm .75s ease-out 1; }
+
+/* La estación a la que acabas de llegar respira tres veces, después
+   del escalonado para que no se pierda bajo la entrada. */
+[data-motion="full"] .v4-st.now .v4-knob { animation-delay: 420ms; }
+
+/* El eje crece desde cero hasta tu progreso al entrar. En CSS y no en JS:
+   requestAnimationFrame no dispara si la pestaña carga en segundo plano,
+   y entonces la pista se quedaría vacía. */
+@keyframes v4-track-fill { from { width: 0 } to { width: var(--fill, 0%) } }
+[data-motion="full"] .v4-track i {
+    animation: v4-track-fill .72s cubic-bezier(.22,.61,.36,1) .16s both;
+}
