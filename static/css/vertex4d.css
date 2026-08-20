@@ -409,23 +409,7 @@ header, .head, .sgp-header, .fd-header, .gp-header, .think-header, .aa-header {
     flex-wrap: wrap;
 }
 
-@media (max-width: 900px) {
-    .pref-panel.is-docked {
-        justify-content: flex-start;
-        margin-left: 0;
-        order: 99;
-        width: 100%;
-    }
-}
-
-@media (max-width: 740px) {
-    body { font-size: 13.8px; }
-    /* El riel pasa a fila horizontal en móvil pero sin envolver: ocho enlaces
-       de 46px empujaban la página a 515px de ancho en una pantalla de 390. */
-    .side { flex-wrap: wrap; gap: 10px; }
-    .pref-panel:not(.is-docked) { left: 10px; right: 10px; justify-content: center; }
-    .pref-label { display: none; }
-    .pref-panel button { padding: 0 7px; }
+@media (max-width: 1080px) {
     .pref-panel.is-docked {
         flex-wrap: nowrap;
         gap: 5px;
@@ -450,6 +434,61 @@ header, .head, .sgp-header, .fd-header, .gp-header, .think-header, .aa-header {
         margin-right: 0;
         width: 15px;
     }
+}
+
+@media (max-width: 900px) {
+    .pref-panel.is-docked {
+        justify-content: flex-start;
+        margin-left: auto;
+        order: 0;
+        width: auto;
+    }
+}
+
+@media (max-width: 740px) {
+    body { font-size: 13.8px; }
+    header.v4-bar, .head.v4-bar, .sgp-header.v4-bar,
+    header, .head, .sgp-header, .fd-header, .gp-header, .think-header, .aa-header,
+    .v4-bar {
+        align-items: center !important;
+        flex-direction: row !important;
+        gap: 8px 10px !important;
+        padding: 10px 14px !important;
+    }
+    .v4-bar nav {
+        flex-wrap: wrap;
+        order: 20 !important;
+        width: 100% !important;
+    }
+    .v4-runtag { display: none !important; }
+    /* The stage rail must stay one compact row. If it wraps, the real page
+       starts below the fold on the later Golden Path tools. */
+    .side {
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+        justify-content: flex-start !important;
+        overflow-x: auto !important;
+        padding: 10px 12px !important;
+        scrollbar-width: none;
+    }
+    .side::-webkit-scrollbar { display: none; }
+    .side .nav, .side .mark {
+        flex: 0 0 36px;
+        height: 36px;
+        width: 36px;
+    }
+    .side .nav .ic, .side .mark .ic {
+        height: 18px;
+        width: 18px;
+    }
+    .pref-panel:not(.is-docked) { left: 10px; right: 10px; justify-content: center; }
+    .pref-label { display: none; }
+    .pref-panel button { padding: 0 7px; }
+    .pref-panel.is-docked { max-width: 180px; }
+    .pref-panel.is-docked .pref-group:last-child { display: none; }
+    .content > * { order: 3; }
+    .content > .v4-head { order: 1; }
+    .content > .v4-path { order: 2; }
 }
 
 /* ══════════════════════════════════════════════════════════════
