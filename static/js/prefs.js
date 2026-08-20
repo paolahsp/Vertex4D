@@ -58,17 +58,23 @@
 
   const ICON = { dark: "i-dark", light: "i-light", full: "i-motion",
                  reduced: "i-motion", none: "i-motion", on: "i-focus" };
+  // El nombre accesible contiene el texto visible, que es lo que dice
+  // quien usa control por voz. En móvil el texto se oculta y este nombre
+  // queda como única etiqueta.
+  const NOMBRE = { dark: "Tema: Oscuro", light: "Tema: Claro",
+                   full: "Movimiento: Completo", reduced: "Movimiento: Reducido",
+                   none: "Movimiento: Ninguno" };
 
   function button(label, key, value) {
     const el = document.createElement("button");
     el.type = "button";
     const ic = ICON[value];
     el.innerHTML = ic
-      ? `<svg class="ic" aria-hidden="true"><use href="#${ic}"/></svg><span class="pref-text" aria-hidden="true">${label}</span>`
-      : `<span class="pref-text" aria-hidden="true">${label}</span>`;
+      ? `<svg class="ic" aria-hidden="true"><use href="#${ic}"/></svg><span class="pref-text">${label}</span>`
+      : `<span class="pref-text">${label}</span>`;
     el.dataset.prefKey = key;
     el.dataset.prefValue = value;
-    el.setAttribute("aria-label", `${key}: ${value}`);
+    el.setAttribute("aria-label", NOMBRE[value] || `${key}: ${value}`);
     el.addEventListener("click", () => setPref(key, value));
     return el;
   }
@@ -112,7 +118,7 @@
 
     const focusButton = document.createElement("button");
     focusButton.type = "button";
-    focusButton.innerHTML = '<svg class="ic" aria-hidden="true"><use href="#i-focus"/></svg><span class="pref-text" aria-hidden="true">Enfoque</span>';
+    focusButton.innerHTML = '<svg class="ic" aria-hidden="true"><use href="#i-focus"/></svg><span class="pref-text">Enfoque</span>';
     focusButton.dataset.prefKey = "focus";
     focusButton.dataset.prefValue = "on";
     focusButton.setAttribute("aria-label", "activar o desactivar el modo enfoque");
