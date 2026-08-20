@@ -75,151 +75,60 @@
 
 <body class="font-display bg-background-light text-near-black">
 {% include "_icon_sprite.html" %}
-    <div class="flex flex-col lg:flex-row min-h-screen lg:h-screen lg:overflow-hidden">
-        <!-- Left Sidebar -->
-        <div class="flex flex-row lg:flex-col items-center gap-6 border-b lg:border-b-0 lg:border-r border-vapor-grey bg-vapor-grey/50 p-3 overflow-x-auto lg:overflow-x-visible shrink-0">
-            <a href="/dashboard" class="size-8 text-primary">
-                <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                    <path clip-rule="evenodd"
-                        d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z"
-                        fill="currentColor" fill-rule="evenodd"></path>
-                </svg>
-            </a>
-            <div class="flex flex-row lg:flex-col items-center gap-2">
-                <a href="/dashboard/lab/synapmap"
-                    class="flex size-12 items-center justify-center rounded-2xl bg-cyber-lavender/20 text-coral-text ring-2 ring-cyber-lavender transition-all hover:bg-cyber-lavender/30">
-                    <svg class="ic ic-xl" aria-hidden="true"><use href="#i-synapmap"/></svg>
-                </a>
-                <a href="/dashboard/lab/alex"
-                    class="flex size-12 items-center justify-center rounded-2xl bg-hyper-coral/20 text-coral-text transition-all hover:bg-hyper-coral/30">
-                    <svg class="ic ic-xl" aria-hidden="true"><use href="#i-alex"/></svg>
-                </a>
-                <a href="/dashboard/lab/billie"
-                    class="flex size-12 items-center justify-center rounded-2xl bg-electric-mint/20 text-olive-text transition-all hover:bg-electric-mint/30">
-                    <svg class="ic ic-xl" aria-hidden="true"><use href="#i-billie"/></svg>
-                </a>
+<div class="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col">
+    <header class="v4-bar shrink-0">
+        <a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Srsly Labs</i></span></a>
+        <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg> SynapMap &middot; SystemMap</span>
+        <nav><a class="app-nav-link v4-navlink" data-run-link href="/dashboard/lab/alex">Back to Alex</a><a class="app-nav-link v4-navlink" data-run-link href="/dashboard/lab/assumption-approval">Approval</a></nav>
+    </header>
+    <main class="flex-1 min-h-0 flex flex-col">
+        <section class="v4-head shrink-0">
+            <div class="focusable">
+                <p class="v4-eyebrow"><s></s>Etapa 2 de 6 &middot; SynapMap</p>
+                <h1 class="v4-h1">Make the system visible.<br><em>Then name the dependencies.</em></h1>
+                <p class="v4-lede">SynapMap turns scattered context into stakeholders, relationships, bottlenecks and RACI signals for the approval gate.</p>
+                <div class="v4-next"><button class="btn primary" type="button" id="save-map-btn"><svg class="ic" aria-hidden="true"><use href="#i-save"/></svg> Save map</button><button class="btn ghost" type="button" id="delete-map-btn"><svg class="ic" aria-hidden="true"><use href="#i-trash"/></svg> Delete map</button><span class="v4-eta">&asymp; 10 min &middot; D3 map stays interactive</span></div>
             </div>
-            <div class="mt-auto flex flex-col items-center gap-4">
-                <button id="save-map-btn"
-                    class="flex size-12 items-center justify-center rounded-full bg-primary/20 text-primary transition-all hover:bg-primary/30"
-                    title="Save Map">
-                    <svg class="ic ic-xl" aria-hidden="true"><use href="#i-save"/></svg>
-                </button>
-                <button id="delete-map-btn"
-                    class="flex size-12 items-center justify-center rounded-full bg-vapor-grey text-medium-grey transition-all hover:bg-white/5"
-                    title="Delete Map">
-                    <svg class="ic ic-xl" aria-hidden="true"><use href="#i-trash"/></svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Main Content: 3 Columns -->
-        <main class="flex-1 flex flex-col min-w-0 lg:overflow-hidden">
-            <header
-                class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2 border-b border-vapor-grey bg-background-light/80 px-4 lg:px-10 py-3 backdrop-blur-sm">
-                <div class="flex items-center gap-2 text-sm text-medium-grey">
-                    <a class="hover:text-near-black" href="/dashboard/lab">4D Lab</a>
-                    <span>/</span>
-                    <span class="font-medium text-near-black">SynapMap</span>
-                </div>
-                <div class="flex items-center gap-6">
-                    <div class="flex items-center gap-2">
-                        <span class="font-mono text-xs font-bold text-coral-text">42</span>
-                        <span class="text-sm text-medium-grey">Signals</span>
+            <aside class="v4-tally"><div class="v4-t"><b>02</b><span>SystemMap stage</span></div><div class="v4-t up"><b>RACI</b><span>Matrix target</span></div><div class="v4-t"><b>35%</b><span>Confidence seed</span></div></aside>
+        </section>
+        {% with stage = 2 %}{% include "lab/_path_bar.html" %}{% endwith %}
+        <section class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-0 lg:overflow-hidden">
+            <aside class="lg:col-span-3 min-w-0 flex flex-col border-b lg:border-b-0 lg:border-r border-vapor-grey p-4">
+                <article class="v4-panel flex-1 min-h-0 flex flex-col p-0 overflow-hidden">
+                    <div class="px-4 py-4 border-b border-vapor-grey"><p class="v4-plabel" style="margin:0">System prompt</p></div>
+                    <div id="chat-container" class="flex-1 overflow-y-auto p-4">
+                        <div class="v4-item v4-hy"><span class="v4-sig"></span><p><b>SynapMap</b><br>Describe your project. I will generate stakeholders, dependencies, bottlenecks and a RACI matrix.</p><span class="v4-chip">ready</span></div>
                     </div>
-                    <div class="flex w-48 flex-col gap-1.5">
-                        <div class="flex items-center justify-between">
-                            <p class="text-sm font-medium text-near-black">Confidence</p>
-                            <p class="text-sm font-bold text-primary">35%</p>
-                        </div>
-                        <div class="h-2 w-full rounded-full bg-vapor-grey">
-                            <div class="h-2 rounded-full bg-primary" style="width: 35%;"></div>
-                        </div>
-                    </div>
-                </div>
-            </header>
-
-            <div class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-0 lg:overflow-hidden">
-                <!-- Column 1: Chat (3/12) -->
-                <div class="lg:col-span-3 min-w-0 flex flex-col border-b lg:border-b-0 lg:border-r border-vapor-grey bg-white">
-                    <div id="chat-container" class="flex-1 overflow-y-auto p-6">
-                        <div class="flex items-start gap-3">
-                            <div
-                                class="flex size-10 items-center justify-center rounded-full bg-cyber-lavender/20 text-coral-text flex-shrink-0">
-                                <svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg>
-                            </div>
-                            <div class="rounded-2xl rounded-tl-none bg-vapor-grey p-3">
-                                <p class="font-bold text-near-black text-sm">SynapMap</p>
-                                <p class="text-medium-grey text-xs">Describe your project. I will generate a system map
-                                    with stakeholders, dependencies, bottlenecks, and a RACI matrix.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Input Area -->
-                    <div class="border-t border-vapor-grey bg-white p-3">
+                    <div class="border-t border-vapor-grey p-3">
                         <div id="status-message" class="mb-2 text-center text-xs"></div>
                         <div class="relative">
-                            <input type="file" id="file-input" class="hidden"
-                                accept=".txt,.pdf,.ppt,.pptx,.doc,.docx,image/*,audio/*" />
-                            <textarea id="idea-input"
-                                class="w-full resize-none rounded-xl border-vapor-grey bg-vapor-grey p-3 pr-20 text-near-black text-sm placeholder:text-medium-grey focus:border-cyber-lavender focus:ring-2 focus:ring-cyber-lavender/50"
-                                placeholder="Describe your idea..." rows="3"></textarea>
+                            <input type="file" id="file-input" class="hidden" accept=".txt,.pdf,.ppt,.pptx,.doc,.docx,image/*,audio/*" />
+                            <textarea id="idea-input" class="w-full resize-none rounded-xl border-vapor-grey bg-vapor-grey p-3 pr-20 text-near-black text-sm placeholder:text-medium-grey focus:border-cyber-lavender focus:ring-2 focus:ring-cyber-lavender/50" placeholder="Describe your idea..." rows="3"></textarea>
                             <div class="absolute bottom-2 right-2 flex gap-1">
-                                <button id="upload-btn" onclick="document.getElementById('file-input').click()"
-                                    class="flex size-7 items-center justify-center rounded-lg bg-vapor-grey text-medium-grey transition-colors hover:bg-cyber-lavender/20 hover:text-coral-text">
-                                    <svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>
-                                </button>
-                                <button id="analyze-btn"
-                                    class="flex size-7 items-center justify-center rounded-lg bg-coral-text text-white transition-colors hover:bg-cyber-lavender/80">
-                                    <svg class="ic" aria-hidden="true"><use href="#i-assist"/></svg>
-                                </button>
+                                <button id="upload-btn" onclick="document.getElementById('file-input').click()" class="flex size-7 items-center justify-center rounded-lg bg-vapor-grey text-medium-grey transition-colors hover:bg-cyber-lavender/20 hover:text-coral-text"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg></button>
+                                <button id="analyze-btn" class="flex size-7 items-center justify-center rounded-lg bg-coral-text text-white transition-colors hover:bg-cyber-lavender/80"><svg class="ic" aria-hidden="true"><use href="#i-assist"/></svg></button>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Column 2: Map (6/12) -->
-                <div class="lg:col-span-6 min-w-0 relative bg-dots min-h-[420px] lg:min-h-0">
-                    <div id="system-map-container" class="h-full w-full">
-                        <svg id="system-map-svg" class="h-full w-full"></svg>
-                        <div id="d3-tooltip" class="d3-tooltip"></div>
-                    </div>
-                    <button id="reset-zoom-btn"
-                        class="absolute top-4 left-4 flex size-10 items-center justify-center rounded-lg bg-white border border-vapor-grey shadow-lg text-coral-text hover:bg-cyber-lavender/10"
-                        title="Reset Zoom">
-                        <svg class="ic" aria-hidden="true"><use href="#i-focus"/></svg>
-                    </button>
-                </div>
-
-                <!-- Column 3: RACI + Insights (3/12) -->
-                <div class="lg:col-span-3 min-w-0 flex flex-col border-t lg:border-t-0 lg:border-l border-vapor-grey bg-white lg:overflow-y-auto">
-                    <!-- RACI Matrix -->
-                    <div class="p-4 border-b border-vapor-grey">
-                        <h3 class="font-bold text-near-black mb-3 text-sm flex items-center gap-2">
-                            <svg class="ic" aria-hidden="true"><use href="#i-table"/></svg>
-                            RACI Matrix
-                        </h3>
-                        <div id="raci-container" class="text-xs">
-                            <p class="text-center text-medium-grey">No data</p>
-                        </div>
-                    </div>
-
-                    <!-- System Insights -->
-                    <div class="p-4">
-                        <h3 class="font-bold text-near-black mb-3 text-sm flex items-center gap-2">
-                            <svg class="ic" aria-hidden="true"><use href="#i-billie"/></svg>
-                            System Analysis
-                        </h3>
-                        <div id="insights-container" class="text-xs space-y-3">
-                            <p class="text-center text-medium-grey">No analysis</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
+                </article>
+            </aside>
+            <section class="lg:col-span-6 min-w-0 relative bg-dots min-h-[420px] lg:min-h-0">
+                <div id="system-map-container" class="h-full w-full"><svg id="system-map-svg" class="h-full w-full"></svg><div id="d3-tooltip" class="d3-tooltip"></div></div>
+                <button id="reset-zoom-btn" class="absolute top-4 left-4 flex size-10 items-center justify-center rounded-lg bg-white border border-vapor-grey shadow-lg text-coral-text hover:bg-cyber-lavender/10" title="Reset Zoom"><svg class="ic" aria-hidden="true"><use href="#i-focus"/></svg></button>
+            </section>
+            <aside class="lg:col-span-3 min-w-0 flex flex-col gap-4 border-t lg:border-t-0 lg:border-l border-vapor-grey p-4 lg:overflow-y-auto">
+                <article class="v4-panel">
+                    <p class="v4-plabel">RACI Matrix</p>
+                    <div id="raci-container" class="text-xs"><div class="v4-empty">No matrix yet. Run the map to see who is responsible, accountable, consulted and informed.</div></div>
+                </article>
+                <article class="v4-panel is-strong">
+                    <p class="v4-plabel">System Analysis</p>
+                    <div id="insights-container" class="text-xs space-y-3"><div class="v4-empty">No analysis yet. Bottlenecks, risks, opportunities and conflicts will appear here after SynapMap generates a system.</div></div>
+                </article>
+            </aside>
+        </section>
+    </main>
+</div>
     <script>
         // STATE
         let currentAnalysis = null;
