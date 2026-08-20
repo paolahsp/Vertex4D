@@ -46,12 +46,13 @@
     </style>
 </head>
 <body class="app-shell glass-workbench">
-    <header class="aa-header">
+    <header class="aa-header v4-bar">
         <div class="aa-brand"><span class="aa-mark">SL</span><div><p class="aa-title-small">Srsly Labs</p><p class="aa-subtitle">Assumption Approval</p></div></div>
         <nav><a class="aa-link" data-run-link href="/dashboard/lab/synapmap">Back to SynapMap</a><a class="aa-link" data-run-link href="/dashboard/lab/billie">Open Billie</a></nav>
     </header>
     <main class="aa-main">
-        <section class="aa-hero">
+        {% with stage = 3 %}{% include "lab/_path_bar.html" %}{% endwith %}
+<section class="aa-hero">
             <article class="aa-panel">
                 <p class="aa-kicker">Governance gate</p>
                 <h1 class="aa-title">Choose which assumptions can carry weight.</h1>
