@@ -426,6 +426,30 @@ header, .head, .sgp-header, .fd-header, .gp-header, .think-header, .aa-header {
     .pref-panel:not(.is-docked) { left: 10px; right: 10px; justify-content: center; }
     .pref-label { display: none; }
     .pref-panel button { padding: 0 7px; }
+    .pref-panel.is-docked {
+        flex-wrap: nowrap;
+        gap: 5px;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+    .pref-panel.is-docked::-webkit-scrollbar { display: none; }
+    .pref-panel.is-docked .pref-group {
+        flex: 0 0 auto;
+        gap: 1px;
+        padding: 2px;
+    }
+    .pref-panel.is-docked button {
+        min-height: 28px;
+        overflow: hidden;
+        padding: 0;
+        width: 30px;
+    }
+    .pref-panel.is-docked .pref-text { display: none; }
+    .pref-panel.is-docked button .ic {
+        height: 15px;
+        margin-right: 0;
+        width: 15px;
+    }
 }
 
 /* ══════════════════════════════════════════════════════════════
