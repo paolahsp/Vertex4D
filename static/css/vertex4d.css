@@ -23,7 +23,7 @@ html[data-theme="dark"] {
     --edge2: rgba(178, 164, 255, .32);
     --fg: #E4DFF2;
     --fg2: #B6ACD2;
-    --fg3: #8A80A6;
+    --fg3: #958bb4;
     --act: #B2A4FF;
     --actfill: #5b13ec;
     --acttext: #fff;
@@ -574,7 +574,7 @@ header, .head, .sgp-header, .fd-header, .gp-header, .think-header, .aa-header {
 .v4-ac .v4-sig, .v4-mt i.v4-ac, .v4-meter.v4-ac .v4-mt i { background: var(--actfill); }
 html:not([data-theme="light"]) .v4-ev .v4-chip { background: color-mix(in srgb, var(--mint) 22%, transparent) !important; color: var(--mint) !important; }
 html:not([data-theme="light"]) .v4-hy .v4-chip { background: color-mix(in srgb, var(--lav) 22%, transparent) !important; color: var(--lav) !important; }
-html:not([data-theme="light"]) .v4-rk .v4-chip { background: color-mix(in srgb, var(--coral) 22%, transparent) !important; color: var(--coral) !important; }
+html:not([data-theme="light"]) .v4-rk .v4-chip { background: color-mix(in srgb, var(--coral) 18%, transparent) !important; color: var(--risk-text) !important; }
 html:not([data-theme="light"]) .v4-ac .v4-chip { background: color-mix(in srgb, var(--act) 24%, transparent) !important; color: var(--act) !important; }
 html[data-theme="light"] .v4-ev .v4-chip { background: #66FFB2 !important; color: #0c3d26 !important; }
 html[data-theme="light"] .v4-hy .v4-chip { background: #B2A4FF !important; color: #241a52 !important; }

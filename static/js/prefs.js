@@ -83,7 +83,7 @@
   // of content and, on a working screen, ends up covering the thing you are reading.
   const HEADER_SELECTORS = [
     "[data-pref-slot]", ".sgp-header", ".fd-header", ".gp-header", ".think-header",
-    ".aa-header", ".head", ".app-header", ".site-nav", "body > header", "main > header",
+    ".aa-header", ".v4-bar", ".head", ".app-header", ".site-nav", "body > header", "main > header",
   ];
 
   function findHost() {
