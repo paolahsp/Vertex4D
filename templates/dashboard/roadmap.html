@@ -6,14 +6,10 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Vertex 4D Dashboard - Levels</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet" />
     <style type="text/tailwindcss">
         
         
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
+        
     </style>
     <script>
         tailwind.config = {
@@ -53,6 +49,7 @@
 </head>
 
 <body class="font-display bg-background-light dark:bg-background-dark text-near-black dark:text-white">
+{% include "_icon_sprite.html" %}
     <div class="flex h-screen">
         <!-- Sidebar -->
         <aside
@@ -73,31 +70,27 @@
             <nav class="mt-8 flex flex-col gap-2">
                 <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-medium-grey hover:bg-stone-100 dark:text-gray-400 dark:hover:bg-white/5"
                     href="/dashboard">
-                    <span class="material-symbols-outlined text-2xl"
-                        style="font-variation-settings: 'FILL' 0">home</span>
+                    <svg class="ic ic-lg" aria-hidden="true"><use href="#i-home"/></svg>
                     <p class="text-sm font-medium leading-normal">Home</p>
                 </a>
                 <a class="flex items-center gap-3 rounded-lg bg-primary/20 px-3 py-2 text-primary dark:bg-primary/30"
                     href="/dashboard/roadmap">
-                    <span class="material-symbols-outlined text-2xl">route</span>
+                    <svg class="ic ic-lg" aria-hidden="true"><use href="#i-run"/></svg>
                     <p class="text-sm font-medium leading-normal">Roadmap</p>
                 </a>
                 <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-medium-grey hover:bg-stone-100 dark:text-gray-400 dark:hover:bg-white/5"
                     href="/dashboard/lab">
-                    <span class="material-symbols-outlined text-2xl"
-                        style="font-variation-settings: 'FILL' 0">science</span>
+                    <svg class="ic ic-lg" aria-hidden="true"><use href="#i-lab"/></svg>
                     <p class="text-sm font-medium leading-normal">4D Lab</p>
                 </a>
                 <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-medium-grey hover:bg-stone-100 dark:text-gray-400 dark:hover:bg-white/5"
                     href="/dashboard/orbit">
-                    <span class="material-symbols-outlined text-2xl"
-                        style="font-variation-settings: 'FILL' 0">public</span>
+                    <svg class="ic ic-lg" aria-hidden="true"><use href="#i-world"/></svg>
                     <p class="text-sm font-medium leading-normal">The Orbit</p>
                 </a>
                 <a class="flex items-center gap-3 rounded-lg px-3 py-2 text-medium-grey hover:bg-stone-100 dark:text-gray-400 dark:hover:bg-white/5"
                     href="/dashboard/bookings">
-                    <span class="material-symbols-outlined text-2xl"
-                        style="font-variation-settings: 'FILL' 0">calendar_month</span>
+                    <svg class="ic ic-lg" aria-hidden="true"><use href="#i-calendar"/></svg>
                     <p class="text-sm font-medium leading-normal">Bookings</p>
                 </a>
             </nav>
@@ -115,7 +108,7 @@
                 </div>
                 <a href="/logout"
                     class="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-stone-100 dark:bg-stone-800 px-4 py-2 text-sm font-bold text-stone-600 dark:text-stone-400 hover:bg-stone-200 dark:hover:bg-stone-700">
-                    <span class="material-symbols-outlined text-xl">logout</span>
+                    <svg class="ic ic-lg" aria-hidden="true"><use href="#i-logout"/></svg>
                     Logout
                 </a>
             </div>

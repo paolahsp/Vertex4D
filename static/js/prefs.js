@@ -56,10 +56,16 @@
     saveRemote(next);
   }
 
+  const ICON = { dark: "i-dark", light: "i-light", full: "i-motion",
+                 reduced: "i-motion", none: "i-motion", on: "i-focus" };
+
   function button(label, key, value) {
     const el = document.createElement("button");
     el.type = "button";
-    el.textContent = label;
+    const ic = ICON[value];
+    el.innerHTML = ic
+      ? `<svg class="ic" aria-hidden="true"><use href="#${ic}"/></svg>${label}`
+      : label;
     el.dataset.prefKey = key;
     el.dataset.prefValue = value;
     el.setAttribute("aria-label", `${key}: ${value}`);
@@ -106,7 +112,7 @@
 
     const focusButton = document.createElement("button");
     focusButton.type = "button";
-    focusButton.textContent = "Enfoque";
+    focusButton.innerHTML = '<svg class="ic" aria-hidden="true"><use href="#i-focus"/></svg>Enfoque';
     focusButton.dataset.prefKey = "focus";
     focusButton.dataset.prefValue = "on";
     focusButton.setAttribute("aria-label", "activar o desactivar el modo enfoque");

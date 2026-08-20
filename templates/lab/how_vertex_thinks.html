@@ -44,10 +44,8 @@
     </style>
 </head>
 <body class="app-shell glass-workbench">
-    <header class="think-header">
-        <div class="think-brand"><span class="think-mark">SL</span><div><p class="think-brand-title">Srsly Labs</p><p class="think-brand-subtitle">How VERTEX Thinks</p></div></div>
-        <nav><a class="think-link" href="{{ back_href }}">{{ back_label }}</a><a class="think-link" href="{{ access_href }}">{{ access_label }}</a></nav>
-    </header>
+{% include "_icon_sprite.html" %}
+    <header class="think-header v4-bar"><a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Srsly Labs</i></span></a><span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-lab"/></svg> Cómo piensa VERTEX</span><nav><a class="-link v4-navlink" href="{{ back_href }}">{{ back_label }}</a><a class="-link v4-navlink" href="{{ access_href }}">{{ access_label }}</a></nav></header>
     <main class="think-main">
         <section class="think-hero">
             <article class="think-panel"><p class="think-kicker">Theory into practice</p><h1 class="think-title">VERTEX teaches founders to read the whole system.</h1><p class="think-copy">The method combines Design Thinking, Systems Thinking, QBI, behavioral decision science and financial intelligence into one practical path: open the idea, map the system, read behavior, read the numbers and make a traceable decision.</p></article>

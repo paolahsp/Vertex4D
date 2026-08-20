@@ -532,3 +532,24 @@ header, .head, .sgp-header, .fd-header, .gp-header, .think-header, .aa-header {
 @media (max-width: 520px) {
     .v4-tally.v4-tally, .v4-stations { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* ── Iconografía propia ──────────────────────────────────────
+   Sprite inline, trazo de 1.75 sobre rejilla de 24, hereda color
+   del texto. Se dimensiona en em para acompañar a la tipografía. */
+.ic {
+    display: inline-block;
+    flex: none;
+    height: 1.15em;
+    vertical-align: -0.17em;
+    width: 1.15em;
+}
+.ic-lg { height: 1.5em; width: 1.5em; }
+.ic-xl { height: 2em; width: 2em; }
+.v4-brand .ic, .v4-tile .ic { color: #fff; height: 17px; width: 17px; vertical-align: 0; }
+/* El riel pasa de siglas de dos letras a iconos de etapa. */
+.side .nav .ic, .side .mark .ic { height: 21px; width: 21px; vertical-align: 0; }
+.pref-panel button .ic { height: 14px; width: 14px; vertical-align: -0.16em; margin-right: 5px; }
+
+.v4-navlink, .v4-bar nav { align-items: center; display: inline-flex; gap: 8px; }
+.v4-bar nav a { font-size: 12.5px; }
+.v4-runtag { align-items: center; display: inline-flex; gap: 7px; }
