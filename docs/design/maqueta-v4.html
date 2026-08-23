@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="es" data-theme="dark" data-motion="full" data-focus="off">
+<head>
+<meta charset="utf-8">
+<title>VERTEX 4D — v4 atención</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#5b13ec; --lav:#B2A4FF; --coral:#FF6B6B; --mint:#66FFB2;
+  --d:"Bricolage Grotesque",Georgia,serif;
+  --u:"Manrope","Helvetica Neue",Arial,sans-serif;
+  --m:"JetBrains Mono",ui-monospace,monospace;
+  --dur:.34s; --ease:cubic-bezier(.22,.61,.36,1);
+}
+[data-theme="dark"]{
+  --bg:#161022; --bg2:#0f0a1a;
+  --glass:rgba(178,164,255,.07); --glass2:rgba(178,164,255,.11);
+  --edge:rgba(178,164,255,.20); --edge2:rgba(178,164,255,.32);
+  --fg:#E4DFF2; --fg2:#A79CC4; --fg3:#8A80A6;
+  --act:#B2A4FF; --actfill:#5b13ec; --acttext:#fff;
+  --track:rgba(178,164,255,.14); --ok:var(--mint);
+}
+[data-theme="light"]{
+  --bg:#f6f6f8; --bg2:#ececf1;
+  --glass:rgba(255,255,255,.72); --glass2:rgba(255,255,255,.92);
+  --edge:rgba(26,26,26,.10); --edge2:rgba(91,19,236,.28);
+  --fg:#1A1A1A; --fg2:#55505f; --fg3:#6B6B73;
+  --act:#5b13ec; --actfill:#5b13ec; --acttext:#fff;
+  --track:rgba(26,26,26,.09); --ok:#0a7346;
+}
+
+/* ── MOTION POLICY ─────────────────────────────────────────────
+   full     one-shot transitions on state change. no loops.
+   reduced  colour/opacity only. nothing travels across the screen.
+   none     instant. every cue stays, carried by colour and text.
+   The OS setting wins on first load; the in-page control can override,
+   because most people never find the OS setting.                */
+[data-motion="reduced"] *{transition-duration:.14s !important;
+  animation-duration:.14s !important;transform:none !important}
+[data-motion="none"] *{transition:none !important;animation:none !important;
+  transform:none !important}
+@media (prefers-reduced-motion:reduce){
+  :root:not([data-motion="full"]) *{transition:none !important;animation:none !important}
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg2);font-family:var(--u);color:var(--fg);-webkit-font-smoothing:antialiased}
+.sheet{width:880px;margin:0 auto;background:var(--bg);position:relative;overflow:hidden;
+  transition:background var(--dur) var(--ease)}
+.sheet::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.30;
+  background:repeating-linear-gradient(to right,var(--edge) 0 1px,transparent 1px 88px),
+             repeating-linear-gradient(to bottom,var(--edge) 0 1px,transparent 1px 88px)}
+.sheet>*{position:relative;z-index:1}
+
+/* ── FOCUS MODE ───────────────────────────────────────────────
+   The strongest attention aid here is not motion: it is removing
+   competition. Everything that is not the current task recedes but
+   stays legible enough to keep context — it is not hidden, so nobody
+   loses their place.                                            */
+.dim{transition:opacity var(--dur) var(--ease),filter var(--dur) var(--ease)}
+[data-focus="on"] .dim{opacity:.34;filter:saturate(.45)}
+[data-focus="on"] .dim:hover{opacity:.72}
+[data-focus="on"] .focusable{outline:2px solid var(--act);outline-offset:8px;border-radius:18px}
+
+/* bar */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:12px 24px;border-bottom:1px solid var(--edge);flex-wrap:wrap}
+.brandbit{display:flex;align-items:center;gap:10px}
+.tile{width:28px;height:28px;border-radius:9px;background:var(--actfill);color:#fff;
+  display:grid;place-items:center;font-family:var(--m);font-size:11px;font-weight:700}
+.brandbit b{font-family:var(--d);font-size:14px;font-weight:800;letter-spacing:-.2px}
+.brandbit i{display:block;font-family:var(--m);font-size:9px;font-style:normal;
+  color:var(--fg3);margin-top:1px}
+.ctrls{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.seg{display:flex;border:1px solid var(--edge);border-radius:9px;overflow:hidden;background:var(--glass)}
+.seg button{border:0;cursor:pointer;background:transparent;color:var(--fg3);font-family:var(--m);
+  font-size:10px;padding:7px 10px;transition:background var(--dur) var(--ease),color var(--dur) var(--ease)}
+.seg button[aria-pressed="true"]{background:var(--actfill);color:#fff}
+.seg .lg{font-family:var(--u);font-size:9.5px;color:var(--fg3);padding:7px 9px 7px 11px;
+  align-self:center;pointer-events:none}
+
+/* head */
+.head{padding:30px 24px 26px;display:grid;grid-template-columns:1fr 218px;gap:30px;
+  align-items:end;border-bottom:1px solid var(--edge)}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--m);font-size:10.5px;
+  color:var(--fg2);margin-bottom:13px}
+.eyebrow s{text-decoration:none;width:18px;height:2px;background:var(--ok);border-radius:2px}
+h1{font-family:var(--d);font-size:43px;line-height:1.04;font-weight:800;letter-spacing:-1.3px;max-width:500px}
+h1 em{font-style:normal;color:var(--act)}
+.lede{margin-top:13px;font-size:14.5px;line-height:1.68;color:var(--fg2);max-width:460px}
+
+/* ── ONE UNMISTAKABLE NEXT ACTION ─────────────────────────────
+   Always the same shape, always the same place. Carries a time
+   estimate, because time blindness is a bigger obstacle than
+   navigation for a lot of people.                              */
+.next{margin-top:20px;display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.b1{font-family:var(--u);font-size:14px;font-weight:700;padding:13px 20px;border-radius:11px;
+  cursor:pointer;border:0;background:var(--actfill);color:var(--acttext);
+  transition:transform var(--dur) var(--ease),box-shadow var(--dur) var(--ease)}
+.b1:hover{transform:translateY(-1px)}
+.b2{font-family:var(--u);font-size:13.5px;font-weight:600;padding:12px 16px;border-radius:11px;
+  cursor:pointer;background:var(--glass);border:1px solid var(--edge);color:var(--fg)}
+.eta{font-family:var(--m);font-size:11px;color:var(--fg2)}
+
+.tally{display:grid;gap:8px}
+.t{background:var(--glass);border:1px solid var(--edge);border-radius:12px;padding:12px 13px;
+  backdrop-filter:blur(14px)}
+.t b{font-family:var(--d);font-size:24px;font-weight:800;letter-spacing:-.9px;display:block;line-height:1}
+.t span{font-size:11px;color:var(--fg2);display:block;margin-top:4px}
+.t.up b{color:var(--ok)}
+
+/* path */
+.path{padding:22px 24px 26px;border-bottom:1px solid var(--edge)}
+.rowcap{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px}
+.rowcap h2{font-family:var(--d);font-size:16px;font-weight:600}
+.rowcap p{font-family:var(--m);font-size:10px;color:var(--fg3)}
+.track{position:relative;height:3px;background:var(--track);border-radius:3px;margin:0 20px}
+.track i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--act);
+  width:70%;transition:width .6s var(--ease)}
+.stations{display:grid;grid-template-columns:repeat(6,1fr);margin-top:-8px}
+.st{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 3px}
+.knob{width:14px;height:14px;border-radius:50%;background:var(--bg);border:2px solid var(--track);
+  margin-bottom:11px;transition:background var(--dur) var(--ease),border-color var(--dur) var(--ease),
+  box-shadow var(--dur) var(--ease)}
+.st.ok .knob{background:var(--ok);border-color:var(--ok)}
+.st.now .knob{background:var(--actfill);border-color:var(--act);
+  box-shadow:0 0 0 5px color-mix(in srgb,var(--act) 24%,transparent)}
+.st h3{font-family:var(--d);font-size:14.5px;font-weight:600}
+.st span{font-family:var(--m);font-size:9.5px;color:var(--fg3);margin-top:4px;display:block}
+.st.now h3{color:var(--act)}
+.st.wait h3,.st.wait span{color:var(--fg3)}
+
+/* ── ARRIVAL CUE: three breaths, then it stops asking ─────────
+   A cue that never stops is a cue you have to keep ignoring.
+   This one draws the eye when you arrive and then leaves you alone. */
+@keyframes breathe{
+  0%,100%{box-shadow:0 0 0 5px color-mix(in srgb,var(--act) 24%,transparent)}
+  50%    {box-shadow:0 0 0 11px color-mix(in srgb,var(--act) 8%,transparent)}
+}
+[data-motion="full"] .st.now .knob{animation:breathe 1.6s var(--ease) 3}
+@keyframes settle{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+[data-motion="full"] .arrive{animation:settle .38s var(--ease) both}
+[data-motion="reduced"] .arrive{animation:settle .18s linear both}
+
+/* body */
+.cols{display:grid;grid-template-columns:1fr 296px;gap:13px;padding:22px 24px 0}
+.panel{background:var(--glass);border:1px solid var(--edge);border-radius:16px;padding:19px;
+  backdrop-filter:blur(18px) saturate(1.1)}
+.plabel{font-family:var(--m);font-size:10px;color:var(--fg3);margin-bottom:13px}
+.ask{font-family:var(--d);font-size:19px;font-weight:600;margin-bottom:14px;line-height:1.26}
+.item{display:grid;grid-template-columns:4px 1fr auto;gap:12px;align-items:center;padding:11px 0;
+  border-top:1px solid var(--edge);transition:opacity var(--dur) var(--ease)}
+.item .sig{width:4px;min-height:28px;height:100%;border-radius:3px}
+.item p{font-size:13.5px;line-height:1.55}
+.chip{font-family:var(--m);font-size:9.5px;padding:5px 9px;border-radius:7px;white-space:nowrap}
+.ev .sig{background:var(--mint)} .hy .sig{background:var(--lav)} .rk .sig{background:var(--coral)}
+[data-theme="dark"] .ev .chip{background:color-mix(in srgb,var(--mint) 22%,transparent);color:var(--mint)}
+[data-theme="dark"] .hy .chip{background:color-mix(in srgb,var(--lav) 22%,transparent);color:var(--lav)}
+[data-theme="dark"] .rk .chip{background:color-mix(in srgb,var(--coral) 22%,transparent);color:var(--coral)}
+[data-theme="light"] .ev .chip{background:#66FFB2;color:#0c3d26}
+[data-theme="light"] .hy .chip{background:#B2A4FF;color:#241a52}
+[data-theme="light"] .rk .chip{background:#FF6B6B;color:#4d1414}
+
+.num{font-family:var(--d);font-size:60px;font-weight:800;letter-spacing:-2.6px;line-height:.9}
+.num u{text-decoration:none;font-size:15px;font-weight:500;color:var(--fg3);letter-spacing:0}
+.shift{display:inline-flex;align-items:center;gap:7px;margin-top:11px;font-size:12.5px;
+  color:var(--fg2);background:var(--glass2);border:1px solid var(--edge);padding:7px 11px;border-radius:9px}
+.shift b{color:var(--fg);font-weight:700}
+.meters{margin-top:18px;display:grid;gap:12px}
+.meter .lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--fg2);margin-bottom:6px}
+.meter .lbl b{color:var(--fg);font-weight:700;font-family:var(--m);font-size:11px}
+.mt{height:7px;border-radius:6px;background:var(--track);overflow:hidden}
+.mt i{display:block;height:100%;border-radius:6px;transition:width .7s var(--ease)}
+
+/* verdict */
+.verdict{margin:13px 24px 24px;border:1px solid var(--edge2);border-radius:16px;background:var(--glass2);
+  backdrop-filter:blur(18px);display:grid;grid-template-columns:196px 1fr;overflow:hidden}
+.vl{padding:19px;background:var(--actfill);color:#fff}
+.vl span{font-family:var(--m);font-size:10px;opacity:.85}
+.vl h2{font-family:var(--d);font-size:28px;font-weight:800;letter-spacing:-.9px;line-height:1.03;margin-top:7px}
+.vr{padding:19px 20px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.vr h4{font-family:var(--m);font-size:10px;margin-bottom:6px}
+.vr p{font-size:12.5px;line-height:1.6;color:var(--fg2)}
+.h-si h4{color:var(--ok)} .h-no h4{color:var(--coral)} .h-md h4{color:var(--act)}
+[data-theme="light"] .h-no h4{color:#b02a2a}
+.foot{grid-column:1/-1;border-top:1px solid var(--edge);padding-top:12px;display:flex;
+  justify-content:space-between;font-family:var(--m);font-size:10px;color:var(--fg3)}
+
+.note{width:880px;margin:0 auto 24px;padding:16px 24px 20px;background:var(--bg2);
+  color:var(--fg2);font-size:12px;line-height:1.85}
+.note b{color:var(--act)}
+.note s{text-decoration:none;color:var(--coral)}
+[data-theme="light"] .note s{color:#b02a2a}
+</style>
+</head>
+<body>
+
+<div class="sheet">
+  <div class="bar">
+    <div class="brandbit"><span class="tile">V4</span><span><b>VERTEX 4D</b><i>SRSLY LABS</i></span></div>
+    <div class="ctrls">
+      <div class="seg"><span class="lg">Tema</span>
+        <button data-k="theme" data-v="dark"  aria-pressed="true">Oscuro</button>
+        <button data-k="theme" data-v="light" aria-pressed="false">Claro</button></div>
+      <div class="seg"><span class="lg">Movimiento</span>
+        <button data-k="motion" data-v="full"    aria-pressed="true">Completo</button>
+        <button data-k="motion" data-v="reduced" aria-pressed="false">Reducido</button>
+        <button data-k="motion" data-v="none"    aria-pressed="false">Ninguno</button></div>
+      <div class="seg">
+        <button data-k="focus" data-v="on" id="focusBtn" aria-pressed="false">Modo enfoque</button></div>
+    </div>
+  </div>
+
+  <div class="head">
+    <div class="focusable">
+      <p class="eyebrow"><s></s>Etapa <span id="stepNo">5</span> de 6 · <span id="stepName">Billie</span></p>
+      <h1>Tu idea ya tiene sistema.<br>Ahora <em>que hable el dinero.</em></h1>
+      <p class="lede">Cinco supuestos aprobados llegaron hasta aquí. Billie no juzga la idea: la mide.</p>
+      <div class="next">
+        <button class="b1" id="advance">Continuar con Billie</button>
+        <button class="b2">Guardar y salir</button>
+        <span class="eta">≈ 8 min · puedes parar y volver</span>
+      </div>
+    </div>
+    <div class="tally dim">
+      <div class="t"><b id="doneCount">5 / 6</b><span>Etapas cerradas</span></div>
+      <div class="t up"><b>+7</b><span>Stakeholders que no habías visto</span></div>
+      <div class="t"><b>12 / 20</b><span>Contrastes de IA usados</span></div>
+    </div>
+  </div>
+
+  <div class="path">
+    <div class="rowcap"><h2>Golden Path</h2><p>problema · sistema · comportamiento · números · decisión</p></div>
+    <div class="track"><i id="fill"></i></div>
+    <div class="stations" id="stations">
+      <div class="st ok"><span class="knob"></span><h3>Alex</h3><span>ProblemFrame</span></div>
+      <div class="st ok"><span class="knob"></span><h3>SynapMap</h3><span>SystemMap</span></div>
+      <div class="st ok"><span class="knob"></span><h3>Aprobación</h3><span>5 supuestos</span></div>
+      <div class="st ok"><span class="knob"></span><h3>D-Predict</h3><span>Hipótesis</span></div>
+      <div class="st now"><span class="knob"></span><h3>Billie</h3><span>aquí estás</span></div>
+      <div class="st wait"><span class="knob"></span><h3>Decisión</h3><span>requiere firma</span></div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="panel dim">
+      <p class="plabel">Registro de supuestos</p>
+      <p class="ask">¿Cuáles estás dispuesta a apostarle recursos?</p>
+      <div class="item ev"><span class="sig"></span><p>Los cafés pagan una cuota por uso, no una suscripción.</p><span class="chip">evidencia</span></div>
+      <div class="item ev"><span class="sig"></span><p>El lavado compartido baja el costo unitario un 40%.</p><span class="chip">evidencia</span></div>
+      <div class="item rk"><span class="sig"></span><p>El cliente devuelve el envase en menos de 48 horas.</p><span class="chip">sin evidencia</span></div>
+      <div class="item hy"><span class="sig"></span><p>Tres de cinco cafés siguen después del piloto.</p><span class="chip">hipótesis</span></div>
+    </div>
+    <div class="panel focusable" id="reading">
+      <p class="plabel">Lectura · precio por uso</p>
+      <p class="num">0.45<u> EUR</u></p>
+      <p class="shift">Tu intuición decía <b>0.20</b></p>
+      <div class="meters">
+        <div class="meter"><div class="lbl"><span>Margen de contribución</span><b>62%</b></div>
+          <div class="mt"><i style="width:62%;background:var(--mint)"></i></div></div>
+        <div class="meter"><div class="lbl"><span>Punto de equilibrio</span><b>mes 14</b></div>
+          <div class="mt"><i style="width:47%;background:var(--lav)"></i></div></div>
+        <div class="meter"><div class="lbl"><span>Colchón de caja</span><b>ajustado</b></div>
+          <div class="mt"><i style="width:26%;background:var(--coral)"></i></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="verdict dim">
+    <div class="vl"><span>Decisión sugerida</span><h2>Piloto acotado</h2></div>
+    <div class="vr">
+      <div class="h-si"><h4>por qué sí</h4><p>El margen aguanta si el lavado se comparte entre los cinco cafés.</p></div>
+      <div class="h-no"><h4>pero</h4><p>La devolución en 48 h no tiene una sola evidencia detrás.</p></div>
+      <div class="h-md"><h4>qué medir</h4><p>Tasa de retorno real, por café y por semana.</p></div>
+      <div class="foot"><span>Cadena completa · 6 artefactos ligados</span><span>Pendiente de firma · facilitador</span></div>
+    </div>
+  </div>
+</div>
+
+<p class="note">
+  <b>Movimiento de una sola vez, nunca en bucle.</b> El punto de la etapa activa “respira” tres veces al llegar y se detiene.
+  Una señal que nunca para es una señal que hay que ignorar todo el rato, y eso cansa más de lo que ayuda.<br>
+  <b>Modo enfoque.</b> Atenúa lo que no es la tarea actual en vez de ocultarlo, para que nadie pierda el hilo de dónde está.
+  Es el apoyo de atención más fuerte de esta pantalla, y no es una animación.<br>
+  <b>Tres niveles de movimiento, y el sistema operativo manda primero.</b> Si <code>prefers-reduced-motion</code> está activo, arranca sin animación;
+  el control de arriba permite cambiarlo, porque casi nadie encuentra ese ajuste del sistema.<br>
+  <b>El movimiento nunca es la única señal.</b> Cada estado se entiende igual con el movimiento apagado: color, posición, peso y la palabra “aquí estás”.<br>
+  <s>Lo que deliberadamente no hay:</s> parallax, autoplay, brillos que laten, contadores que suben solos, transiciones entre pantallas, ni nada que se mueva mientras lees.
+</p>
+
+<script>
+const root = document.documentElement;
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) setKey('motion','none');
+
+function setKey(k, v){
+  root.setAttribute('data-'+k, v);
+  document.querySelectorAll(`[data-k="${k}"]`).forEach(b =>
+    b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+}
+document.querySelectorAll('.seg button[data-k]').forEach(b => {
+  b.addEventListener('click', () => {
+    if (b.dataset.k === 'focus'){
+      const on = root.getAttribute('data-focus') === 'on';
+      root.setAttribute('data-focus', on ? 'off' : 'on');
+      b.setAttribute('aria-pressed', String(!on));
+      b.textContent = on ? 'Modo enfoque' : 'Enfoque activo';
+      return;
+    }
+    setKey(b.dataset.k, b.dataset.v);
+  });
+});
+
+// Advancing a stage: the cue fires once, on arrival, and then rests.
+const names = ['Alex','SynapMap','Aprobación','D-Predict','Billie','Decisión'];
+let cur = 4;
+document.getElementById('advance').addEventListener('click', () => {
+  if (cur >= 5) return;
+  const sts = [...document.querySelectorAll('.st')];
+  sts[cur].className = 'st ok';
+  sts[cur].querySelector('span').textContent = 'cerrado';
+  cur++;
+  sts[cur].className = 'st now arrive';
+  sts[cur].querySelector('span').textContent = 'aquí estás';
+  document.getElementById('fill').style.width = (cur / 5 * 100) + '%';
+  document.getElementById('stepNo').textContent = cur + 1;
+  document.getElementById('stepName').textContent = names[cur];
+  document.getElementById('doneCount').textContent = cur + ' / 6';
+  // restart the three breaths for the new station only
+  const k = sts[cur].querySelector('.knob');
+  k.style.animation = 'none'; void k.offsetWidth; k.style.animation = '';
+});
+</script>
+</body>
+</html>
