@@ -9,6 +9,7 @@ temporal atado a una sesión; están aquí para que sobrevivan.
 | `maqueta-v3.html` | Paso previo, sin la capa de atención. Se conserva porque muestra la decisión de legibilidad para jornada larga. |
 | `prompt-rediseno-v4.md` | Brief que produjo la capa de tokens, tipografía y accesibilidad. |
 | `prompt-fase-B.md` | Brief de reconstrucción de los cuerpos de pantalla, con las trampas de medición documentadas. |
+| `prompt-sistema-visual.md` | **Especificación completa del sistema**: colorimetría con ratios medidos, tipografía, iconografía, movimiento y componentes. Autocontenida. |
 
 ## Lo que la maqueta fija
 
