@@ -227,6 +227,13 @@ def main() -> None:
             ),
             "create cohort",
         )["cohort"]
+        assert client.get("/dashboard/facilitator").status_code == 200, "facilitator dashboard should render"
+        assert client.get(f"/dashboard/facilitator/cohorts/{cohort['cohort_id']}").status_code == 200, "cohort management page should render"
+        member_update = assert_ok(
+            client.post(f"/api/vertex/cohorts/{cohort['cohort_id']}/members", json={"team_id": team_id}),
+            "add team to cohort",
+        )
+        assert any(member["team_id"] == team_id for member in member_update["cohort"]["members"]), member_update
         forbidden_report = client.get(f"/api/vertex/cohorts/{cohort['cohort_id']}/outcome-report")
         assert forbidden_report.status_code == 200, forbidden_report.text
 
@@ -237,6 +244,30 @@ def main() -> None:
         legacy_run = app_main.database.create_run("run_legacy_no_baseline", team_id, "Legacy no baseline")
         legacy_baseline = assert_ok(client.get("/api/vertex/runs/run_legacy_no_baseline/baseline"), "legacy baseline")
         assert legacy_run and legacy_baseline["status"] == "baseline not locked", legacy_baseline
+
+        assignable = assert_ok(
+            client.post(
+                "/api/vertex/runs",
+                json={
+                    "title": "Assignable smoke case",
+                    "initial_problem_statement": "A case starts outside a cohort.",
+                    "current_decision": "test",
+                },
+            ),
+            "create assignable case",
+        )
+        assignable_run_id = assignable["run"]["run_id"]
+        app_main.app.dependency_overrides[app_main.get_current_user] = lambda: facilitator_user
+        assigned = assert_ok(
+            client.post(
+                f"/api/vertex/cohorts/{cohort['cohort_id']}/cases",
+                json={"run_id": assignable_run_id},
+            ),
+            "assign case to cohort",
+        )
+        assert assigned["run"]["cohort_id"] == cohort["cohort_id"], assigned
+        assert client.get(f"/dashboard/facilitator/cohorts/{cohort['cohort_id']}").status_code == 200, "cohort page should render with assigned case"
+        app_main.app.dependency_overrides[app_main.get_current_user] = lambda: founder_user
 
         created = assert_ok(
             client.post(

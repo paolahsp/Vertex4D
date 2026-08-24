@@ -700,6 +700,52 @@ def compose_cohort_outcome_report(cohort_id: str) -> dict:
         "empty_state": "No Decision Cases belong to this cohort yet." if not runs else "",
         "note": "Missing data is marked as missing. This report does not fabricate outcomes or predict startup success.",
     }
+
+
+def compose_cohort_management(cohort_id: str, user: dict) -> dict:
+    require_facilitator_or_admin(user)
+    cohort = database.get_cohort(cohort_id)
+    if not cohort:
+        raise HTTPException(status_code=404, detail="Cohort not found")
+    cases = database.list_runs_for_cohort(cohort_id)
+    run_ids = [case["run_id"] for case in cases]
+    comments_by_case = {run_id: database.list_case_comments(run_id) for run_id in run_ids}
+    scores_by_case = database.list_decision_quality_scores(run_ids)
+    available_runs = database.list_unassigned_runs()
+    teams = database.get_all_teams()
+    managed_cases = []
+    for case in cases:
+        scores = scores_by_case.get(case["run_id"], [])
+        baseline_scores = [score for score in scores if score.get("score_stage") == "baseline"]
+        post_scores = [score for score in scores if score.get("score_stage") == "post"]
+        comments = comments_by_case.get(case["run_id"], [])
+        managed_cases.append({
+            **case,
+            "comments": comments,
+            "open_comments": [comment for comment in comments if comment.get("status") == "open"],
+            "scores": scores,
+            "score_summary": {
+                "baseline_avg": score_average(baseline_scores),
+                "post_avg": score_average(post_scores),
+                "delta": (
+                    round(score_average(post_scores) - score_average(baseline_scores), 2)
+                    if score_average(post_scores) is not None and score_average(baseline_scores) is not None
+                    else None
+                ),
+            },
+        })
+    return {
+        "cohort": cohort,
+        "cases": managed_cases,
+        "available_runs": available_runs,
+        "teams": teams,
+        "totals": {
+            "members": len(cohort.get("members") or []),
+            "cases": len(cases),
+            "available_runs": len(available_runs),
+            "open_comments": sum(len(case["open_comments"]) for case in managed_cases),
+        },
+    }
 def build_vertex_golden_case_view_model():
     artifacts = load_vertex_golden_case()
     project = artifacts["project_record"]
@@ -1115,6 +1161,29 @@ async def add_vertex_cohort_member(cohort_id: str, payload: dict = Body(...), us
     return {"saved": True, "cohort": database.add_cohort_member(cohort_id, team_id)}
 
 
+@app.post("/api/vertex/cohorts/{cohort_id}/cases")
+async def assign_vertex_case_to_cohort(cohort_id: str, payload: dict = Body(...), user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    require_facilitator_or_admin(user)
+    if not database.get_cohort(cohort_id):
+        raise HTTPException(status_code=404, detail="Cohort not found")
+    run_id = str(payload.get("run_id") or "").strip()
+    if not run_id:
+        raise HTTPException(status_code=422, detail="run_id is required")
+    existing_run = database.get_run_any(run_id)
+    if not existing_run:
+        raise HTTPException(status_code=404, detail="Decision Case not found")
+    existing_cohort = str(existing_run.get("cohort_id") or "").strip()
+    if existing_cohort and existing_cohort != cohort_id:
+        raise HTTPException(status_code=409, detail="Decision Case already belongs to another cohort")
+    run = database.assign_run_to_cohort(run_id, cohort_id)
+    if not run:
+        raise HTTPException(status_code=404, detail="Decision Case not found")
+    database.record_event(int(run["team_id"]), "cohort_case_assigned", {"cohort_id": cohort_id, "assigned_by": user.get("member_email")}, run_id)
+    return {"saved": True, "run": run, "cohort": database.get_cohort(cohort_id)}
+
+
 @app.get("/api/vertex/cohorts/{cohort_id}/outcome-report")
 async def vertex_cohort_outcome_report(cohort_id: str, user: dict = Depends(get_current_user)):
     if not user:
@@ -1498,7 +1567,16 @@ async def facilitator_dashboard(request: Request, user: dict = Depends(get_curre
     if not user:
         return RedirectResponse(url="/login", status_code=303)
     metrics = build_facilitator_metrics(user)
-    return templates.TemplateResponse(request, "facilitator.html", {"user": user, "metrics": metrics})
+    cohorts = database.list_cohorts_for_user(get_team_id(user), include_all=get_user_role(user) in {"facilitator", "admin"})
+    return templates.TemplateResponse(request, "facilitator.html", {"user": user, "metrics": metrics, "cohorts": cohorts})
+
+
+@app.get("/dashboard/facilitator/cohorts/{cohort_id}", response_class=HTMLResponse)
+async def facilitator_cohort_management_page(cohort_id: str, request: Request, user: dict = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    management = compose_cohort_management(cohort_id, user)
+    return templates.TemplateResponse(request, "cohort_management.html", {"user": user, "management": management})
 
 
 @app.get("/dashboard/facilitator/cohorts/{cohort_id}/outcome-report", response_class=HTMLResponse)

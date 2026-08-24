@@ -563,6 +563,49 @@ def list_runs_for_cohort(cohort_id: str) -> list[dict]:
     return runs
 
 
+def list_unassigned_runs() -> list[dict]:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT runs.*, teams.team_name
+        FROM runs
+        JOIN teams ON teams.id = runs.team_id
+        WHERE runs.cohort_id IS NULL OR runs.cohort_id = ''
+        ORDER BY runs.created_at DESC
+        """
+    )
+    runs = [dict(row) for row in cursor.fetchall()]
+    conn.close()
+    return runs
+
+
+def assign_run_to_cohort(run_id: str, cohort_id: str) -> dict | None:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT run_id, team_id FROM runs WHERE run_id = ?", (run_id,))
+    run = cursor.fetchone()
+    if not run:
+        conn.close()
+        return None
+    cursor.execute("SELECT cohort_id FROM cohorts WHERE cohort_id = ?", (cohort_id,))
+    if not cursor.fetchone():
+        conn.close()
+        return None
+    team_id = int(run["team_id"])
+    cursor.execute(
+        "UPDATE runs SET cohort_id = ?, mode = 'cohort' WHERE run_id = ?",
+        (cohort_id, run_id),
+    )
+    cursor.execute(
+        "INSERT OR IGNORE INTO cohort_memberships (cohort_id, team_id) VALUES (?, ?)",
+        (cohort_id, team_id),
+    )
+    conn.commit()
+    conn.close()
+    return get_run_any(run_id)
+
+
 def lock_decision_baseline(run_id: str, team_id: int, baseline: dict) -> dict:
     conn = get_db_connection()
     cursor = conn.cursor()
