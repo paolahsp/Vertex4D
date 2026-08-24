@@ -529,6 +529,7 @@ def compose_decision_memo(run_id: str, user: dict) -> dict:
     predictive = artifacts.load_artifact(run_id, "predictive_hypothesis")
     finance = artifacts.load_artifact(run_id, "financial_scenario")
     decision = artifacts.load_artifact(run_id, "decision_record")
+    cohort = database.get_cohort(run.get("cohort_id")) if run.get("cohort_id") else None
 
     final_decision = (decision or {}).get("selected_decision") or {}
     baseline_decision = baseline.get("current_decision") or "not captured"
@@ -551,6 +552,7 @@ def compose_decision_memo(run_id: str, user: dict) -> dict:
         "case_title": run.get("case_title") or run.get("title"),
         "team_name": run.get("team_name") or user.get("team_name"),
         "cohort_id": run.get("cohort_id"),
+        "cohort_name": (cohort or {}).get("cohort_name"),
         "baseline_locked_at": baseline.get("locked_at") or run.get("baseline_locked_at"),
         "baseline_status": "locked" if (baseline.get("locked_at") or run.get("baseline_locked_at")) else "baseline not locked",
         "initial_baseline_decision": baseline_decision,
@@ -573,6 +575,8 @@ def compose_decision_memo(run_id: str, user: dict) -> dict:
             "decision_record": (decision or {}).get("artifact_id"),
         },
         "open_comments": [comment for comment in comments if comment.get("status") == "open"],
+        "resolved_comments": [comment for comment in comments if comment.get("status") == "resolved"],
+        "comment_count": len(comments),
         "note": "This memo documents decision quality and traceability. It does not predict startup success.",
     }
 
@@ -692,6 +696,8 @@ def compose_cohort_outcome_report(cohort_id: str) -> dict:
             ],
         })
     totals["completion_rate"] = round(totals["completed_cases"] / totals["cases"] * 100, 1) if totals["cases"] else 0
+    totals["would_pay_yes_rate"] = round(totals["would_pay_yes"] / totals["feedback_captured"] * 100, 1) if totals["feedback_captured"] else 0
+    totals["would_recommend_yes_rate"] = round(totals["would_recommend_yes"] / totals["feedback_captured"] * 100, 1) if totals["feedback_captured"] else 0
     return {
         "cohort": cohort,
         "totals": totals,
@@ -1077,6 +1083,20 @@ async def decision_memo_page(request: Request, run_id: str = "", user: dict = De
         return RedirectResponse(url="/login", status_code=303)
     memo = compose_decision_memo(run_id, user) if run_id else None
     return templates.TemplateResponse(request, "lab/decision_memo.html", {"user": user, "memo": memo, "run_id": run_id})
+
+
+@app.get("/dashboard/lab/decision-memo/print", response_class=HTMLResponse)
+async def decision_memo_print_page(request: Request, run_id: str = "", user: dict = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    if not run_id:
+        raise HTTPException(status_code=422, detail="run_id is required")
+    memo = compose_decision_memo(run_id, user)
+    return templates.TemplateResponse(
+        request,
+        "lab/decision_memo_print.html",
+        {"user": user, "memo": memo, "run_id": run_id, "generated_at": utc_now_iso()},
+    )
 
 @app.get("/dashboard/lab/golden-path", response_class=HTMLResponse)
 async def vertex_golden_path(request: Request):
@@ -1615,6 +1635,20 @@ async def facilitator_cohort_outcome_report_page(cohort_id: str, request: Reques
         raise HTTPException(status_code=403, detail="Facilitator or admin role required")
     report = compose_cohort_outcome_report(cohort_id)
     return templates.TemplateResponse(request, "cohort_outcome_report.html", {"user": user, "report": report})
+
+
+@app.get("/dashboard/facilitator/cohorts/{cohort_id}/outcome-report/print", response_class=HTMLResponse)
+async def facilitator_cohort_outcome_report_print_page(cohort_id: str, request: Request, user: dict = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    if get_user_role(user) not in {"facilitator", "admin"}:
+        raise HTTPException(status_code=403, detail="Facilitator or admin role required")
+    report = compose_cohort_outcome_report(cohort_id)
+    return templates.TemplateResponse(
+        request,
+        "cohort_outcome_report_print.html",
+        {"user": user, "report": report, "generated_at": utc_now_iso()},
+    )
 
 
 @app.get("/api/vertex/facilitator/metrics")

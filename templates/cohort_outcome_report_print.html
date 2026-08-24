@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Cohort Outcome Report | VERTEX 4D</title>
+    <style>
+        :root { color: #18181b; background: #fff; font-family: Arial, Helvetica, sans-serif; }
+        body { background: #fff; color: #18181b; margin: 0; }
+        .page { margin: 0 auto; max-width: 1120px; padding: 28px; }
+        .topbar { align-items: center; border-bottom: 2px solid #18181b; display: flex; gap: 16px; justify-content: space-between; padding-bottom: 14px; }
+        .brand { font-size: 13px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+        .actions { display: flex; gap: 8px; }
+        button, .link { background: #18181b; border: 0; border-radius: 6px; color: #fff; cursor: pointer; font: 700 13px/1 Arial, sans-serif; padding: 10px 12px; text-decoration: none; }
+        h1 { font-size: 32px; line-height: 1.05; margin: 22px 0 8px; }
+        h2 { border-bottom: 1px solid #d4d4d8; font-size: 17px; margin: 28px 0 10px; padding-bottom: 6px; }
+        p, li, td, th { font-size: 12px; line-height: 1.45; }
+        .meta, .stats { display: grid; gap: 10px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+        .box { border: 1px solid #d4d4d8; border-radius: 8px; padding: 10px; }
+        .box b { display: block; font-size: 11px; letter-spacing: .03em; margin-bottom: 4px; text-transform: uppercase; }
+        .box strong { display: block; font-size: 22px; line-height: 1.1; }
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #d4d4d8; padding: 7px; text-align: left; vertical-align: top; }
+        th { background: #f4f4f5; font-size: 10.5px; text-transform: uppercase; }
+        .small { color: #52525b; font-size: 11.5px; }
+        .section { page-break-inside: avoid; }
+        .wide-section { page-break-before: auto; }
+        .disclaimer { border: 1px solid #71717a; margin-top: 24px; padding: 10px; }
+        .missing { color: #7f1d1d; font-weight: 700; }
+        @media print {
+            @page { margin: 12mm; size: landscape; }
+            .no-print { display: none !important; }
+            .page { max-width: none; padding: 0; }
+            body { color: #000; }
+            a { color: #000; text-decoration: none; }
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+        }
+    </style>
+</head>
+<body>
+<main class="page">
+    <header class="topbar">
+        <div>
+            <div class="brand">VERTEX 4D Cohort Outcome Report</div>
+            <div class="small">Generated {{ generated_at }}</div>
+        </div>
+        <div class="actions no-print">
+            <button type="button" onclick="window.print()">Print / Save PDF</button>
+            <a class="link" href="/dashboard/facilitator/cohorts/{{ report.cohort.cohort_id }}/outcome-report">Back</a>
+        </div>
+    </header>
+
+    <h1>{{ report.cohort.cohort_name }}</h1>
+    <section class="meta">
+        <div class="box"><b>Cohort ID</b>{{ report.cohort.cohort_id }}</div>
+        <div class="box"><b>Institution</b>{{ report.cohort.institution_name }}</div>
+        <div class="box"><b>Status</b>{{ report.cohort.status }}</div>
+        <div class="box"><b>Dates</b>{{ report.cohort.start_date or 'missing' }} to {{ report.cohort.end_date or 'missing' }}</div>
+    </section>
+
+    <section class="stats section">
+        <div class="box"><b>Total cases</b><strong>{{ report.totals.cases }}</strong></div>
+        <div class="box"><b>Completion rate</b><strong>{{ report.totals.completion_rate }}%</strong></div>
+        <div class="box"><b>Locked baselines</b><strong>{{ report.totals.locked_baselines }}</strong></div>
+        <div class="box"><b>DecisionRecords</b><strong>{{ report.totals.decision_records }}</strong></div>
+        <div class="box"><b>Stakeholder delta</b><strong>+{{ report.totals.stakeholder_delta }}</strong></div>
+        <div class="box"><b>Price changes</b><strong>{{ report.totals.price_changes }}</strong></div>
+        <div class="box"><b>Decision changes</b><strong>{{ report.totals.decision_changes }}</strong></div>
+        <div class="box"><b>Need intervention</b><strong>{{ report.totals.cases_needing_intervention }}</strong></div>
+    </section>
+
+    <section class="stats section">
+        <div class="box"><b>Rubric baseline avg</b>{{ report.quality_scores.avg_baseline_score or 'missing' }}</div>
+        <div class="box"><b>Rubric post avg</b>{{ report.quality_scores.avg_post_score or 'missing' }}</div>
+        <div class="box"><b>Rubric delta</b>{{ report.quality_scores.avg_delta if report.quality_scores.avg_delta is not none else 'missing' }}</div>
+        <div class="box"><b>AI usage</b>{{ report.totals.ai_calls }} calls / {{ report.totals.ai_tokens }} tokens</div>
+        <div class="box"><b>Feedback captured</b>{{ report.totals.feedback_captured }}</div>
+        <div class="box"><b>Would pay yes</b>{{ report.totals.would_pay_yes }} / {{ report.totals.would_pay_yes_rate }}%</div>
+        <div class="box"><b>Would recommend yes</b>{{ report.totals.would_recommend_yes }} / {{ report.totals.would_recommend_yes_rate }}%</div>
+        <div class="box"><b>Report note</b>{{ report.note }}</div>
+    </section>
+
+    {% if report.empty_state %}
+    <section class="box section">{{ report.empty_state }}</section>
+    {% else %}
+    <section class="wide-section">
+        <h2>Case Outcomes</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Case</th>
+                    <th>Progress</th>
+                    <th>Deltas</th>
+                    <th>Founder feedback</th>
+                    <th>Rubric</th>
+                    <th>Intervention / missing data</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for case in report.cases %}
+                <tr>
+                    <td><b>{{ case.case_title }}</b><br>{{ case.team_name }}<br>{{ case.run_id }}</td>
+                    <td>
+                        Stage: {{ case.stage }}<br>
+                        Baseline: {% if case.baseline_locked %}locked{% else %}<span class="missing">missing</span>{% endif %}<br>
+                        DecisionRecord: {% if case.completed %}saved{% else %}<span class="missing">missing</span>{% endif %}
+                    </td>
+                    <td>
+                        Stakeholders +{{ case.stakeholder_delta }}<br>
+                        Price changed: {{ case.price_changed if case.price_changed is not none else 'missing' }}<br>
+                        Decision changed: {{ case.decision_changed if case.decision_changed is not none else 'missing' }}
+                    </td>
+                    <td>
+                        Pay: {{ case.would_pay }}<br>
+                        Recommend: {{ case.would_recommend }}<br>
+                        AI: {{ case.ai_calls }} calls
+                    </td>
+                    <td>
+                        Before: {{ case.quality_scores.baseline_avg or 'missing' }}<br>
+                        After: {{ case.quality_scores.post_avg or 'missing' }}<br>
+                        Delta: {{ case.quality_scores.delta if case.quality_scores.delta is not none else 'missing' }}
+                    </td>
+                    <td>
+                        {% if case.needs_intervention %}<span class="missing">review needed</span>{% else %}clear{% endif %}<br>
+                        Open comments: {{ case.open_comments }}<br>
+                        Missing: {% if case.missing %}{{ case.missing | join(', ') }}{% else %}none{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+    {% endif %}
+
+    <section class="disclaimer">
+        <b>Methodology and disclaimer.</b>
+        This report summarizes VERTEX Decision Cases attached to the cohort. Metrics come from locked baseline snapshots, saved artifacts, facilitator comments, decision quality scores, pilot feedback events, and AI usage logs where present. Missing data is marked as missing and is not inferred. VERTEX does not predict startup success. This report is not a validation guarantee, investment recommendation, or substitute for buyer due diligence.
+    </section>
+</main>
+</body>
+</html>

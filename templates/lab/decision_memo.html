@@ -27,7 +27,7 @@
 <header class="v4-bar">
     <a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Srsly Labs</i></span></a>
     <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-decision"/></svg> Decision Memo</span>
-    <nav><a class="v4-navlink" href="/dashboard/lab/decision-record{% if run_id %}?run_id={{ run_id }}{% endif %}">DecisionRecord</a><a class="v4-navlink" href="/dashboard/facilitator">Facilitator</a></nav>
+    <nav>{% if run_id %}<a class="v4-navlink" href="/dashboard/lab/decision-memo/print?run_id={{ run_id }}">Print</a>{% endif %}<a class="v4-navlink" href="/dashboard/lab/decision-record{% if run_id %}?run_id={{ run_id }}{% endif %}">DecisionRecord</a><a class="v4-navlink" href="/dashboard/facilitator">Facilitator</a></nav>
 </header>
 <main class="memo-main">
     {% if not memo %}
