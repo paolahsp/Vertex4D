@@ -339,6 +339,12 @@ def main() -> None:
             "facilitator comment",
         )["comment"]
         assert comment["status"] == "open", comment
+        resolved_comment = assert_ok(
+            client.post(f"/api/vertex/runs/{run_id}/comments/{comment['id']}/resolve"),
+            "resolve facilitator comment",
+        )["comment"]
+        assert resolved_comment["status"] == "resolved" and resolved_comment["resolved_at"], resolved_comment
+        assert client.get(f"/dashboard/facilitator/cohorts/{cohort['cohort_id']}").status_code == 200, "cohort page should render resolved comments"
         for score_stage, base in [("baseline", 3), ("post", 4)]:
             score = assert_ok(
                 client.post(
@@ -365,6 +371,8 @@ def main() -> None:
         assert memo["artifact_ids"]["decision_record"] == loaded["artifact_id"], memo
         report = assert_ok(client.get(f"/api/vertex/cohorts/{cohort['cohort_id']}/outcome-report"), "cohort outcome report")
         assert report["totals"]["cases"] >= 1 and report["quality_scores"]["avg_delta"] == 1.0, report
+        reported_case = next(item for item in report["cases"] if item["run_id"] == run_id)
+        assert reported_case["open_comments"] == 0, reported_case
 
         # Pilot validation metrics 4 and 5. "Would you pay" is the founder's
         # answer even though the facilitator signs the record, so the respondent
@@ -378,6 +386,7 @@ def main() -> None:
         app_main.app.dependency_overrides[app_main.get_current_user] = lambda: founder_user
         comments = assert_ok(client.get(f"/api/vertex/runs/{run_id}/comments"), "founder reads comments")
         assert comments["comments"][0]["comment_text"].startswith("Check the blocker"), comments
+        assert comments["comments"][0]["status"] == "resolved", comments
         feedback = assert_ok(
             client.post(
                 f"/api/vertex/runs/{run_id}/pilot-feedback",

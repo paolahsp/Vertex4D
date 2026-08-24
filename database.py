@@ -773,6 +773,28 @@ def list_case_comments(run_id: str) -> list[dict]:
     return comments
 
 
+def resolve_case_comment(run_id: str, comment_id: int) -> dict | None:
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    resolved_at = datetime.utcnow().replace(microsecond=0).isoformat() + "Z"
+    cursor.execute(
+        """
+        UPDATE case_comments
+        SET status = 'resolved', resolved_at = ?
+        WHERE id = ? AND run_id = ? AND status = 'open'
+        """,
+        (resolved_at, comment_id, run_id),
+    )
+    if cursor.rowcount == 0:
+        conn.close()
+        return None
+    conn.commit()
+    cursor.execute("SELECT * FROM case_comments WHERE id = ? AND run_id = ?", (comment_id, run_id))
+    comment = dict(cursor.fetchone())
+    conn.close()
+    return comment
+
+
 def open_comment_counts(run_ids: list[str]) -> dict[str, int]:
     if not run_ids:
         return {}

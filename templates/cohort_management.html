@@ -31,6 +31,8 @@
         .cm-case h2, .cm-panel h2 { font: 700 clamp(20px,2.4vw,28px)/1.08 var(--font-display); margin: 6px 0 10px; }
         .cm-comments { display: grid; gap: 8px; }
         .cm-comment { border-left: 4px solid var(--coral); color: var(--fg2); font-size: 13px; line-height: 1.5; padding-left: 10px; }
+        .cm-comment.is-resolved { border-left-color: var(--mint); }
+        .cm-intervention { border-left: 4px solid var(--coral); display: grid; gap: 8px; padding-left: 12px; }
         .cm-score-table { border-collapse: collapse; width: 100%; }
         .cm-score-table th, .cm-score-table td { border-bottom: 1px solid var(--edge); color: var(--fg2); font-size: 12.5px; padding: 8px; text-align: left; }
         .cm-score-table th { color: var(--risk-text); font: 700 10.5px/1.2 var(--font-mono); }
@@ -57,6 +59,7 @@
             <div class="v4-t"><b>{{ management.totals.members }}</b><span>Teams</span></div>
             <div class="v4-t up"><b>{{ management.totals.cases }}</b><span>Decision Cases</span></div>
             <div class="v4-t"><b>{{ management.totals.open_comments }}</b><span>Open comments</span></div>
+            <div class="v4-t"><b>{{ management.totals.needs_intervention }}</b><span>Need intervention</span></div>
         </aside>
     </section>
     <section class="cm-grid">
@@ -98,6 +101,27 @@
             </form>
         </article>
     </section>
+    <section class="cm-panel">
+        <p class="v4-plabel">Intervention queue</p>
+        <div class="cm-stack">
+            {% for case in management.cases if case.needs_intervention %}
+            <div class="cm-intervention">
+                <div>
+                    <strong>{{ case.case_title or case.title }}</strong>
+                    <p class="cm-muted">{{ case.team_name }} / {{ case.run_id }}</p>
+                </div>
+                <div>
+                    {% for reason in case.intervention_reasons %}
+                    <span class="cm-chip warn">{{ reason }}</span>
+                    {% endfor %}
+                    <a class="cm-chip" href="#case-{{ case.run_id }}">Open case</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="v4-empty">No cases currently need facilitator intervention.</div>
+            {% endfor %}
+        </div>
+    </section>
     <section class="cm-stack">
         {% for case in management.cases %}
         <article class="cm-case" id="case-{{ case.run_id }}">
@@ -108,6 +132,7 @@
                     <span class="cm-chip">{{ case.stage }}</span>
                     <span class="cm-chip {% if case.baseline_locked_at %}ok{% else %}warn{% endif %}">{% if case.baseline_locked_at %}snapshot locked{% else %}baseline not locked{% endif %}</span>
                     <span class="cm-chip">{{ case.open_comments | length }} open comments</span>
+                    {% if case.needs_intervention %}<span class="cm-chip warn">needs intervention</span>{% else %}<span class="cm-chip ok">clear</span>{% endif %}
                 </div>
                 <div>
                     <a class="cm-chip" href="/dashboard/lab/decision-memo?run_id={{ case.run_id }}">Decision Memo</a>
@@ -119,11 +144,26 @@
                     <p class="v4-plabel">Open comments</p>
                     <div class="cm-comments">
                         {% for comment in case.open_comments %}
-                        <div class="cm-comment">{{ comment.comment_text }}<br><span class="cm-chip">{{ comment.artifact_type or 'general' }}</span><span class="cm-chip">{{ comment.author_email or comment.author_role }}</span></div>
+                        <div class="cm-comment">
+                            {{ comment.comment_text }}<br>
+                            <span class="cm-chip">{{ comment.artifact_type or 'general' }}</span><span class="cm-chip">{{ comment.author_email or comment.author_role }}</span>
+                            <form class="js-json-form" data-endpoint="/api/vertex/runs/{{ case.run_id }}/comments/{{ comment.id }}/resolve" style="display:inline">
+                                <button class="cm-chip" type="submit">Resolve</button>
+                                <span class="cm-status"></span>
+                            </form>
+                        </div>
                         {% else %}
                         <div class="v4-empty">No open comments for this case.</div>
                         {% endfor %}
                     </div>
+                    {% if case.resolved_comments %}
+                    <p class="v4-plabel" style="margin-top:14px">Resolved comments</p>
+                    <div class="cm-comments">
+                        {% for comment in case.resolved_comments[:3] %}
+                        <div class="cm-comment is-resolved">{{ comment.comment_text }}<br><span class="cm-chip ok">resolved</span><span class="cm-chip">{{ comment.resolved_at }}</span></div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                     <form class="cm-form js-json-form" data-endpoint="/api/vertex/runs/{{ case.run_id }}/comments">
                         <div class="cm-row">
                             <div class="cm-field"><label>Attach to</label><select name="artifact_type"><option value="">General</option><option value="project_record">ProjectRecord</option><option value="problem_frame">ProblemFrame</option><option value="system_map">SystemMap</option><option value="predictive_hypothesis">PredictiveHypothesis</option><option value="financial_scenario">FinancialScenario</option><option value="decision_record">DecisionRecord</option></select></div>

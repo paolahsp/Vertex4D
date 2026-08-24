@@ -719,10 +719,24 @@ def compose_cohort_management(cohort_id: str, user: dict) -> dict:
         baseline_scores = [score for score in scores if score.get("score_stage") == "baseline"]
         post_scores = [score for score in scores if score.get("score_stage") == "post"]
         comments = comments_by_case.get(case["run_id"], [])
+        open_comments = [comment for comment in comments if comment.get("status") == "open"]
+        decision = artifacts.load_artifact(case["run_id"], "decision_record")
+        intervention_reasons = [
+            label for label, active in [
+                ("baseline not locked", not case.get("baseline_locked_at")),
+                ("DecisionRecord missing", decision is None),
+                ("open facilitator comments", bool(open_comments)),
+                ("baseline score missing", not baseline_scores),
+                ("post score missing", not post_scores),
+            ] if active
+        ]
         managed_cases.append({
             **case,
             "comments": comments,
-            "open_comments": [comment for comment in comments if comment.get("status") == "open"],
+            "open_comments": open_comments,
+            "resolved_comments": [comment for comment in comments if comment.get("status") == "resolved"],
+            "needs_intervention": bool(intervention_reasons),
+            "intervention_reasons": intervention_reasons,
             "scores": scores,
             "score_summary": {
                 "baseline_avg": score_average(baseline_scores),
@@ -744,6 +758,7 @@ def compose_cohort_management(cohort_id: str, user: dict) -> dict:
             "cases": len(cases),
             "available_runs": len(available_runs),
             "open_comments": sum(len(case["open_comments"]) for case in managed_cases),
+            "needs_intervention": sum(1 for case in managed_cases if case["needs_intervention"]),
         },
     }
 def build_vertex_golden_case_view_model():
@@ -1263,6 +1278,19 @@ async def add_vertex_case_comment(run_id: str, payload: dict = Body(...), user: 
         artifacts.safe_artifact_type(artifact_type)
     comment = database.add_case_comment(run_id, int(run["team_id"]), user.get("member_email"), get_user_role(user), artifact_type, comment_text[:4000])
     database.record_event(int(run["team_id"]), "facilitator_comment_added", {"comment_id": comment["id"], "artifact_type": artifact_type, "author_email": user.get("member_email")}, run_id)
+    return {"saved": True, "comment": comment}
+
+
+@app.post("/api/vertex/runs/{run_id}/comments/{comment_id}/resolve")
+async def resolve_vertex_case_comment(run_id: str, comment_id: int, user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    require_facilitator_or_admin(user)
+    run = get_visible_run_or_404(run_id, user)
+    comment = database.resolve_case_comment(run_id, comment_id)
+    if not comment:
+        raise HTTPException(status_code=404, detail="Open comment not found")
+    database.record_event(int(run["team_id"]), "facilitator_review_resolved", {"comment_id": comment_id, "resolved_by": user.get("member_email")}, run_id)
     return {"saved": True, "comment": comment}
 
 
