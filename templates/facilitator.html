@@ -51,8 +51,10 @@
             </article>
             <div class="fd-stat"><strong>{{ metrics.totals.runs }}</strong><span>Runs</span></div>
             <div class="fd-stat"><strong>{{ metrics.totals.complete }}</strong><span>DecisionRecords</span></div>
+            <div class="fd-stat"><strong>{{ metrics.totals.locked_baselines }}</strong><span>Locked baselines</span></div>
             <div class="fd-stat"><strong>{{ metrics.totals.stakeholder_delta }}</strong><span>New stakeholders</span></div>
             <div class="fd-stat"><strong>{{ metrics.totals.ai_calls }}</strong><span>LLM calls</span></div>
+            <div class="fd-stat"><strong>{{ metrics.totals.open_comments }}</strong><span>Open comments</span></div>
             <div class="fd-stat"><strong>{{ metrics.totals.would_pay_rate }}%</strong><span>Would pay ({{ metrics.totals.feedback_captured }} answered)</span></div>
             <div class="fd-stat"><strong>{{ metrics.totals.would_recommend_rate }}%</strong><span>Would recommend</span></div>
         </section>
@@ -61,29 +63,33 @@
                 <thead>
                     <tr>
                         <th>Run</th>
+                        <th>Cohort</th>
                         <th>Stage</th>
                         <th>Problem delta</th>
                         <th>Stakeholder delta</th>
                         <th>Price delta</th>
                         <th>Decision</th>
                         <th>Pilot feedback</th>
+                        <th>Review</th>
                         <th>AI</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for run in metrics.runs %}
                     <tr>
-                        <td><span class="fd-cell-title">{{ run.title }}</span><span class="fd-muted">{{ run.team_name }} / {{ run.run_id }}</span></td>
-                        <td><span class="fd-pill">{{ run.stage }}</span><span class="fd-pill {% if run.baseline_captured %}ok{% else %}warn{% endif %}">{% if run.baseline_captured %}baseline{% else %}no baseline{% endif %}</span><div class="fd-muted">{{ run.artifacts_saved }} artifacts</div></td>
+                        <td><span class="fd-cell-title">{{ run.title }}</span><span class="fd-muted">{{ run.team_name }} / {{ run.run_id }}</span><div><a class="fd-pill" href="/dashboard/lab/decision-memo?run_id={{ run.run_id }}">Decision Memo</a></div></td>
+                        <td>{% if run.cohort_id %}<span class="fd-cell-title">{{ run.cohort_name or run.cohort_id }}</span><a class="fd-pill" href="/dashboard/facilitator/cohorts/{{ run.cohort_id }}/outcome-report">Outcome report</a>{% else %}<span class="fd-pill">solo</span>{% endif %}</td>
+                        <td><span class="fd-pill">{{ run.stage }}</span><span class="fd-pill {% if run.baseline_locked %}ok{% else %}warn{% endif %}">{% if run.baseline_locked %}snapshot locked{% else %}baseline not locked{% endif %}</span><div class="fd-muted">{{ run.artifacts_saved }} artifacts</div></td>
                         <td><span class="fd-pill {% if run.problem_changed %}ok{% else %}warn{% endif %}">{% if run.problem_changed %}changed{% else %}pending{% endif %}</span><div class="fd-muted">Before: {{ run.initial_problem or 'not captured' }}</div><div class="fd-muted">After: {{ run.final_problem or 'not saved yet' }}</div></td>
                         <td><span class="fd-cell-title">{{ run.initial_stakeholder_count }} -> {{ run.mapped_stakeholder_count }}</span><span class="fd-pill {% if run.stakeholder_delta > 0 %}ok{% else %}warn{% endif %}">+{{ run.stakeholder_delta }}</span><div class="fd-muted">{% if run.new_stakeholders %}{{ run.new_stakeholders | join(', ') }}{% else %}none yet{% endif %}</div></td>
                         <td><span class="fd-cell-title">{{ run.intuition_price or 'n/a' }} {{ run.price_currency }} -> {{ run.billie_price or 'n/a' }} {{ run.price_currency }}</span><span class="fd-pill {% if run.price_changed %}ok{% else %}warn{% endif %}">{% if run.price_changed %}changed{% else %}pending{% endif %}</span></td>
                         <td>{{ run.decision or 'not closed yet' }}</td>
                         <td>{% if run.feedback_captured %}<span class="fd-cell-title">Pay: {{ run.would_pay }} / Rec: {{ run.would_recommend }}</span><span class="fd-muted">answered by {{ run.feedback_role }}</span>{% if run.feedback_note %}<div class="fd-muted">{{ run.feedback_note }}</div>{% endif %}{% else %}<span class="fd-pill warn">not answered</span>{% endif %}</td>
+                        <td><span class="fd-cell-title">{{ run.open_comments }} open comments</span><span class="fd-muted">Baseline score: {{ run.baseline_score or 'missing' }}</span><div class="fd-muted">Post score: {{ run.post_score or 'missing' }}</div></td>
                         <td><span class="fd-cell-title">{{ run.ai_calls }} calls</span><span class="fd-muted">{{ run.ai_tokens }} tokens</span></td>
                     </tr>
                     {% else %}
-                    <tr><td colspan="8">No runs yet.</td></tr>
+                    <tr><td colspan="10">No runs yet.</td></tr>
                     {% endfor %}
                 </tbody>
             </table>

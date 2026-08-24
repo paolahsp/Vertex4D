@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision Memo | VERTEX 4D</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
+    <style>
+        body { margin: 0; min-height: 100vh; color: var(--fg); }
+        .memo-main { display: grid; gap: 20px; margin: 0 auto; max-width: 1180px; padding: clamp(22px, 2.8vw, 30px); }
+        .memo-grid { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr) minmax(280px, .42fr); }
+        .memo-panel { background: var(--glass); border: 1px solid var(--edge); border-radius: 16px; box-shadow: var(--shadow); padding: 20px; }
+        .memo-panel strong { color: var(--fg); display: block; font: 700 14px/1.3 var(--font-display); margin-bottom: 6px; }
+        .memo-panel p, .memo-panel li { color: var(--fg2); font-size: 13.5px; line-height: 1.6; }
+        .memo-list { display: grid; gap: 10px; margin: 0; padding: 0; }
+        .memo-list li { border-left: 4px solid var(--mint); list-style: none; padding-left: 10px; }
+        .memo-list.risk li { border-left-color: var(--coral); }
+        .memo-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .memo-chip { background: var(--glass2); border: 1px solid var(--edge); border-radius: 8px; color: var(--act); font: 600 10.5px/1.2 var(--font-mono); padding: 6px 8px; }
+        @media (max-width: 900px) { .memo-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body class="srsly-module app-shell glass-workbench">
+{% include "_icon_sprite.html" %}
+<header class="v4-bar">
+    <a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Srsly Labs</i></span></a>
+    <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-decision"/></svg> Decision Memo</span>
+    <nav><a class="v4-navlink" href="/dashboard/lab/decision-record{% if run_id %}?run_id={{ run_id }}{% endif %}">DecisionRecord</a><a class="v4-navlink" href="/dashboard/facilitator">Facilitator</a></nav>
+</header>
+<main class="memo-main">
+    {% if not memo %}
+    <section class="v4-head">
+        <div><p class="v4-eyebrow"><s></s>Decision Memo</p><h1 class="v4-h1">Choose a Decision Case.<br><em>The memo needs a run_id.</em></h1><p class="v4-lede">Open this page from a Decision Case or add <code>?run_id=...</code>.</p></div>
+    </section>
+    {% else %}
+    <section class="v4-head">
+        <div>
+            <p class="v4-eyebrow"><s></s>{{ memo.baseline_status }} &middot; {{ memo.run_id }}</p>
+            <h1 class="v4-h1">{{ memo.case_title }}<br><em>Decision Memo</em></h1>
+            <p class="v4-lede">{{ memo.note }}</p>
+        </div>
+        <aside class="v4-tally">
+            <div class="v4-t"><b>{{ memo.initial_baseline_decision }}</b><span>Initial decision</span></div>
+            <div class="v4-t up"><b>{{ memo.facilitator_approval_state }}</b><span>Approval</span></div>
+            <div class="v4-t"><b>{{ memo.open_comments | length }}</b><span>Open comments</span></div>
+        </aside>
+    </section>
+    <section class="v4-verdict">
+        <div class="v4-vl"><span>Final decision</span><h2>{{ memo.final_decision }}</h2></div>
+        <div class="v4-vr">
+            <div class="v4-yes"><h4>problem</h4><p>{{ memo.problem_statement }}</p></div>
+            <div class="v4-but"><h4>risk</h4><p>{% if memo.risks_unknowns_remaining %}{{ memo.risks_unknowns_remaining[0].statement }}{% else %}No saved risk yet.{% endif %}</p></div>
+            <div class="v4-measure"><h4>next test</h4><p>{{ memo.next_experiment.statement }}</p></div>
+            <div class="v4-foot"><span>{{ memo.team_name }}</span><span>{{ memo.pricing_financial_insight }}</span></div>
+        </div>
+    </section>
+    <section class="memo-grid">
+        <article class="memo-panel">
+            <strong>Stakeholder System</strong>
+            <p>{% if memo.key_stakeholders %}{{ memo.key_stakeholders | join(', ') }}{% else %}Missing stakeholder data.{% endif %}</p>
+            <strong>Adoption / Resistance Hypothesis</strong>
+            <p>{{ memo.key_adoption_resistance_hypothesis }}</p>
+        </article>
+        <aside class="memo-panel">
+            <strong>Traceability</strong>
+            <div class="memo-chips">
+                {% for label, artifact_id in memo.artifact_ids.items() %}
+                    <span class="memo-chip">{{ label }}: {{ artifact_id or 'missing' }}</span>
+                {% endfor %}
+            </div>
+        </aside>
+    </section>
+    <section class="memo-grid">
+        <article class="memo-panel">
+            <strong>Evidence Supporting The Decision</strong>
+            <ul class="memo-list">
+                {% for item in memo.evidence_supporting_decision %}
+                    <li>{{ item.summary }} <span class="memo-chip">{{ item.evidence_id }}</span></li>
+                {% else %}
+                    <li>Missing saved DecisionRecord evidence.</li>
+                {% endfor %}
+            </ul>
+        </article>
+        <article class="memo-panel">
+            <strong>Risks And Unknowns Remaining</strong>
+            <ul class="memo-list risk">
+                {% for item in memo.risks_unknowns_remaining %}
+                    <li>{{ item.statement }} <span class="memo-chip">{{ item.classification }}</span></li>
+                {% else %}
+                    <li>No saved risks or unknowns yet.</li>
+                {% endfor %}
+            </ul>
+        </article>
+    </section>
+    {% endif %}
+</main>
+</body>
+</html>

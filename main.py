@@ -110,6 +110,18 @@ def get_team_id(user: dict) -> int:
 
 
 VALID_APPROVER_ROLES = {"founder", "facilitator", "admin"}
+CASE_MODES = {"solo", "cohort"}
+COHORT_STATUSES = {"planned", "active", "completed", "archived"}
+BASELINE_DECISIONS = {"build", "test", "pivot", "pause", "stop"}
+RUBRIC_STAGES = {"baseline", "post"}
+RUBRIC_FIELDS = [
+    "framing",
+    "system_awareness",
+    "evidence_quality",
+    "behavioral_logic",
+    "economic_coherence",
+    "decision_action",
+]
 
 
 def get_user_role(user: dict) -> str:
@@ -238,6 +250,22 @@ def get_current_run_or_404(run_id: str, user: dict) -> dict:
     return run
 
 
+def get_visible_run_or_404(run_id: str, user: dict) -> dict:
+    role = get_user_role(user)
+    if role in {"facilitator", "admin"}:
+        run = database.get_run_any(run_id)
+    else:
+        run = database.get_run(run_id, get_team_id(user))
+    if not run:
+        raise HTTPException(status_code=404, detail="Decision Case not found")
+    return run
+
+
+def require_facilitator_or_admin(user: dict) -> None:
+    if get_user_role(user) not in {"facilitator", "admin"}:
+        raise HTTPException(status_code=403, detail="Facilitator or admin role required")
+
+
 def artifact_response(run_id: str, artifact_type: str, artifact: dict) -> dict:
     return {
         "run_id": run_id,
@@ -258,22 +286,71 @@ def split_founder_list(raw: str | None) -> list[str]:
     return items
 
 
+def normalized_text(payload: dict, *keys: str) -> str:
+    for key in keys:
+        value = payload.get(key)
+        if value is not None:
+            return str(value).strip()
+    return ""
+
+
+def optional_number(payload: dict, *keys: str) -> float | None:
+    for key in keys:
+        value = payload.get(key)
+        if str(value or "").strip():
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                raise HTTPException(status_code=422, detail=f"{key} must be numeric")
+    return None
+
+
 def build_metric_baseline(payload: dict) -> dict:
-    price_raw = payload.get("baseline_intuition_price")
+    price_raw = payload.get("baseline_intuition_price", payload.get("intuition_price"))
     try:
         intuition_price = float(price_raw) if str(price_raw or "").strip() else None
     except (TypeError, ValueError):
-        intuition_price = None
-    stakeholders = split_founder_list(payload.get("baseline_stakeholders"))
+        raise HTTPException(status_code=422, detail="intuition_price must be numeric")
+    confidence_score = optional_number(payload, "confidence_score")
+    if confidence_score is not None and not 0 <= confidence_score <= 10:
+        raise HTTPException(status_code=422, detail="confidence_score must be between 0 and 10")
+    current_decision = normalized_text(payload, "current_decision").lower()
+    if current_decision and current_decision not in BASELINE_DECISIONS:
+        raise HTTPException(status_code=422, detail="current_decision must be one of: build, test, pivot, pause, stop")
+    stakeholders = split_founder_list(payload.get("initial_stakeholders", payload.get("baseline_stakeholders")))
     return {
         "source": "start_golden_path",
-        "initial_problem_statement": str(payload.get("baseline_problem_statement") or "").strip(),
+        "initial_problem_statement": normalized_text(payload, "initial_problem_statement", "baseline_problem_statement"),
+        "initial_customer": normalized_text(payload, "initial_customer"),
+        "initial_user": normalized_text(payload, "initial_user"),
+        "initial_payer": normalized_text(payload, "initial_payer"),
+        "initial_approver": normalized_text(payload, "initial_approver"),
+        "initial_blocker": normalized_text(payload, "initial_blocker"),
         "initial_stakeholders": stakeholders,
         "initial_stakeholder_count": len(stakeholders),
+        "initial_assumptions": split_founder_list(payload.get("initial_assumptions")),
+        "initial_evidence": split_founder_list(payload.get("initial_evidence")),
         "intuition_price": intuition_price,
-        "intuition_price_currency": str(payload.get("baseline_price_currency") or payload.get("currency") or "").strip().upper(),
-        "intuition_pricing_note": str(payload.get("baseline_pricing_note") or "").strip(),
+        "intuition_price_currency": normalized_text(payload, "baseline_price_currency", "intuition_price_currency", "currency").upper(),
+        "intuition_pricing_note": normalized_text(payload, "baseline_pricing_note", "intuition_pricing_note"),
+        "main_variable_costs": split_founder_list(payload.get("main_variable_costs")),
+        "main_fixed_costs": split_founder_list(payload.get("main_fixed_costs")),
+        "current_decision": current_decision,
+        "confidence_score": confidence_score,
+        "biggest_uncertainty": normalized_text(payload, "biggest_uncertainty"),
+        "next_test": normalized_text(payload, "next_test"),
     }
+
+
+def baseline_has_content(baseline: dict) -> bool:
+    for key, value in baseline.items():
+        if key in {"source", "locked_at"}:
+            continue
+        if isinstance(value, list) and value:
+            return True
+        if isinstance(value, (str, int, float)) and str(value).strip():
+            return True
+    return False
 
 
 def latest_event_payload(events: list[dict], event_type: str) -> dict:
@@ -330,6 +407,16 @@ def first_pricing_value(financial_scenario: dict | None) -> float | None:
     return numeric(items[0])
 
 
+def score_total(score: dict) -> int:
+    return sum(int(score.get(field) or 0) for field in RUBRIC_FIELDS)
+
+
+def score_average(scores: list[dict]) -> float | None:
+    if not scores:
+        return None
+    return round(sum(score_total(score) for score in scores) / (len(scores) * len(RUBRIC_FIELDS)), 2)
+
+
 def build_facilitator_metrics(user: dict) -> dict:
     role = get_user_role(user)
     team_id = get_team_id(user)
@@ -338,13 +425,15 @@ def build_facilitator_metrics(user: dict) -> dict:
     run_ids = [run["run_id"] for run in runs]
     events_by_run = database.list_events_for_runs(run_ids)
     ai_usage_by_run = database.get_ai_usage_by_runs(run_ids)
+    open_comments_by_run = database.open_comment_counts(run_ids)
+    scores_by_run = database.list_decision_quality_scores(run_ids)
     rows = []
-    totals = {"runs": len(runs), "complete": 0, "stakeholder_delta": 0, "ai_calls": 0, "would_pay": 0, "would_recommend": 0, "feedback_captured": 0}
+    totals = {"runs": len(runs), "complete": 0, "stakeholder_delta": 0, "ai_calls": 0, "would_pay": 0, "would_recommend": 0, "feedback_captured": 0, "locked_baselines": 0, "open_comments": 0}
 
     for run in runs:
         run_id = run["run_id"]
         events = events_by_run.get(run_id, [])
-        baseline = latest_event_payload(events, "metric_baseline_captured")
+        baseline = database.get_decision_baseline(run_id) or latest_event_payload(events, "metric_baseline_captured")
         feedback = latest_event_payload(events, "pilot_feedback_captured")
         problem_frame = artifacts.load_artifact(run_id, "problem_frame")
         system_map = artifacts.load_artifact(run_id, "system_map")
@@ -367,8 +456,14 @@ def build_facilitator_metrics(user: dict) -> dict:
         complete = decision_record is not None
         if complete:
             totals["complete"] += 1
+        if baseline.get("locked_at") or run.get("baseline_locked_at"):
+            totals["locked_baselines"] += 1
         totals["stakeholder_delta"] += stakeholder_delta
         totals["ai_calls"] += ai_usage["calls"]
+        totals["open_comments"] += open_comments_by_run.get(run_id, 0)
+        run_scores = scores_by_run.get(run_id, [])
+        baseline_scores = [score for score in run_scores if score.get("score_stage") == "baseline"]
+        post_scores = [score for score in run_scores if score.get("score_stage") == "post"]
         if feedback:
             totals["feedback_captured"] += 1
             if feedback.get("would_pay") == "yes":
@@ -380,9 +475,14 @@ def build_facilitator_metrics(user: dict) -> dict:
             "team_name": run.get("team_name") or user.get("team_name") or "Team",
             "title": run.get("title"),
             "stage": run.get("stage"),
+            "mode": run.get("mode") or "solo",
+            "cohort_id": run.get("cohort_id") or "",
+            "cohort_name": run.get("cohort_name") or "",
+            "deadline": run.get("deadline") or "",
             "created_at": run.get("created_at"),
             "artifacts_saved": len(run.get("artifacts") or {}),
             "baseline_captured": bool(baseline),
+            "baseline_locked": bool(baseline.get("locked_at") or run.get("baseline_locked_at")),
             "initial_problem": initial_problem,
             "final_problem": final_problem,
             "problem_changed": bool(initial_problem and final_problem and initial_problem.strip().lower() != final_problem.strip().lower()),
@@ -397,6 +497,9 @@ def build_facilitator_metrics(user: dict) -> dict:
             "decision": ((decision_record or {}).get("selected_decision") or {}).get("statement") or "",
             "ai_calls": ai_usage["calls"],
             "ai_tokens": ai_usage["tokens"],
+            "open_comments": open_comments_by_run.get(run_id, 0),
+            "baseline_score": score_average(baseline_scores),
+            "post_score": score_average(post_scores),
             "feedback_captured": bool(feedback),
             "would_pay": feedback.get("would_pay") or "",
             "would_recommend": feedback.get("would_recommend") or "",
@@ -409,6 +512,194 @@ def build_facilitator_metrics(user: dict) -> dict:
     totals["would_pay_rate"] = round((totals["would_pay"] / answered * 100), 1) if answered else 0
     totals["would_recommend_rate"] = round((totals["would_recommend"] / answered * 100), 1) if answered else 0
     return {"role": role, "include_all": include_all, "runs": rows, "totals": totals}
+
+
+def labels_from_system_map(system_map: dict | None) -> list[str]:
+    return [stakeholder_label(item) for item in ((system_map or {}).get("stakeholders") or []) if stakeholder_label(item)]
+
+
+def compose_decision_memo(run_id: str, user: dict) -> dict:
+    run = get_visible_run_or_404(run_id, user)
+    events = database.list_events_for_runs([run_id]).get(run_id, [])
+    baseline = database.get_decision_baseline(run_id) or latest_event_payload(events, "metric_baseline_captured")
+    comments = database.list_case_comments(run_id)
+    project = artifacts.load_artifact(run_id, "project_record")
+    problem = artifacts.load_artifact(run_id, "problem_frame")
+    system_map = artifacts.load_artifact(run_id, "system_map")
+    predictive = artifacts.load_artifact(run_id, "predictive_hypothesis")
+    finance = artifacts.load_artifact(run_id, "financial_scenario")
+    decision = artifacts.load_artifact(run_id, "decision_record")
+
+    final_decision = (decision or {}).get("selected_decision") or {}
+    baseline_decision = baseline.get("current_decision") or "not captured"
+    final_decision_text = final_decision.get("statement") or "DecisionRecord not saved yet"
+    decision_changed = bool(final_decision.get("decision_type") and baseline_decision != "not captured" and final_decision.get("decision_type") != baseline_decision)
+    evidence = (decision or {}).get("evidence_summary") or []
+    risks = (decision or {}).get("risks") or []
+    unknowns = (decision or {}).get("unknowns") or []
+    next_experiment = (decision or {}).get("next_experiment") or {}
+    predictive_responses = (predictive or {}).get("simulated_stakeholder_responses") or []
+    pricing_insight = "missing"
+    price = first_pricing_value(finance)
+    if baseline.get("intuition_price") is not None and price is not None:
+        pricing_insight = f"{baseline.get('intuition_price_currency') or (finance or {}).get('currency') or ''} {baseline.get('intuition_price')} intuition -> {price} modelled"
+    elif price is not None:
+        pricing_insight = f"{(finance or {}).get('currency') or ''} {price} modelled"
+
+    return {
+        "run_id": run_id,
+        "case_title": run.get("case_title") or run.get("title"),
+        "team_name": run.get("team_name") or user.get("team_name"),
+        "cohort_id": run.get("cohort_id"),
+        "baseline_locked_at": baseline.get("locked_at") or run.get("baseline_locked_at"),
+        "baseline_status": "locked" if (baseline.get("locked_at") or run.get("baseline_locked_at")) else "baseline not locked",
+        "initial_baseline_decision": baseline_decision,
+        "final_decision": final_decision_text,
+        "decision_changed": decision_changed,
+        "problem_statement": ((problem or {}).get("reframed_problem") or {}).get("statement") or baseline.get("initial_problem_statement") or "missing",
+        "key_stakeholders": labels_from_system_map(system_map) or baseline.get("initial_stakeholders") or [],
+        "key_adoption_resistance_hypothesis": (predictive_responses[0].get("simulated_response") if predictive_responses else "missing"),
+        "pricing_financial_insight": pricing_insight,
+        "evidence_supporting_decision": evidence,
+        "risks_unknowns_remaining": risks + unknowns,
+        "next_experiment": next_experiment or {"statement": baseline.get("next_test") or "missing"},
+        "facilitator_approval_state": ((decision or {}).get("facilitator_approval") or {}).get("state") or "not approved",
+        "artifact_ids": {
+            "project_record": (project or {}).get("artifact_id"),
+            "problem_frame": (problem or {}).get("artifact_id"),
+            "system_map": (system_map or {}).get("artifact_id"),
+            "predictive_hypothesis": (predictive or {}).get("artifact_id"),
+            "financial_scenario": (finance or {}).get("artifact_id"),
+            "decision_record": (decision or {}).get("artifact_id"),
+        },
+        "open_comments": [comment for comment in comments if comment.get("status") == "open"],
+        "note": "This memo documents decision quality and traceability. It does not predict startup success.",
+    }
+
+
+def score_summary_for_runs(run_ids: list[str]) -> dict:
+    grouped = database.list_decision_quality_scores(run_ids)
+    baseline_scores = []
+    post_scores = []
+    by_run = {}
+    for run_id, scores in grouped.items():
+        baseline = [score for score in scores if score.get("score_stage") == "baseline"]
+        post = [score for score in scores if score.get("score_stage") == "post"]
+        baseline_avg = score_average(baseline)
+        post_avg = score_average(post)
+        by_run[run_id] = {
+            "baseline_avg": baseline_avg,
+            "post_avg": post_avg,
+            "delta": round(post_avg - baseline_avg, 2) if baseline_avg is not None and post_avg is not None else None,
+            "score_count": len(scores),
+        }
+        if baseline_avg is not None:
+            baseline_scores.append(baseline_avg)
+        if post_avg is not None:
+            post_scores.append(post_avg)
+    avg_baseline = round(sum(baseline_scores) / len(baseline_scores), 2) if baseline_scores else None
+    avg_post = round(sum(post_scores) / len(post_scores), 2) if post_scores else None
+    return {
+        "avg_baseline_score": avg_baseline,
+        "avg_post_score": avg_post,
+        "avg_delta": round(avg_post - avg_baseline, 2) if avg_baseline is not None and avg_post is not None else None,
+        "by_run": by_run,
+    }
+
+
+def compose_cohort_outcome_report(cohort_id: str) -> dict:
+    cohort = database.get_cohort(cohort_id)
+    if not cohort:
+        raise HTTPException(status_code=404, detail="Cohort not found")
+    runs = database.list_runs_for_cohort(cohort_id)
+    run_ids = [run["run_id"] for run in runs]
+    events_by_run = database.list_events_for_runs(run_ids)
+    ai_usage = database.get_ai_usage_by_runs(run_ids)
+    comment_counts = database.open_comment_counts(run_ids)
+    score_summary = score_summary_for_runs(run_ids)
+    cases = []
+    totals = {
+        "cases": len(runs),
+        "completed_cases": 0,
+        "locked_baselines": 0,
+        "decision_records": 0,
+        "stakeholder_delta": 0,
+        "price_changes": 0,
+        "decision_changes": 0,
+        "ai_calls": 0,
+        "ai_tokens": 0,
+        "feedback_captured": 0,
+        "would_pay_yes": 0,
+        "would_recommend_yes": 0,
+        "cases_needing_intervention": 0,
+    }
+    for run in runs:
+        run_id = run["run_id"]
+        events = events_by_run.get(run_id, [])
+        baseline = database.get_decision_baseline(run_id) or latest_event_payload(events, "metric_baseline_captured")
+        feedback = latest_event_payload(events, "pilot_feedback_captured")
+        problem = artifacts.load_artifact(run_id, "problem_frame")
+        system_map = artifacts.load_artifact(run_id, "system_map")
+        finance = artifacts.load_artifact(run_id, "financial_scenario")
+        decision = artifacts.load_artifact(run_id, "decision_record")
+        initial_set = {str(item).strip().lower() for item in (baseline.get("initial_stakeholders") or []) if str(item).strip()}
+        mapped = {item.lower() for item in labels_from_system_map(system_map)}
+        stakeholder_delta = max(0, len(mapped) - len(initial_set))
+        initial_price = baseline.get("intuition_price")
+        final_price = first_pricing_value(finance)
+        price_changed = initial_price is not None and final_price is not None and round(float(initial_price), 2) != round(float(final_price), 2)
+        final_decision_type = ((decision or {}).get("selected_decision") or {}).get("decision_type")
+        decision_changed = bool(baseline.get("current_decision") and final_decision_type and baseline.get("current_decision") != final_decision_type)
+        usage = ai_usage.get(run_id, {"calls": 0, "tokens": 0})
+        complete = bool(decision)
+        baseline_locked = bool(baseline.get("locked_at") or run.get("baseline_locked_at"))
+        needs_intervention = not baseline_locked or not complete or comment_counts.get(run_id, 0) > 0
+        totals["completed_cases"] += 1 if complete else 0
+        totals["locked_baselines"] += 1 if baseline_locked else 0
+        totals["decision_records"] += 1 if decision else 0
+        totals["stakeholder_delta"] += stakeholder_delta
+        totals["price_changes"] += 1 if price_changed else 0
+        totals["decision_changes"] += 1 if decision_changed else 0
+        totals["ai_calls"] += usage["calls"]
+        totals["ai_tokens"] += usage["tokens"]
+        totals["feedback_captured"] += 1 if feedback else 0
+        totals["would_pay_yes"] += 1 if feedback.get("would_pay") == "yes" else 0
+        totals["would_recommend_yes"] += 1 if feedback.get("would_recommend") == "yes" else 0
+        totals["cases_needing_intervention"] += 1 if needs_intervention else 0
+        cases.append({
+            "run_id": run_id,
+            "case_title": run.get("case_title") or run.get("title"),
+            "team_name": run.get("team_name"),
+            "baseline_locked": baseline_locked,
+            "stage": run.get("stage"),
+            "completed": complete,
+            "stakeholder_delta": stakeholder_delta,
+            "price_changed": price_changed if initial_price is not None and final_price is not None else None,
+            "decision_changed": decision_changed if baseline.get("current_decision") and final_decision_type else None,
+            "would_pay": feedback.get("would_pay") or "missing",
+            "would_recommend": feedback.get("would_recommend") or "missing",
+            "ai_calls": usage["calls"],
+            "open_comments": comment_counts.get(run_id, 0),
+            "quality_scores": score_summary["by_run"].get(run_id, {"baseline_avg": None, "post_avg": None, "delta": None, "score_count": 0}),
+            "needs_intervention": needs_intervention,
+            "missing": [
+                label for label, missing in [
+                    ("locked baseline", not baseline_locked),
+                    ("DecisionRecord", not complete),
+                    ("pilot feedback", not feedback),
+                    ("rubric scores", score_summary["by_run"].get(run_id, {}).get("score_count", 0) == 0),
+                ] if missing
+            ],
+        })
+    totals["completion_rate"] = round(totals["completed_cases"] / totals["cases"] * 100, 1) if totals["cases"] else 0
+    return {
+        "cohort": cohort,
+        "totals": totals,
+        "quality_scores": score_summary,
+        "cases": cases,
+        "empty_state": "No Decision Cases belong to this cohort yet." if not runs else "",
+        "note": "Missing data is marked as missing. This report does not fabricate outcomes or predict startup success.",
+    }
 def build_vertex_golden_case_view_model():
     artifacts = load_vertex_golden_case()
     project = artifacts["project_record"]
@@ -719,6 +1010,13 @@ async def decision_record_alias(request: Request):
         return RedirectResponse(url="/login")
     return RedirectResponse(url="/dashboard/lab/decision-record", status_code=303)
 
+@app.get("/dashboard/lab/decision-memo", response_class=HTMLResponse)
+async def decision_memo_page(request: Request, run_id: str = "", user: dict = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    memo = compose_decision_memo(run_id, user) if run_id else None
+    return templates.TemplateResponse(request, "lab/decision_memo.html", {"user": user, "memo": memo, "run_id": run_id})
+
 @app.get("/dashboard/lab/golden-path", response_class=HTMLResponse)
 async def vertex_golden_path(request: Request):
     user = get_current_user(request)
@@ -733,9 +1031,21 @@ async def create_vertex_run(payload: dict = Body(...), user: dict = Depends(get_
     title = str(payload.get("title") or user.get("challenge_desc") or "Untitled VERTEX run").strip()
     if not title:
         raise HTTPException(status_code=400, detail="Run title is required")
+    mode = str(payload.get("mode") or ("cohort" if payload.get("cohort_id") else "solo")).strip().lower()
+    if mode not in CASE_MODES:
+        raise HTTPException(status_code=422, detail="mode must be solo or cohort")
+    cohort_id = str(payload.get("cohort_id") or "").strip() or None
+    if cohort_id:
+        cohort = database.get_cohort(cohort_id)
+        if not cohort:
+            raise HTTPException(status_code=404, detail="Cohort not found")
+        if get_user_role(user) not in {"facilitator", "admin"} and not database.team_in_cohort(cohort_id, get_team_id(user)):
+            raise HTTPException(status_code=403, detail="Team is not a member of this cohort")
+        mode = "cohort"
+    deadline = str(payload.get("deadline") or "").strip() or None
     run_id = artifacts.create_run_id()
     team_id = get_team_id(user)
-    run = database.create_run(run_id, team_id, title)
+    run = database.create_run(run_id, team_id, title, mode=mode, cohort_id=cohort_id, deadline=deadline)
     project_record = artifacts.build_project_record(run_id, user, title, payload)
     errors = contracts_runtime.validate_artifact("project_record", project_record)
     if errors:
@@ -743,11 +1053,74 @@ async def create_vertex_run(payload: dict = Body(...), user: dict = Depends(get_
     path = artifacts.save_artifact(run_id, "project_record", project_record)
     database.upsert_run_artifact(run_id, "project_record", project_record["artifact_id"], str(path), project_record["status"])
     baseline = build_metric_baseline(payload)
-    database.record_event(team_id, "run_created", {"title": title, "project_record_id": project_record["artifact_id"]}, run_id)
-    if any([baseline["initial_problem_statement"], baseline["initial_stakeholders"], baseline["intuition_price"] is not None]):
+    database.record_event(team_id, "run_created", {"title": title, "project_record_id": project_record["artifact_id"], "case_title": title, "mode": mode, "cohort_id": cohort_id}, run_id)
+    if baseline_has_content(baseline):
+        baseline = database.lock_decision_baseline(run_id, team_id, baseline)
         database.record_event(team_id, "metric_baseline_captured", baseline, run_id)
+        database.record_event(team_id, "baseline_locked", {"locked_at": baseline["locked_at"]}, run_id)
     run = database.get_run(run_id, team_id)
-    return {"created": True, "run": run, "project_record": artifacts.artifact_summary(project_record), "baseline": baseline}
+    return {"created": True, "run": run, "project_record": artifacts.artifact_summary(project_record), "baseline": baseline, "decision_case": {"run_id": run_id, "case_title": title, "mode": mode, "cohort_id": cohort_id, "baseline_locked": bool(baseline.get("locked_at"))}}
+
+
+@app.get("/api/vertex/cohorts")
+async def list_vertex_cohorts(user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    include_all = get_user_role(user) in {"facilitator", "admin"}
+    return {"cohorts": database.list_cohorts_for_user(get_team_id(user), include_all=include_all)}
+
+
+@app.post("/api/vertex/cohorts")
+async def create_vertex_cohort(payload: dict = Body(...), user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    require_facilitator_or_admin(user)
+    name = str(payload.get("cohort_name") or payload.get("name") or "").strip()
+    institution = str(payload.get("institution_name") or "").strip()
+    status_value = str(payload.get("status") or "planned").strip().lower()
+    if not name or not institution:
+        raise HTTPException(status_code=422, detail="cohort_name and institution_name are required")
+    if status_value not in COHORT_STATUSES:
+        raise HTTPException(status_code=422, detail="status must be planned, active, completed, or archived")
+    cohort = database.create_cohort({**payload, "cohort_name": name, "institution_name": institution, "status": status_value}, get_team_id(user), user.get("member_email"))
+    database.add_cohort_member(cohort["cohort_id"], get_team_id(user))
+    return {"created": True, "cohort": database.get_cohort(cohort["cohort_id"])}
+
+
+@app.get("/api/vertex/cohorts/{cohort_id}")
+async def get_vertex_cohort(cohort_id: str, user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    cohort = database.get_cohort(cohort_id)
+    if not cohort:
+        raise HTTPException(status_code=404, detail="Cohort not found")
+    if get_user_role(user) not in {"facilitator", "admin"} and not database.team_in_cohort(cohort_id, get_team_id(user)):
+        raise HTTPException(status_code=403, detail="Cohort is not visible to this team")
+    return {"cohort": cohort, "cases": database.list_runs_for_cohort(cohort_id) if get_user_role(user) in {"facilitator", "admin"} else [run for run in database.list_runs_for_cohort(cohort_id) if run.get("team_id") == get_team_id(user)]}
+
+
+@app.post("/api/vertex/cohorts/{cohort_id}/members")
+async def add_vertex_cohort_member(cohort_id: str, payload: dict = Body(...), user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    require_facilitator_or_admin(user)
+    if not database.get_cohort(cohort_id):
+        raise HTTPException(status_code=404, detail="Cohort not found")
+    try:
+        team_id = int(payload.get("team_id"))
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=422, detail="team_id is required")
+    if not database.get_team_by_id(team_id):
+        raise HTTPException(status_code=404, detail="Team not found")
+    return {"saved": True, "cohort": database.add_cohort_member(cohort_id, team_id)}
+
+
+@app.get("/api/vertex/cohorts/{cohort_id}/outcome-report")
+async def vertex_cohort_outcome_report(cohort_id: str, user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    require_facilitator_or_admin(user)
+    return compose_cohort_outcome_report(cohort_id)
 
 
 @app.get("/api/vertex/runs")
@@ -768,6 +1141,107 @@ async def get_vertex_run(run_id: str, user: dict = Depends(get_current_user)):
         if artifact is not None:
             artifact_summaries[artifact_type] = artifacts.artifact_summary(artifact)
     return {"run": run, "artifacts": artifact_summaries, "artifact_order": contracts_runtime.ARTIFACT_ORDER}
+
+
+@app.get("/api/vertex/runs/{run_id}/baseline")
+async def get_vertex_run_baseline(run_id: str, user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    run = get_visible_run_or_404(run_id, user)
+    baseline = database.get_decision_baseline(run_id)
+    if not baseline:
+        events = database.list_events_for_runs([run_id]).get(run_id, [])
+        legacy = latest_event_payload(events, "metric_baseline_captured")
+        return {"run_id": run_id, "status": "baseline not locked", "baseline": legacy or None, "baseline_locked_at": run.get("baseline_locked_at")}
+    return {"run_id": run_id, "status": "locked", "baseline": baseline, "baseline_locked_at": baseline.get("locked_at")}
+
+
+@app.post("/api/vertex/runs/{run_id}/baseline")
+async def lock_vertex_run_baseline(run_id: str, payload: dict = Body(...), user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    run = get_current_run_or_404(run_id, user)
+    if database.get_decision_baseline(run_id) or run.get("baseline_locked_at"):
+        raise HTTPException(status_code=409, detail="Decision Snapshot is already locked and cannot be overwritten.")
+    baseline = build_metric_baseline(payload)
+    if not baseline_has_content(baseline):
+        raise HTTPException(status_code=422, detail="Decision Snapshot must include baseline content before it can be locked.")
+    baseline = database.lock_decision_baseline(run_id, get_team_id(user), baseline)
+    database.record_event(get_team_id(user), "metric_baseline_captured", baseline, run_id)
+    database.record_event(get_team_id(user), "baseline_locked", {"locked_at": baseline["locked_at"]}, run_id)
+    return {"locked": True, "baseline": baseline}
+
+
+@app.get("/api/vertex/runs/{run_id}/comments")
+async def get_vertex_case_comments(run_id: str, user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    get_visible_run_or_404(run_id, user)
+    return {"comments": database.list_case_comments(run_id)}
+
+
+@app.post("/api/vertex/runs/{run_id}/comments")
+async def add_vertex_case_comment(run_id: str, payload: dict = Body(...), user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    require_facilitator_or_admin(user)
+    run = get_visible_run_or_404(run_id, user)
+    comment_text = str(payload.get("comment_text") or payload.get("text") or "").strip()
+    if not comment_text:
+        raise HTTPException(status_code=422, detail="comment_text is required")
+    artifact_type = str(payload.get("artifact_type") or "").strip() or None
+    if artifact_type:
+        artifacts.safe_artifact_type(artifact_type)
+    comment = database.add_case_comment(run_id, int(run["team_id"]), user.get("member_email"), get_user_role(user), artifact_type, comment_text[:4000])
+    database.record_event(int(run["team_id"]), "facilitator_comment_added", {"comment_id": comment["id"], "artifact_type": artifact_type, "author_email": user.get("member_email")}, run_id)
+    return {"saved": True, "comment": comment}
+
+
+@app.post("/api/vertex/runs/{run_id}/review-request")
+async def request_vertex_case_review(run_id: str, payload: dict = Body(default={}), user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    run = get_visible_run_or_404(run_id, user)
+    database.record_event(int(run["team_id"]), "facilitator_review_requested", {"requested_by": user.get("member_email"), "note": str(payload.get("note") or "").strip()[:1000]}, run_id)
+    return {"requested": True, "run_id": run_id}
+
+
+@app.get("/api/vertex/runs/{run_id}/decision-memo")
+async def get_vertex_decision_memo(run_id: str, user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    return compose_decision_memo(run_id, user)
+
+
+@app.get("/api/vertex/runs/{run_id}/quality-scores")
+async def get_vertex_quality_scores(run_id: str, user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    get_visible_run_or_404(run_id, user)
+    scores = database.list_decision_quality_scores([run_id]).get(run_id, [])
+    return {"scores": scores, "summary": score_summary_for_runs([run_id])["by_run"].get(run_id, {})}
+
+
+@app.post("/api/vertex/runs/{run_id}/quality-scores")
+async def add_vertex_quality_score(run_id: str, payload: dict = Body(...), user: dict = Depends(get_current_user)):
+    if not user:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    require_facilitator_or_admin(user)
+    get_visible_run_or_404(run_id, user)
+    stage = str(payload.get("score_stage") or payload.get("stage") or "").strip().lower()
+    if stage not in RUBRIC_STAGES:
+        raise HTTPException(status_code=422, detail="score_stage must be baseline or post")
+    scores = {}
+    for field in RUBRIC_FIELDS:
+        try:
+            value = int(payload.get(field))
+        except (TypeError, ValueError):
+            raise HTTPException(status_code=422, detail=f"{field} must be an integer from 1 to 5")
+        if not 1 <= value <= 5:
+            raise HTTPException(status_code=422, detail=f"{field} must be an integer from 1 to 5")
+        scores[field] = value
+    score = database.add_decision_quality_score(run_id, user.get("member_email"), stage, scores, str(payload.get("notes") or "").strip()[:3000])
+    return {"saved": True, "score": score, "summary": score_summary_for_runs([run_id])["by_run"].get(run_id, {})}
 
 
 @app.post("/api/vertex/runs/{run_id}/artifacts/{artifact_type}/validate")
@@ -802,6 +1276,8 @@ async def save_vertex_run_artifact(run_id: str, artifact_type: str, payload: dic
     path = artifacts.save_artifact(run_id, artifact_type, payload)
     database.upsert_run_artifact(run_id, artifact_type, payload["artifact_id"], str(path), payload.get("status", "draft"))
     database.record_event(get_team_id(user), "artifact_saved", {"artifact_type": artifact_type, "artifact_id": payload["artifact_id"]}, run_id)
+    if artifact_type == "decision_record":
+        database.mark_run_completed(run_id)
     return {"saved": True, "valid": True, "run_id": run["run_id"], "artifact": artifacts.artifact_summary(payload)}
 
 
@@ -1023,6 +1499,16 @@ async def facilitator_dashboard(request: Request, user: dict = Depends(get_curre
         return RedirectResponse(url="/login", status_code=303)
     metrics = build_facilitator_metrics(user)
     return templates.TemplateResponse(request, "facilitator.html", {"user": user, "metrics": metrics})
+
+
+@app.get("/dashboard/facilitator/cohorts/{cohort_id}/outcome-report", response_class=HTMLResponse)
+async def facilitator_cohort_outcome_report_page(cohort_id: str, request: Request, user: dict = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    if get_user_role(user) not in {"facilitator", "admin"}:
+        raise HTTPException(status_code=403, detail="Facilitator or admin role required")
+    report = compose_cohort_outcome_report(cohort_id)
+    return templates.TemplateResponse(request, "cohort_outcome_report.html", {"user": user, "report": report})
 
 
 @app.get("/api/vertex/facilitator/metrics")

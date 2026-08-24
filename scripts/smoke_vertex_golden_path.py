@@ -212,25 +212,69 @@ def main() -> None:
         facilitator_user = app_main.database.verify_login(facilitator_email, password)[2]
         assert founder_user["role"] == "founder", founder_user
         assert facilitator_user["role"] == "facilitator", facilitator_user
+
+        app_main.app.dependency_overrides[app_main.get_current_user] = lambda: facilitator_user
+        cohort = assert_ok(
+            client.post(
+                "/api/vertex/cohorts",
+                json={
+                    "cohort_name": "Smoke Decision Quality Pilot",
+                    "institution_name": "Smoke Institute",
+                    "start_date": "2026-08-01",
+                    "end_date": "2026-09-15",
+                    "status": "active",
+                },
+            ),
+            "create cohort",
+        )["cohort"]
+        forbidden_report = client.get(f"/api/vertex/cohorts/{cohort['cohort_id']}/outcome-report")
+        assert forbidden_report.status_code == 200, forbidden_report.text
+
         app_main.app.dependency_overrides[app_main.get_current_user] = lambda: founder_user
+        founder_forbidden_report = client.get(f"/api/vertex/cohorts/{cohort['cohort_id']}/outcome-report")
+        assert founder_forbidden_report.status_code == 403, founder_forbidden_report.text
+
+        legacy_run = app_main.database.create_run("run_legacy_no_baseline", team_id, "Legacy no baseline")
+        legacy_baseline = assert_ok(client.get("/api/vertex/runs/run_legacy_no_baseline/baseline"), "legacy baseline")
+        assert legacy_run and legacy_baseline["status"] == "baseline not locked", legacy_baseline
 
         created = assert_ok(
             client.post(
                 "/api/vertex/runs",
                 json={
                     "title": "Golden Path smoke",
+                    "mode": "cohort",
+                    "cohort_id": cohort["cohort_id"],
                     "challenge_statement": "A pilot needs a traceable final decision.",
                     "is_synthetic": True,
                     # Pilot metric baseline: the founder's "before", captured at t=0.
-                    "baseline_problem_statement": "Cafes will not reuse containers because it is inconvenient.",
-                    "baseline_stakeholders": "cafe owners, customers",
+                    "initial_problem_statement": "Cafes will not reuse containers because it is inconvenient.",
+                    "initial_customer": "independent cafe operators",
+                    "initial_user": "baristas",
+                    "initial_payer": "cafe owners",
+                    "initial_approver": "store manager",
+                    "initial_blocker": "operations lead",
+                    "initial_stakeholders": "cafe owners, customers",
+                    "initial_assumptions": "deposit acceptance, washing capacity",
+                    "initial_evidence": "two cafe conversations",
                     "baseline_intuition_price": 0.2,
                     "baseline_price_currency": "EUR",
+                    "main_variable_costs": "washing, replacement cups",
+                    "main_fixed_costs": "storage, onboarding",
+                    "current_decision": "test",
+                    "confidence_score": 4,
+                    "biggest_uncertainty": "whether cafes will add a deposit flow",
+                    "next_test": "run a two-cafe service trial",
                 },
             ),
             "create run",
         )
         run_id = created["run"]["run_id"]
+        assert created["decision_case"]["cohort_id"] == cohort["cohort_id"], created
+        locked_baseline = assert_ok(client.get(f"/api/vertex/runs/{run_id}/baseline"), "locked baseline")
+        assert locked_baseline["status"] == "locked", locked_baseline
+        overwrite = client.post(f"/api/vertex/runs/{run_id}/baseline", json={"initial_problem_statement": "changed"})
+        assert overwrite.status_code == 409, overwrite.text
         project = assert_ok(client.get(f"/api/vertex/runs/{run_id}/artifacts/project_record"), "load project")["artifact"]
 
         problem = build_problem_frame(run_id, project)
@@ -256,10 +300,40 @@ def main() -> None:
             "facilitator decision validation",
         )
         assert facilitator_validation["valid"] is True, facilitator_validation
+        comment = assert_ok(
+            client.post(
+                f"/api/vertex/runs/{run_id}/comments",
+                json={"artifact_type": "system_map", "comment_text": "Check the blocker before the next pilot gate."},
+            ),
+            "facilitator comment",
+        )["comment"]
+        assert comment["status"] == "open", comment
+        for score_stage, base in [("baseline", 3), ("post", 4)]:
+            score = assert_ok(
+                client.post(
+                    f"/api/vertex/runs/{run_id}/quality-scores",
+                    json={
+                        "score_stage": score_stage,
+                        "framing": base,
+                        "system_awareness": base,
+                        "evidence_quality": base,
+                        "behavioral_logic": base,
+                        "economic_coherence": base,
+                        "decision_action": base,
+                        "notes": f"Smoke {score_stage} score",
+                    },
+                ),
+                f"{score_stage} quality score",
+            )
+            assert score["summary"]["score_count"] >= 1, score
         save_artifact(client, run_id, "decision_record", decision)
         loaded = assert_ok(client.get(f"/api/vertex/runs/{run_id}/artifacts/decision_record"), "load decision")["artifact"]
         assert loaded["facilitator_approval"]["approved_by_role"] == "facilitator"
         assert loaded["predictive_hypotheses"][0]["not_evidence"] is True
+        memo = assert_ok(client.get(f"/api/vertex/runs/{run_id}/decision-memo"), "decision memo")
+        assert memo["artifact_ids"]["decision_record"] == loaded["artifact_id"], memo
+        report = assert_ok(client.get(f"/api/vertex/cohorts/{cohort['cohort_id']}/outcome-report"), "cohort outcome report")
+        assert report["totals"]["cases"] >= 1 and report["quality_scores"]["avg_delta"] == 1.0, report
 
         # Pilot validation metrics 4 and 5. "Would you pay" is the founder's
         # answer even though the facilitator signs the record, so the respondent
@@ -271,6 +345,8 @@ def main() -> None:
         assert bad_choice.status_code == 422, bad_choice.status_code
 
         app_main.app.dependency_overrides[app_main.get_current_user] = lambda: founder_user
+        comments = assert_ok(client.get(f"/api/vertex/runs/{run_id}/comments"), "founder reads comments")
+        assert comments["comments"][0]["comment_text"].startswith("Check the blocker"), comments
         feedback = assert_ok(
             client.post(
                 f"/api/vertex/runs/{run_id}/pilot-feedback",

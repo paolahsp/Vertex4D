@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+<html lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Start Golden Path | VERTEX 4D</title>
+    <title>Decision Case | VERTEX 4D</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
     <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
@@ -60,33 +60,36 @@
 {% include "_icon_sprite.html" %}
 <header class="sgp-header v4-bar">
     <a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Srsly Labs</i></span></a>
-    <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-run"/></svg> Start Golden Path</span>
+    <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-run"/></svg> Decision Case</span>
     <nav><a class="sgp-link v4-navlink" href="/dashboard/lab">Back to 4D Lab</a><a class="sgp-link v4-navlink" href="/dashboard/lab/golden-path">View contract chain</a></nav>
 </header>
 <main class="v4-main sgp-main">
     <section class="v4-head">
         <div class="focusable">
             <p class="v4-eyebrow"><s></s>Etapa 1 de 6 &middot; Puerta de entrada</p>
-            <h1 class="v4-h1">Start with the idea.<br><em>Finish with a decision.</em></h1>
-            <p class="v4-lede">Create one Golden Path run before Alex. The baseline captures what you believe now, so every later artifact can show what changed.</p>
-            <div class="v4-next"><button class="sgp-button" type="button" id="create-run-btn">Create run</button><a class="sgp-button secondary" data-run-link href="/dashboard/lab/alex">Start with Alex</a><span class="v4-eta">&asymp; 5 min &middot; puedes parar y volver</span></div>
-            <p class="sgp-copy" id="run-status" style="margin-top:16px;font-size:14px">No active run yet. Create one to connect the five artifacts.</p>
+            <h1 class="v4-h1">Open a Decision Case.<br><em>Lock the first snapshot.</em></h1>
+            <p class="v4-lede">Capture what the team believes before Alex. VERTEX keeps this Decision Snapshot locked so the Golden Path can reveal what changed.</p>
+            <div class="v4-next"><button class="sgp-button" type="button" id="create-run-btn">Create Decision Case</button><a class="sgp-button secondary" data-run-link href="/dashboard/lab/alex">Start with Alex</a><span class="v4-eta">&asymp; 7 min &middot; snapshot locks on create</span></div>
+            <p class="sgp-copy" id="run-status" style="margin-top:16px;font-size:14px">No active Decision Case yet. Create one to connect the five artifacts.</p>
         </div>
         <aside class="v4-tally" aria-label="Golden Path readiness">
             <div class="v4-t"><b>6</b><span>Stages in the chain</span></div>
-            <div class="v4-t up"><b>1</b><span>Active run to create</span></div>
+            <div class="v4-t up"><b>1</b><span>Decision Snapshot to lock</span></div>
             <div class="v4-t"><b>5</b><span>Contract artifacts ahead</span></div>
         </aside>
     </section>
     {% with stage = 1 %}{% include "lab/_path_bar.html" %}{% endwith %}
     <section class="v4-two is-balanced">
         <article class="v4-panel">
-            <p class="v4-plabel">Baseline setup</p>
-            <p class="v4-ask">What are you bringing into the method before the system answers back?</p>
+            <p class="v4-plabel">Decision Snapshot</p>
+            <p class="v4-ask">What should VERTEX preserve before the system answers back?</p>
             <div class="sgp-run-form" aria-label="Run setup">
-                <div class="sgp-field full"><label for="run-title-input">Project title</label><input id="run-title-input" name="title" value="VERTEX Golden Path run"></div>
+                <div class="sgp-field full"><label for="run-title-input">Decision Case title</label><input id="run-title-input" name="title" value="VERTEX Decision Case"></div>
+                <div class="sgp-field"><label for="run-mode-input">Mode</label><select id="run-mode-input" name="mode"><option value="solo">Solo</option><option value="cohort">Cohort</option></select></div>
+                <div class="sgp-field"><label for="run-cohort-input">Cohort</label><select id="run-cohort-input" name="cohort_id"><option value="">No cohort</option></select></div>
                 <div class="sgp-field"><label for="run-stage-input">Stage</label><select id="run-stage-input" name="venture_stage"><option value="idea">Idea</option><option value="discovery">Discovery</option><option value="prototype">Prototype</option><option value="pilot">Pilot</option><option value="launched">Launched</option></select></div>
                 <div class="sgp-field"><label for="run-scope-input">Scope</label><select id="run-scope-input" name="operating_scope"><option value="local">Local</option><option value="regional">Regional</option><option value="national">National</option><option value="international">International</option></select></div>
+                <div class="sgp-field"><label for="run-deadline-input">Decision deadline</label><input id="run-deadline-input" name="deadline" type="date"></div>
                 <div class="sgp-field"><label for="run-city-input">Primary city</label><input id="run-city-input" name="primary_city" placeholder="Mexico City"></div>
                 <div class="sgp-field"><label for="run-country-input">Country</label><input id="run-country-input" name="country" placeholder="Mexico"></div>
                 <div class="sgp-field full"><p class="v4-plabel" style="margin:10px 0 4px">Privacy</p></div>
@@ -94,21 +97,34 @@
                 <div class="sgp-field"><label for="run-consent-basis-input">Consent basis</label><select id="run-consent-basis-input" name="consent_basis"><option value="explicit_consent">Explicit consent</option><option value="institutional_dpa">Institutional DPA</option><option value="anonymized_before_processing">Anonymized before processing</option></select></div>
                 <div class="sgp-field"><label for="run-consent-ref-input">Consent record</label><input id="run-consent-ref-input" name="consent_record_ref" placeholder="consent_form_batch_001"></div>
                 <div class="sgp-field full"><p class="v4-plabel" style="margin:10px 0 4px">Baseline metrics</p></div>
-                <div class="sgp-field full"><label for="baseline-problem-input">Before Alex: problem in one sentence</label><textarea id="baseline-problem-input" name="baseline_problem_statement" placeholder="What problem do you think you are solving right now?"></textarea></div>
-                <div class="sgp-field full"><label for="baseline-stakeholders-input">Before SynapMap: stakeholders you already see</label><textarea id="baseline-stakeholders-input" name="baseline_stakeholders" placeholder="One per line, or separated by commas"></textarea></div>
+                <div class="sgp-field full"><label for="baseline-problem-input">Initial problem statement</label><textarea id="baseline-problem-input" name="initial_problem_statement" placeholder="What problem do you believe you are solving right now?"></textarea></div>
+                <div class="sgp-field"><label for="baseline-customer-input">Initial customer</label><input id="baseline-customer-input" name="initial_customer" placeholder="Who is the customer?"></div>
+                <div class="sgp-field"><label for="baseline-user-input">Initial user</label><input id="baseline-user-input" name="initial_user" placeholder="Who uses it?"></div>
+                <div class="sgp-field"><label for="baseline-payer-input">Initial payer</label><input id="baseline-payer-input" name="initial_payer" placeholder="Who pays?"></div>
+                <div class="sgp-field"><label for="baseline-approver-input">Initial approver</label><input id="baseline-approver-input" name="initial_approver" placeholder="Who approves?"></div>
+                <div class="sgp-field"><label for="baseline-blocker-input">Initial blocker</label><input id="baseline-blocker-input" name="initial_blocker" placeholder="Who can block adoption?"></div>
+                <div class="sgp-field"><label for="baseline-decision-input">Current decision</label><select id="baseline-decision-input" name="current_decision"><option value="">Choose</option><option value="build">Build</option><option value="test">Test</option><option value="pivot">Pivot</option><option value="pause">Pause</option><option value="stop">Stop</option></select></div>
+                <div class="sgp-field full"><label for="baseline-stakeholders-input">Stakeholders you already see</label><textarea id="baseline-stakeholders-input" name="initial_stakeholders" placeholder="One per line, or separated by commas"></textarea></div>
+                <div class="sgp-field full"><label for="baseline-assumptions-input">Assumptions that must be true</label><textarea id="baseline-assumptions-input" name="initial_assumptions" placeholder="One per line, or separated by commas"></textarea></div>
+                <div class="sgp-field full"><label for="baseline-evidence-input">Evidence you already have</label><textarea id="baseline-evidence-input" name="initial_evidence" placeholder="Interviews, observations, sales, usage, or other proof"></textarea></div>
                 <div class="sgp-field"><label for="baseline-price-input">Before Billie: intuition price</label><input id="baseline-price-input" name="baseline_intuition_price" type="number" step="0.01" placeholder="49.00"></div>
                 <div class="sgp-field"><label for="baseline-price-currency-input">Price currency</label><input id="baseline-price-currency-input" name="baseline_price_currency" placeholder="MXN"></div>
                 <div class="sgp-field full"><label for="baseline-pricing-note-input">Why that price?</label><input id="baseline-pricing-note-input" name="baseline_pricing_note" placeholder="What makes this feel right before seeing the numbers?"></div>
+                <div class="sgp-field full"><label for="baseline-variable-costs-input">Main variable costs</label><textarea id="baseline-variable-costs-input" name="main_variable_costs" placeholder="One per line, or separated by commas"></textarea></div>
+                <div class="sgp-field full"><label for="baseline-fixed-costs-input">Main fixed costs</label><textarea id="baseline-fixed-costs-input" name="main_fixed_costs" placeholder="One per line, or separated by commas"></textarea></div>
+                <div class="sgp-field"><label for="baseline-confidence-input">Confidence score (0-10)</label><input id="baseline-confidence-input" name="confidence_score" type="number" min="0" max="10" step="1" placeholder="5"></div>
+                <div class="sgp-field"><label for="baseline-uncertainty-input">Biggest uncertainty</label><input id="baseline-uncertainty-input" name="biggest_uncertainty" placeholder="What could change this decision?"></div>
+                <div class="sgp-field full"><label for="baseline-next-test-input">Next test</label><input id="baseline-next-test-input" name="next_test" placeholder="What would you test next?"></div>
             </div>
         </article>
         <aside class="v4-panel is-strong">
             <p class="v4-plabel">Run counters</p>
             <div class="v4-meters">
-                <div class="v4-meter v4-ac"><div class="v4-lbl"><span>Baseline captured</span><b>0%</b></div><div class="v4-mt"><i style="--value:0%"></i></div></div>
+                <div class="v4-meter v4-ac"><div class="v4-lbl"><span>Snapshot locked</span><b>0%</b></div><div class="v4-mt"><i style="--value:0%"></i></div></div>
                 <div class="v4-meter v4-hy"><div class="v4-lbl"><span>Artifacts linked</span><b>0 / 5</b></div><div class="v4-mt"><i style="--value:0%"></i></div></div>
                 <div class="v4-meter v4-ev"><div class="v4-lbl"><span>Next action clarity</span><b>Create run</b></div><div class="v4-mt"><i style="--value:32%"></i></div></div>
             </div>
-            <div class="v4-empty" style="margin-top:18px">Until a run exists, downstream links stay ready but unbound. Creating the run adds the same <code>run_id</code> to Alex, SynapMap, Billie and DecisionRecord.</div>
+            <div class="v4-empty" style="margin-top:18px">Until a Decision Case exists, downstream links stay ready but unbound. Creating the case adds the same <code>run_id</code> to Alex, SynapMap, Billie and DecisionRecord.</div>
             <div class="v4-next"><a class="sgp-button secondary" href="/dashboard/lab/how-vertex-thinks">How VERTEX thinks</a></div>
         </aside>
     </section>
@@ -129,22 +145,43 @@
     function setRun(runId) {
         if (runId) {
             localStorage.setItem(storageKey, runId);
-            status.textContent = `Active run: ${runId}. The next artifacts will be connected to this chain.`;
+            status.textContent = `Active Decision Case: ${runId}. The snapshot is locked and the next artifacts will be connected to this chain.`;
         } else {
-            status.textContent = "No active run yet. Create one to connect the five artifacts.";
+            status.textContent = "No active Decision Case yet. Create one to connect the five artifacts.";
         }
         updateLinks(runId);
     }
 
+    async function loadCohorts() {
+        const select = document.getElementById("run-cohort-input");
+        try {
+            const response = await fetch("/api/vertex/cohorts");
+            if (!response.ok) return;
+            const result = await response.json();
+            (result.cohorts || []).forEach((cohort) => {
+                const option = document.createElement("option");
+                option.value = cohort.cohort_id;
+                option.textContent = `${cohort.cohort_name} / ${cohort.institution_name}`;
+                select.appendChild(option);
+            });
+        } catch (error) {
+            /* solo mode stays available */
+        }
+    }
+
     async function createRun() {
         createButton.disabled = true;
-        status.textContent = "Creating Golden Path run...";
+        status.textContent = "Creating Decision Case and locking snapshot...";
         try {
+            const cohortId = document.getElementById("run-cohort-input").value;
             const response = await fetch("/api/vertex/runs", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    title: document.getElementById("run-title-input").value || "VERTEX Golden Path run",
+                    title: document.getElementById("run-title-input").value || "VERTEX Decision Case",
+                    mode: cohortId ? "cohort" : document.getElementById("run-mode-input").value,
+                    cohort_id: cohortId,
+                    deadline: document.getElementById("run-deadline-input").value,
                     venture_stage: document.getElementById("run-stage-input").value,
                     operating_scope: document.getElementById("run-scope-input").value,
                     primary_city: document.getElementById("run-city-input").value || "Unknown",
@@ -155,11 +192,24 @@
                     consent_basis: document.getElementById("run-consent-basis-input").value,
                     consent_record_ref: document.getElementById("run-consent-ref-input").value,
                     allows_predictive_processing: document.getElementById("run-consent-predictive-input").checked,
-                    baseline_problem_statement: document.getElementById("baseline-problem-input").value,
-                    baseline_stakeholders: document.getElementById("baseline-stakeholders-input").value,
+                    initial_problem_statement: document.getElementById("baseline-problem-input").value,
+                    initial_customer: document.getElementById("baseline-customer-input").value,
+                    initial_user: document.getElementById("baseline-user-input").value,
+                    initial_payer: document.getElementById("baseline-payer-input").value,
+                    initial_approver: document.getElementById("baseline-approver-input").value,
+                    initial_blocker: document.getElementById("baseline-blocker-input").value,
+                    initial_stakeholders: document.getElementById("baseline-stakeholders-input").value,
+                    initial_assumptions: document.getElementById("baseline-assumptions-input").value,
+                    initial_evidence: document.getElementById("baseline-evidence-input").value,
                     baseline_intuition_price: document.getElementById("baseline-price-input").value,
                     baseline_price_currency: document.getElementById("baseline-price-currency-input").value,
-                    baseline_pricing_note: document.getElementById("baseline-pricing-note-input").value
+                    baseline_pricing_note: document.getElementById("baseline-pricing-note-input").value,
+                    main_variable_costs: document.getElementById("baseline-variable-costs-input").value,
+                    main_fixed_costs: document.getElementById("baseline-fixed-costs-input").value,
+                    current_decision: document.getElementById("baseline-decision-input").value,
+                    confidence_score: document.getElementById("baseline-confidence-input").value,
+                    biggest_uncertainty: document.getElementById("baseline-uncertainty-input").value,
+                    next_test: document.getElementById("baseline-next-test-input").value
                 })
             });
             if (response.status === 401) {
@@ -179,6 +229,7 @@
     }
 
     createButton.addEventListener("click", createRun);
+    loadCohorts();
     setRun(new URLSearchParams(window.location.search).get("run_id") || localStorage.getItem(storageKey));
 }());
 </script>
