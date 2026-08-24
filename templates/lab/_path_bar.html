@@ -13,6 +13,11 @@
     <h2>Golden Path</h2>
     <p>problem / system / behavior / numbers / decision</p>
   </div>
+  <div class="v4-evidence-gate" aria-label="Evidence Gate">
+    <span class="v4-gate-chip is-evidence">what I know</span>
+    <span class="v4-gate-chip is-hypothesis">what I assume</span>
+    <span class="v4-gate-chip is-risk">what still needs proof</span>
+  </div>
   <div class="v4-track"><i style="--fill: {{ ((stage - 1) / 5 * 100) | round(1) }}%"></i></div>
   <nav class="v4-stations" aria-label="Golden Path stages">
     {% for name, artifact, href in stations %}

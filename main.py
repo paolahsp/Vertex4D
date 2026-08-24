@@ -417,6 +417,66 @@ def score_average(scores: list[dict]) -> float | None:
     return round(sum(score_total(score) for score in scores) / (len(scores) * len(RUBRIC_FIELDS)), 2)
 
 
+RUBRIC_LABELS = {
+    "framing": "Framing",
+    "system_awareness": "System awareness",
+    "evidence_quality": "Evidence quality",
+    "behavioral_logic": "Behavioral logic",
+    "economic_coherence": "Economics",
+    "decision_action": "Decision action",
+}
+
+
+def score_field_average(scores: list[dict], field: str) -> float | None:
+    values = [int(score.get(field) or 0) for score in scores if score.get(field) is not None]
+    return round(sum(values) / len(values), 2) if values else None
+
+
+def score_dimension_movement(grouped_scores: dict[str, list[dict]]) -> list[dict]:
+    movement = []
+    baseline_by_field = {field: [] for field in RUBRIC_FIELDS}
+    post_by_field = {field: [] for field in RUBRIC_FIELDS}
+    for scores in grouped_scores.values():
+        for score in scores:
+            target = baseline_by_field if score.get("score_stage") == "baseline" else post_by_field if score.get("score_stage") == "post" else None
+            if target is None:
+                continue
+            for field in RUBRIC_FIELDS:
+                if score.get(field) is not None:
+                    target[field].append(score)
+    for field in RUBRIC_FIELDS:
+        before = score_field_average(baseline_by_field[field], field)
+        after = score_field_average(post_by_field[field], field)
+        movement.append({
+            "field": field,
+            "label": RUBRIC_LABELS[field],
+            "baseline": before,
+            "post": after,
+            "delta": round(after - before, 2) if before is not None and after is not None else None,
+        })
+    return movement
+
+
+def intervention_pattern_labels(baseline_locked: bool, complete: bool, comments: list[dict], score_count: int, price_changed: bool | None) -> list[str]:
+    labels = []
+    comment_text = " ".join(str(comment.get("comment_text") or "") for comment in comments).lower()
+    if any(word in comment_text for word in ["payer", "approver", "consent", "authorization", "authorise", "authorize"]):
+        labels.append("payer / approver confusion")
+    if any(word in comment_text for word in ["evidence", "proof", "validated", "unsupported"]):
+        labels.append("unsupported evidence")
+    if any(word in comment_text for word in ["price", "pricing", "margin", "economics", "cost"]):
+        labels.append("economics contradict plan")
+    if not baseline_locked:
+        labels.append("baseline missing")
+    if not complete:
+        labels.append("DecisionRecord missing")
+    if score_count == 0:
+        labels.append("rubric missing")
+    if price_changed is True:
+        labels.append("pricing changed")
+    return labels
+
+
 def build_facilitator_metrics(user: dict) -> dict:
     role = get_user_role(user)
     team_id = get_team_id(user)
@@ -518,6 +578,52 @@ def labels_from_system_map(system_map: dict | None) -> list[str]:
     return [stakeholder_label(item) for item in ((system_map or {}).get("stakeholders") or []) if stakeholder_label(item)]
 
 
+def qbi_summary_from_predictive(predictive: dict | None) -> list[dict]:
+    qbi = (predictive or {}).get("qbi_reading") or {}
+    if not qbi:
+        return []
+    rows = []
+    for item in (qbi.get("interpretation_states") or [])[:2]:
+        rows.append({"label": "coexisting reading", "statement": item.get("statement"), "classification": item.get("classification")})
+    for item in (qbi.get("actor_correlations") or [])[:1]:
+        rows.append({"label": "actor correlation", "statement": item.get("statement"), "classification": item.get("classification")})
+    for item in (qbi.get("context_loss_vectors") or [])[:1]:
+        rows.append({"label": f"context loss: {item.get('severity') or 'unknown'}", "statement": item.get("statement"), "classification": item.get("classification")})
+    pressure = qbi.get("commitment_pressure") or {}
+    if pressure.get("statement"):
+        rows.append({"label": f"commitment pressure: {pressure.get('collapse_risk') or 'unknown'}", "statement": pressure.get("statement"), "classification": pressure.get("classification")})
+    return [row for row in rows if row.get("statement")]
+
+
+def decision_memo_change_summary(baseline: dict, decision: dict | None, finance: dict | None, system_map: dict | None) -> dict:
+    selected = ((decision or {}).get("selected_decision") or {})
+    initial_decision = baseline.get("current_decision") or "not captured"
+    final_statement = selected.get("statement") or "DecisionRecord not saved yet"
+    initial_price = baseline.get("intuition_price")
+    final_price = first_pricing_value(finance)
+    currency = baseline.get("intuition_price_currency") or (finance or {}).get("currency") or ""
+    mapped_stakeholders = labels_from_system_map(system_map)
+    initial_stakeholders = baseline.get("initial_stakeholders") or []
+    reasons = []
+    if mapped_stakeholders:
+        reasons.append("stakeholder system changed")
+    if initial_price is not None and final_price is not None and round(float(initial_price), 2) != round(float(final_price), 2):
+        reasons.append("economics changed the commitment")
+    if (decision or {}).get("evidence_summary"):
+        reasons.append("evidence trail reviewed")
+    if (decision or {}).get("risks") or (decision or {}).get("unknowns"):
+        reasons.append("remaining risk preserved")
+    return {
+        "baseline_decision": initial_decision,
+        "reviewed_decision": final_statement,
+        "baseline_price": f"{currency} {initial_price}" if initial_price is not None else "missing",
+        "reviewed_price": f"{currency} {final_price}" if final_price is not None else "missing",
+        "baseline_stakeholders": ", ".join(str(item) for item in initial_stakeholders[:4]) if initial_stakeholders else "missing",
+        "reviewed_stakeholders": ", ".join(mapped_stakeholders[:4]) if mapped_stakeholders else "missing",
+        "why_changed": reasons or ["DecisionRecord not complete"],
+    }
+
+
 def compose_decision_memo(run_id: str, user: dict) -> dict:
     run = get_visible_run_or_404(run_id, user)
     events = database.list_events_for_runs([run_id]).get(run_id, [])
@@ -558,9 +664,11 @@ def compose_decision_memo(run_id: str, user: dict) -> dict:
         "initial_baseline_decision": baseline_decision,
         "final_decision": final_decision_text,
         "decision_changed": decision_changed,
+        "what_changed": decision_memo_change_summary(baseline, decision, finance, system_map),
         "problem_statement": ((problem or {}).get("reframed_problem") or {}).get("statement") or baseline.get("initial_problem_statement") or "missing",
         "key_stakeholders": labels_from_system_map(system_map) or baseline.get("initial_stakeholders") or [],
         "key_adoption_resistance_hypothesis": (predictive_responses[0].get("simulated_response") if predictive_responses else "missing"),
+        "qbi_reading_summary": qbi_summary_from_predictive(predictive),
         "pricing_financial_insight": pricing_insight,
         "evidence_supporting_decision": evidence,
         "risks_unknowns_remaining": risks + unknowns,
@@ -622,6 +730,7 @@ def compose_cohort_outcome_report(cohort_id: str) -> dict:
     comment_counts = database.open_comment_counts(run_ids)
     score_summary = score_summary_for_runs(run_ids)
     cases = []
+    intervention_patterns: dict[str, int] = {}
     totals = {
         "cases": len(runs),
         "completed_cases": 0,
@@ -636,12 +745,14 @@ def compose_cohort_outcome_report(cohort_id: str) -> dict:
         "would_pay_yes": 0,
         "would_recommend_yes": 0,
         "cases_needing_intervention": 0,
+        "paired_cases": 0,
     }
     for run in runs:
         run_id = run["run_id"]
         events = events_by_run.get(run_id, [])
         baseline = database.get_decision_baseline(run_id) or latest_event_payload(events, "metric_baseline_captured")
         feedback = latest_event_payload(events, "pilot_feedback_captured")
+        comments = database.list_case_comments(run_id)
         problem = artifacts.load_artifact(run_id, "problem_frame")
         system_map = artifacts.load_artifact(run_id, "system_map")
         finance = artifacts.load_artifact(run_id, "financial_scenario")
@@ -658,6 +769,8 @@ def compose_cohort_outcome_report(cohort_id: str) -> dict:
         complete = bool(decision)
         baseline_locked = bool(baseline.get("locked_at") or run.get("baseline_locked_at"))
         needs_intervention = not baseline_locked or not complete or comment_counts.get(run_id, 0) > 0
+        quality = score_summary["by_run"].get(run_id, {"baseline_avg": None, "post_avg": None, "delta": None, "score_count": 0})
+        paired = bool(baseline_locked and quality.get("post_avg") is not None)
         totals["completed_cases"] += 1 if complete else 0
         totals["locked_baselines"] += 1 if baseline_locked else 0
         totals["decision_records"] += 1 if decision else 0
@@ -670,6 +783,9 @@ def compose_cohort_outcome_report(cohort_id: str) -> dict:
         totals["would_pay_yes"] += 1 if feedback.get("would_pay") == "yes" else 0
         totals["would_recommend_yes"] += 1 if feedback.get("would_recommend") == "yes" else 0
         totals["cases_needing_intervention"] += 1 if needs_intervention else 0
+        totals["paired_cases"] += 1 if paired else 0
+        for pattern in intervention_pattern_labels(baseline_locked, complete, comments, quality.get("score_count", 0), price_changed if initial_price is not None and final_price is not None else None):
+            intervention_patterns[pattern] = intervention_patterns.get(pattern, 0) + 1
         cases.append({
             "run_id": run_id,
             "case_title": run.get("case_title") or run.get("title"),
@@ -684,8 +800,15 @@ def compose_cohort_outcome_report(cohort_id: str) -> dict:
             "would_recommend": feedback.get("would_recommend") or "missing",
             "ai_calls": usage["calls"],
             "open_comments": comment_counts.get(run_id, 0),
-            "quality_scores": score_summary["by_run"].get(run_id, {"baseline_avg": None, "post_avg": None, "delta": None, "score_count": 0}),
+            "quality_scores": quality,
             "needs_intervention": needs_intervention,
+            "before_after": {
+                "baseline_decision": baseline.get("current_decision") or "missing",
+                "final_decision": ((decision or {}).get("selected_decision") or {}).get("statement") or "missing",
+                "baseline_price": baseline.get("intuition_price"),
+                "final_price": final_price,
+                "currency": baseline.get("intuition_price_currency") or (finance or {}).get("currency") or "",
+            },
             "missing": [
                 label for label, missing in [
                     ("locked baseline", not baseline_locked),
@@ -696,12 +819,18 @@ def compose_cohort_outcome_report(cohort_id: str) -> dict:
             ],
         })
     totals["completion_rate"] = round(totals["completed_cases"] / totals["cases"] * 100, 1) if totals["cases"] else 0
+    totals["paired_rate"] = round(totals["paired_cases"] / totals["cases"] * 100, 1) if totals["cases"] else 0
+    totals["missing_paired"] = max(0, totals["cases"] - totals["paired_cases"])
     totals["would_pay_yes_rate"] = round(totals["would_pay_yes"] / totals["feedback_captured"] * 100, 1) if totals["feedback_captured"] else 0
     totals["would_recommend_yes_rate"] = round(totals["would_recommend_yes"] / totals["feedback_captured"] * 100, 1) if totals["feedback_captured"] else 0
+    before_after_case = next((case for case in cases if case.get("decision_changed") or case.get("price_changed")), cases[0] if cases else None)
     return {
         "cohort": cohort,
         "totals": totals,
         "quality_scores": score_summary,
+        "skill_movement": score_dimension_movement(database.list_decision_quality_scores(run_ids)),
+        "top_interventions": [{"label": label, "count": count} for label, count in sorted(intervention_patterns.items(), key=lambda item: item[1], reverse=True)[:5]],
+        "before_after_case": before_after_case,
         "cases": cases,
         "empty_state": "No Decision Cases belong to this cohort yet." if not runs else "",
         "note": "Missing data is marked as missing. This report does not fabricate outcomes or predict startup success.",
@@ -727,21 +856,47 @@ def compose_cohort_management(cohort_id: str, user: dict) -> dict:
         comments = comments_by_case.get(case["run_id"], [])
         open_comments = [comment for comment in comments if comment.get("status") == "open"]
         decision = artifacts.load_artifact(case["run_id"], "decision_record")
-        intervention_reasons = [
-            label for label, active in [
-                ("baseline not locked", not case.get("baseline_locked_at")),
-                ("DecisionRecord missing", decision is None),
-                ("open facilitator comments", bool(open_comments)),
-                ("baseline score missing", not baseline_scores),
-                ("post score missing", not post_scores),
+        decision_interventions = []
+        comment_workflow_attention = []
+        decision_keywords = (
+            "adoption", "approval path", "approver", "assumption", "blocker", "buyer",
+            "consent", "contradiction", "customer", "economic", "evidence", "payer",
+            "price", "pricing", "resistance", "stakeholder",
+        )
+        for comment in open_comments:
+            comment_text = comment.get("comment_text") or "Open facilitator comment needs review."
+            lower_comment = comment_text.lower()
+            signal = {
+                "label": f"{comment.get('artifact_type') or 'case'} needs judgment",
+                "detail": comment_text,
+            }
+            if any(keyword in lower_comment for keyword in decision_keywords):
+                decision_interventions.append(signal)
+            else:
+                comment_workflow_attention.append({
+                    "label": "open facilitator comment",
+                    "detail": comment_text,
+                })
+        workflow_attention = [
+            {"label": label, "detail": detail}
+            for label, detail, active in [
+                ("baseline not locked", "The before state is missing or legacy; cohort change cannot be compared cleanly.", not case.get("baseline_locked_at")),
+                ("DecisionRecord missing", "The case has not been closed into a final decision artifact.", decision is None),
+                ("baseline score missing", "No baseline rubric score has been saved for this case.", not baseline_scores),
+                ("post score missing", "No post rubric score has been saved for this case.", not post_scores),
             ] if active
         ]
+        workflow_attention = [*comment_workflow_attention, *workflow_attention]
+        intervention_reasons = (["open facilitator comments"] if open_comments else []) + [item["label"] for item in workflow_attention]
         managed_cases.append({
             **case,
             "comments": comments,
             "open_comments": open_comments,
             "resolved_comments": [comment for comment in comments if comment.get("status") == "resolved"],
             "needs_intervention": bool(intervention_reasons),
+            "has_decision_intervention": bool(decision_interventions),
+            "decision_interventions": decision_interventions,
+            "workflow_attention": workflow_attention,
             "intervention_reasons": intervention_reasons,
             "scores": scores,
             "score_summary": {
@@ -765,6 +920,7 @@ def compose_cohort_management(cohort_id: str, user: dict) -> dict:
             "available_runs": len(available_runs),
             "open_comments": sum(len(case["open_comments"]) for case in managed_cases),
             "needs_intervention": sum(1 for case in managed_cases if case["needs_intervention"]),
+            "decision_interventions": sum(1 for case in managed_cases if case["has_decision_intervention"]),
         },
     }
 def build_vertex_golden_case_view_model():

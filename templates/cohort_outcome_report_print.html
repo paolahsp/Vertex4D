@@ -60,15 +60,51 @@
     </section>
 
     <section class="stats section">
-        <div class="box"><b>Total cases</b><strong>{{ report.totals.cases }}</strong></div>
-        <div class="box"><b>Completion rate</b><strong>{{ report.totals.completion_rate }}%</strong></div>
+        <div class="box"><b>Paired cases</b><strong>{{ report.totals.paired_cases }} / {{ report.totals.cases }}</strong></div>
+        <div class="box"><b>Decision changes</b><strong>{{ report.totals.decision_changes }}</strong></div>
+        <div class="box"><b>Decision interventions</b><strong>{{ report.totals.cases_needing_intervention }}</strong></div>
+        <div class="box"><b>Missing paired</b><strong>{{ report.totals.missing_paired }} / {{ report.totals.cases }}</strong></div>
+    </section>
+
+    <section class="section">
+        <h2>Decision Skill Movement</h2>
+        <table>
+            <thead><tr><th>Skill</th><th>Baseline avg</th><th>Post avg</th><th>Delta</th></tr></thead>
+            <tbody>
+                {% for skill in report.skill_movement %}
+                <tr><td>{{ skill.label }}</td><td>{{ skill.baseline or 'missing' }}</td><td>{{ skill.post or 'missing' }}</td><td>{{ skill.delta if skill.delta is not none else 'missing' }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="stats section">
+        <div class="box"><b>Top interventions</b>{% for item in report.top_interventions %}{{ item.count }} {{ item.label }}{% if not loop.last %}<br>{% endif %}{% else %}none recorded{% endfor %}</div>
         <div class="box"><b>Locked baselines</b><strong>{{ report.totals.locked_baselines }}</strong></div>
         <div class="box"><b>DecisionRecords</b><strong>{{ report.totals.decision_records }}</strong></div>
         <div class="box"><b>Stakeholder delta</b><strong>+{{ report.totals.stakeholder_delta }}</strong></div>
         <div class="box"><b>Price changes</b><strong>{{ report.totals.price_changes }}</strong></div>
-        <div class="box"><b>Decision changes</b><strong>{{ report.totals.decision_changes }}</strong></div>
-        <div class="box"><b>Need intervention</b><strong>{{ report.totals.cases_needing_intervention }}</strong></div>
+        <div class="box"><b>Completion rate</b><strong>{{ report.totals.completion_rate }}%</strong></div>
+        <div class="box"><b>Rubric delta</b><strong>{{ report.quality_scores.avg_delta if report.quality_scores.avg_delta is not none else 'missing' }}</strong></div>
+        <div class="box"><b>AI usage</b>{{ report.totals.ai_calls }} calls / {{ report.totals.ai_tokens }} tokens</div>
     </section>
+
+    {% if report.before_after_case %}
+    <section class="section">
+        <h2>One Before -> After Case</h2>
+        <table>
+            <thead><tr><th>Case</th><th>Baseline</th><th>Reviewed decision</th><th>Other movement</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td>{{ report.before_after_case.case_title }}</td>
+                    <td>{{ report.before_after_case.before_after.baseline_decision }}<br>Price: {{ report.before_after_case.before_after.currency }} {{ report.before_after_case.before_after.baseline_price or 'missing' }}</td>
+                    <td>{{ report.before_after_case.before_after.final_decision }}<br>Price: {{ report.before_after_case.before_after.currency }} {{ report.before_after_case.before_after.final_price or 'missing' }}</td>
+                    <td>Stakeholder delta +{{ report.before_after_case.stakeholder_delta }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+    {% endif %}
 
     <section class="stats section">
         <div class="box"><b>Rubric baseline avg</b>{{ report.quality_scores.avg_baseline_score or 'missing' }}</div>

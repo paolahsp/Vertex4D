@@ -16,7 +16,7 @@ Checking `$schema` alone does not prove a schema is valid; the official validato
 1. `ProjectRecord` creates the project container, synthetic-data declaration, revision metadata and current artifact references.
 2. `ProblemFrame` represents future Alex output: original challenge, reframed problem, needs, assumptions, tensions, unknowns and Four Dimensions analysis.
 3. `SystemMap` represents future SynapMap output: stakeholders, roles, relationships, dependencies, tensions, evidence references, boundaries and approved assumptions.
-4. `PredictiveHypothesis` represents a future internal D-Predict scenario result. It is always a bounded simulation hypothesis.
+4. `PredictiveHypothesis` represents a future internal D-Predict scenario result. It is always a bounded simulation hypothesis and now includes a product-facing `qbi_reading`.
 5. `FinancialScenario` represents a future FinOps adapter output. It is a contract, not a calculator.
 6. `DecisionRecord` is the final VERTEX artifact. It links all upstream artifacts and preserves evidence, assumptions, hypotheses, risks and unknowns.
 
@@ -49,6 +49,8 @@ Financial assumptions for service fee, washing cost, setup buffer and pilot volu
 `PredictiveHypothesis` is bounded to `stakeholder_adoption_resistance`. Every simulated response includes adoption, resistance and undecided likelihoods; the validator checks that they sum to 1 within tolerance.
 
 `PredictiveHypothesis` has `classification: predictive_hypothesis` and carries the required not-evidence warning. The `DecisionRecord` may summarize predictive hypotheses, but it must never convert them into evidence or facts.
+
+The `qbi_reading` block is QBI lite, not the full formal model. It captures coexisting interpretation states, actor correlations, context-loss vectors and commitment pressure while preserving the same contract rules: every referenced stakeholder, relationship, assumption, signal, cascade, evidence item or unknown must resolve to the upstream artifact chain, and every QBI statement remains classified as `hypothesis`.
 
 ## Structured Success Criteria
 

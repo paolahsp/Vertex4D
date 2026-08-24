@@ -951,6 +951,23 @@ header, .head, .sgp-header, .fd-header, .gp-header, .think-header, .aa-header {
 .v4-rowcap { align-items: baseline; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; margin-bottom: 18px; }
 .v4-rowcap h2 { font: 600 16px/1.2 var(--font-display) !important; margin: 0; }
 .v4-rowcap p { color: var(--fg2); font: 400 10.5px/1.4 var(--font-mono); margin: 0; }
+.v4-evidence-gate {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: -6px 0 18px;
+}
+.v4-gate-chip {
+    border: 1px solid var(--edge);
+    border-radius: var(--radius-chip);
+    display: inline-flex;
+    font: 700 10.5px/1.2 var(--font-mono);
+    padding: 6px 8px;
+}
+.v4-gate-chip.is-evidence { background: var(--evidence-chip); border-color: color-mix(in srgb, var(--mint) 42%, transparent); color: var(--evidence-text); }
+.v4-gate-chip.is-hypothesis { background: var(--hypothesis-chip); border-color: color-mix(in srgb, var(--lav) 42%, transparent); color: var(--hypothesis-text); }
+.v4-gate-chip.is-risk { background: var(--risk-chip); border-color: color-mix(in srgb, var(--coral) 42%, transparent); color: var(--risk-text); }
 .v4-track { background: var(--track); border-radius: 3px; height: 3px; margin: 0 20px; position: relative; }
 .v4-track i { background: var(--act); border-radius: 3px; bottom: 0; left: 0; position: absolute; top: 0; width: var(--fill, 0%); }
 .v4-stations { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); margin-top: -8px; }
@@ -1829,4 +1846,120 @@ body.srsly-module .bg-dots {
         linear-gradient(rgba(91, 19, 236, .06) 1px, transparent 1px),
         linear-gradient(90deg, rgba(91, 19, 236, .06) 1px, transparent 1px) !important;
     background-size: 18px 18px !important;
+}
+
+/* Institutional demo hardening: keep the recovered module shell aligned with
+   the VERTEX 4D visual system and readable in buyer-facing light mode. */
+body.srsly-module {
+    color: var(--fg) !important;
+    font-family: var(--font-body) !important;
+}
+
+body.srsly-module .v4-brand b,
+body.srsly-module .v4-h1,
+body.srsly-module .title,
+body.srsly-module .gp-title,
+body.srsly-module .think-title,
+body.srsly-module h1,
+body.srsly-module h2,
+body.srsly-module h3,
+body.srsly-module .cm-case h2,
+body.srsly-module .cm-panel h2 {
+    color: var(--fg) !important;
+    font-family: var(--font-display) !important;
+}
+
+body.srsly-module .v4-brand i,
+body.srsly-module .v4-lede,
+body.srsly-module .copy,
+body.srsly-module .v4-shift,
+body.srsly-module .v4-empty,
+body.srsly-module .gp-copy,
+body.srsly-module .think-copy,
+body.srsly-module .cm-muted,
+body.srsly-module .memo-panel p,
+body.srsly-module .memo-panel li,
+body.srsly-module td {
+    color: var(--fg2) !important;
+}
+
+body.srsly-module .v4-runtag,
+body.srsly-module .v4-plabel,
+body.srsly-module .sgp-field label,
+body.srsly-module .cm-field label,
+body.srsly-module th,
+body.srsly-module .cm-score-table th {
+    color: var(--fg3) !important;
+}
+
+body.srsly-module .v4-head,
+body.srsly-module .v4-panel,
+body.srsly-module .hero,
+body.srsly-module .card,
+body.srsly-module .question,
+body.srsly-module .mini,
+body.srsly-module .metric,
+body.srsly-module .sgp-panel,
+body.srsly-module .sgp-card,
+body.srsly-module .sgp-step,
+body.srsly-module .sgp-aside,
+body.srsly-module .gp-card,
+body.srsly-module .gp-stage,
+body.srsly-module .gp-mini,
+body.srsly-module .think-card,
+body.srsly-module .think-panel,
+body.srsly-module .cm-panel,
+body.srsly-module .cm-case,
+body.srsly-module .memo-panel,
+body.srsly-module .memo-decision,
+body.srsly-module .cor-table {
+    background: var(--glass2) !important;
+    border-color: var(--edge) !important;
+    color: var(--fg) !important;
+}
+
+body.srsly-module .v4-t,
+body.srsly-module .memo-decision-card,
+body.srsly-module .cm-signal,
+body.srsly-module .cm-chip,
+body.srsly-module .cor-chip,
+body.srsly-module .memo-chip {
+    background: var(--glass) !important;
+    border-color: var(--edge) !important;
+}
+
+html[data-theme="light"] body.srsly-module .cm-chip.warn,
+html[data-theme="light"] body.srsly-module .cor-chip.warn,
+html[data-theme="light"] body.srsly-module .memo-list.risk .memo-chip {
+    background: var(--risk-chip) !important;
+    border-color: color-mix(in srgb, var(--coral) 46%, transparent) !important;
+    color: var(--risk-text) !important;
+}
+
+html[data-theme="light"] body.srsly-module .cm-chip.ok,
+html[data-theme="light"] body.srsly-module .memo-list:not(.risk) .memo-chip {
+    background: var(--evidence-chip) !important;
+    border-color: color-mix(in srgb, var(--mint) 46%, transparent) !important;
+    color: var(--evidence-text) !important;
+}
+
+html[data-theme="light"] body.srsly-module .cm-chip.workflow,
+html[data-theme="light"] body.srsly-module .cor-chip,
+html[data-theme="light"] body.srsly-module .memo-chip {
+    background: var(--hypothesis-chip) !important;
+    border-color: color-mix(in srgb, var(--lav) 46%, transparent) !important;
+    color: var(--hypothesis-text) !important;
+}
+
+html[data-theme="light"] body.srsly-module .cm-chip.decision,
+html[data-theme="light"] body.srsly-module .cm-signal.is-decision {
+    background: var(--risk-chip) !important;
+    border-color: color-mix(in srgb, var(--coral) 46%, transparent) !important;
+    color: var(--risk-text) !important;
+}
+
+body.srsly-module input,
+body.srsly-module textarea,
+body.srsly-module select {
+    color: var(--fg) !important;
 }

@@ -6,7 +6,23 @@ Founder programs generate a lot of activity: workshops, mentor meetings, pitch p
 
 Did founders make better decisions by the end of the cohort?
 
-VERTEX is a decision-readiness system for founder cohorts. It captures a founder's baseline intuition, guides the team through problem framing, stakeholder systems, adoption/resistance hypotheses, economics, and a final DecisionRecord, then gives the facilitator a cohort-level view of progress and intervention need.
+VERTEX is a decision-readiness system for entrepreneurship programs. It shows where founders' reasoning changes, where evidence is still weak, and where facilitators need to intervene, then turns those changes into a cohort-level record the institution can use.
+
+The commercial value is best understood as three connected objects:
+
+- Founder: `Decision Case` - a traceable decision file that helps a founder understand what changed and what to do next.
+- Facilitator: `Intervention Radar` - a live view of which teams need help and why.
+- Buyer: `Cohort Outcome Report` - an institutional artifact showing what changed during the program without claiming startup success.
+
+The Decision Memo demonstrates individual value. The Cohort Outcome Report demonstrates institutional value.
+
+One-sentence buyer promise:
+
+Know where to intervene. Show what changed.
+
+Core no-overclaim line:
+
+VERTEX does not predict whether a startup will succeed. It makes the quality and evidence behind today's decision more visible.
 
 ## Pain VERTEX solves
 
@@ -19,6 +35,14 @@ Institutions need to show founder progress without relying on anecdotes, pitch-d
 - What can be shown to leadership, sponsors, funders, or boards?
 
 VERTEX turns those questions into a visible cohort workflow.
+
+For a program director, the most concrete job-to-be-done is:
+
+"Tell my facilitator team where to intervene and why."
+
+There is a second job at the end of the program:
+
+"Show me what changed across this cohort in a form I can credibly use with leadership, funders, and the next program design."
 
 ## Why cohort-level decision quality matters
 
@@ -36,6 +60,8 @@ A paid VERTEX pilot should prove that:
 - Outcome Reports are useful institutional artifacts.
 - Before/post rubric scores and changed decisions create a credible program-learning story.
 - The buyer values decision quality enough to pay for another cohort.
+
+It should not claim causal proof from a simple before/after design. A pilot can show measured change and buyer utility; it cannot prove that VERTEX alone caused all observed change.
 
 ## What VERTEX is not
 

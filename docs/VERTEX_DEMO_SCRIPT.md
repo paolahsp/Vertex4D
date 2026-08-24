@@ -1,6 +1,145 @@
 # VERTEX Institutional Buyer Demo Script
 
-## 8-12 minute flow
+## Current recommended version
+
+For the next commercial rehearsal, use `docs/VERTEX_COMMERCIAL_REHEARSAL.md` first.
+
+This script remains a feature-complete institutional demo path. The commercial rehearsal is tighter: it tells one transformation story, then switches into the facilitator and buyer view through Intervention Radar and Cohort Outcome Report.
+
+## 9-10 minute buyer demo flow
+
+Rule:
+
+Do not show how VERTEX works until the buyer has seen a decision change.
+
+Target timing:
+
+| Time | Moment |
+| --- | --- |
+| 0:00 | Buyer problem |
+| 0:30 | Baseline belief |
+| 1:15 | Decision changed |
+| 2:30 | Decision Memo |
+| 4:00 | Switch to Program Director |
+| 4:30 | Intervention Radar |
+| 6:15 | Cohort Outcome Report |
+| 8:15 | What the pilot measures |
+| 9:15 | Name the cohort + next step |
+
+### Opening
+
+Ask first:
+
+"Before I show you anything: when a cohort ends, what can you demonstrate today about how founder decision-making changed beyond attendance, workshops and pitch decks?"
+
+Pause.
+
+Then say:
+
+"That is what VERTEX is designed to make visible. I will show one founder decision changing, then switch into the Program Director view."
+
+Avoid opening with:
+
+- a feature tour;
+- login;
+- module explanations;
+- schema IDs;
+- claims that VERTEX improves outcomes.
+
+### First aha: before -> after
+
+Say:
+
+"RepairLoop entered with this baseline belief: a price intuition, a stakeholder assumption and a current decision. VERTEX preserved that starting point. After the system and economics were reviewed, the team was no longer making the same decision."
+
+Click:
+
+- Open `/dashboard/lab/decision-memo?run_id=run_demo_economics_changed`.
+- Point to `What changed?`.
+- Point to baseline -> reviewed decision.
+- Point to why it changed.
+
+Buyer should notice:
+
+- VERTEX does not claim the startup will succeed.
+- VERTEX shows why the next commitment changed.
+- The artifact is a decision record, not a chatbot answer.
+
+Say:
+
+"VERTEX did not validate the startup. It made explicit why the next commitment should change."
+
+### Switch to Program Director
+
+Say:
+
+"That is useful for one founder. But the institutional job is different: if I am responsible for twenty teams, I cannot read twenty memos every Tuesday."
+
+Click:
+
+- Open `/dashboard/facilitator/cohorts/{cohort_id}`.
+
+### Intervention Radar
+
+Say:
+
+"This is not a progress alert. The first card is a decision intervention. SkillBridge still has an unresolved school consent path. The team may be treating the user as if they are also payer and approver."
+
+Point to:
+
+- decision intervention first;
+- workflow attention second.
+
+Say:
+
+"We separate decision intervention from workflow attention because missing post scores are administration. Payer confusion is VERTEX."
+
+Avoid:
+
+- adding a comment live;
+- resolving a comment live;
+- spending time on task-management behavior.
+
+### Outcome Report
+
+Say:
+
+"This is what the Program Director can keep: not a dashboard screenshot, but a report of what changed, where intervention was needed, and what data is still missing."
+
+Click:
+
+- Open `/dashboard/facilitator/cohorts/{cohort_id}/outcome-report`.
+- Show paired cases, decision changes, interventions and missing paired data.
+- Show decision skill movement.
+- Show one before -> after case.
+
+Say:
+
+"Missing stays missing. VERTEX does not invent a post score to make the report look complete."
+
+### Pilot scope
+
+Say:
+
+"The pilot does not try to prove causality. It tests feasibility, observed change, facilitator usefulness and whether this report is useful enough to run another cohort."
+
+### Closing ask
+
+Ask:
+
+"Thinking about the next 90 days, which cohort would be the cleanest candidate to test this with real founders?"
+
+If they name one:
+
+"Good. The next step is to define that cohort, success criteria and your data/security review. For up to 15 teams, the pilot is EUR 5,500 fixed for 4-6 weeks. If that is within range, we can close scope in a 30-minute pilot planning session."
+
+Do not close with:
+
+"Would this visibility help?"
+
+That produces polite interest, not a qualified opportunity.
+
+## Feature-complete appendix flow
 
 Audience: incubator director, university entrepreneurship center director, accelerator program manager, or economic-development program lead.
 
@@ -8,11 +147,11 @@ Audience: incubator director, university entrepreneurship center director, accel
 
 Say:
 
-"Most founder programs can see attendance, mentor notes, and pitch outcomes. What is harder to see is whether founders made better decisions by the end of the cohort. VERTEX is built around that question: what changed between initial intuition and final decision, and what evidence supports the change?"
+"Your program already tracks activity: workshops, mentor sessions, milestones and pitch outcomes. The harder question is what changed in the founder's reasoning, why it changed, and where your team should intervene before more resources are committed. VERTEX makes that decision trail visible across the cohort."
 
 Click:
 
-- Sign in as `facilitator@northstar-demo.example`.
+- Use an already-authenticated browser.
 - Open `/dashboard/facilitator`.
 
 Buyer should notice:
@@ -24,6 +163,7 @@ Avoid:
 
 - "VERTEX predicts which startups will win."
 - "The AI validates the business."
+- "Your current systems cannot show outcomes."
 
 ### 2. Facilitator dashboard
 
@@ -61,7 +201,7 @@ Buyer should notice:
 
 Say:
 
-"This queue is where VERTEX becomes useful during the cohort, not only at the end. It shows which teams need intervention and why."
+"This queue is where VERTEX becomes useful during the cohort, not only at the end. It shows which teams need human attention and why. The strongest signals are not merely missing tasks; they are business reasoning risks that need facilitator judgment."
 
 Click:
 
@@ -72,6 +212,7 @@ Buyer should notice:
 
 - SkillBridge needs post-score and comment resolution.
 - ClinicFlow has a baseline risk because it was imported without a locked baseline.
+- The hero signal is the substantive unresolved decision issue, not workflow hygiene alone.
 
 Fallback if data is missing:
 
@@ -94,6 +235,8 @@ Buyer should notice:
 - The founder is not simply filling a form; VERTEX is revealing the blocker in the business system.
 
 ### 6. Add or resolve comment
+
+Use only in an appendix or second demo. Do not include this in the first commercial pass.
 
 Say:
 
@@ -139,11 +282,13 @@ Click:
 - Open `/dashboard/lab/decision-memo?run_id=run_demo_economics_changed`.
 - Point to pricing insight: intuition price to modelled price.
 - Point to traceability chips.
+- Translate traceability as evidence provenance rather than raw IDs.
 
 Buyer should notice:
 
 - VERTEX connects baseline intuition to final decision.
 - RepairLoop changed economic understanding before committing resources.
+- The buyer can inspect where conclusions came from without buying technical identifiers.
 
 ### 9. Open Outcome Report
 
@@ -169,7 +314,7 @@ Say:
 
 Call to action:
 
-"The next step I would propose is a paid 4-6 week pilot with one cohort, using VERTEX to capture baselines, facilitator interventions, DecisionRecords, and a final outcome report for the program debrief."
+"Thinking about the next 90 days, which cohort would be the cleanest candidate to test this with real founders?"
 
 ## Phrases to use
 
@@ -179,6 +324,9 @@ Call to action:
 - "intervention need"
 - "cohort outcome"
 - "missing data is marked as missing"
+- "decision intervention, not workflow attention"
+- "a traceable change, not an AI answer"
+- "missing stays missing"
 
 ## Phrases to avoid
 
@@ -188,3 +336,6 @@ Call to action:
 - "automated accelerator"
 - "founder CRM"
 - "the score says this company is good"
+- "the method works"
+- "nobody else can do this"
+- "below the tender threshold"

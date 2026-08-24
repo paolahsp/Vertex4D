@@ -60,8 +60,25 @@
     </section>
 
     <section class="verdict section">
-        <h2>Final Decision</h2>
-        <p>{{ memo.final_decision }}</p>
+        <h2>What Changed?</h2>
+        <table>
+            <thead><tr><th>Baseline</th><th>Reviewed decision</th><th>Why it changed</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <b>{{ memo.what_changed.baseline_decision }}</b><br>
+                        Price: {{ memo.what_changed.baseline_price }}<br>
+                        Stakeholders: {{ memo.what_changed.baseline_stakeholders }}
+                    </td>
+                    <td>
+                        <b>{{ memo.what_changed.reviewed_decision }}</b><br>
+                        Price: {{ memo.what_changed.reviewed_price }}<br>
+                        Stakeholders: {{ memo.what_changed.reviewed_stakeholders }}
+                    </td>
+                    <td>{{ memo.what_changed.why_changed | join(', ') }}</td>
+                </tr>
+            </tbody>
+        </table>
         <p class="small">This memo documents decision quality and traceability. It does not predict startup success.</p>
     </section>
 
@@ -83,6 +100,21 @@
     <section class="section">
         <h2>Adoption / Resistance Hypothesis</h2>
         <p>{{ memo.key_adoption_resistance_hypothesis }}</p>
+    </section>
+
+    <section class="section">
+        <h2>QBI Lite Reading</h2>
+        <table>
+            <thead><tr><th>Signal</th><th>Statement</th><th>Classification</th></tr></thead>
+            <tbody>
+                {% for item in memo.qbi_reading_summary %}
+                <tr><td>{{ item.label }}</td><td>{{ item.statement }}</td><td>{{ item.classification }}</td></tr>
+                {% else %}
+                <tr><td colspan="3">Missing QBI reading.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="small">QBI lite preserves competing interpretations and context risk. It is not direct evidence or a full formal QBI model.</p>
     </section>
 
     <section class="section">

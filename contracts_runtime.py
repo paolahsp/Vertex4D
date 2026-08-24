@@ -131,6 +131,8 @@ def system_registries(upstream: dict[str, dict[str, Any]]) -> dict[str, dict[str
     approved_assumptions = indexed(system.get("approved_assumptions", []), "assumption_id")
     stakeholders = indexed(system.get("stakeholders", []), "stakeholder_id")
     relationships = indexed(system.get("relationships", []), "relationship_id")
+    problem_unknowns = indexed(problem.get("unknowns", []), "id")
+    system_unknowns = indexed(system.get("unknowns", []), "id")
     return {
         "evidence": evidence,
         "approved_assumptions": approved_assumptions,
@@ -138,6 +140,7 @@ def system_registries(upstream: dict[str, dict[str, Any]]) -> dict[str, dict[str
         "approved_financial": {key for key, item in approved_assumptions.items() if item.get("approved_for_financial_processing") is True},
         "stakeholders": set(stakeholders),
         "relationships": set(relationships),
+        "unknowns": set(problem_unknowns) | set(system_unknowns),
     }
 
 
@@ -189,6 +192,32 @@ def predictive_rule_errors(artifact: dict[str, Any], upstream: dict[str, dict[st
     for index, cascade in enumerate(artifact.get("possible_cascades", [])):
         if cascade.get("classification") != "hypothesis":
             errors.append({"path": f"possible_cascades.{index}.classification", "message": f"cascade must remain hypothesis: {cascade.get('cascade_id')}"})
+    qbi = artifact.get("qbi_reading") or {}
+    for index, item in enumerate(qbi.get("interpretation_states", [])):
+        missing_stakeholders = sorted(set(item.get("stakeholder_ids", [])) - registries["stakeholders"])
+        if missing_stakeholders:
+            errors.append({"path": f"qbi_reading.interpretation_states.{index}.stakeholder_ids", "message": f"QBI interpretation stakeholder reference unresolved: {', '.join(missing_stakeholders)}"})
+        unapproved_qbi = sorted(set(item.get("assumption_ids", [])) - registries["approved_predictive"])
+        if unapproved_qbi:
+            errors.append({"path": f"qbi_reading.interpretation_states.{index}.assumption_ids", "message": f"QBI interpretation uses unapproved predictive assumption: {', '.join(unapproved_qbi)}"})
+    for index, item in enumerate(qbi.get("actor_correlations", [])):
+        missing_stakeholders = sorted(set(item.get("stakeholder_ids", [])) - registries["stakeholders"])
+        missing_relationships = sorted(set(item.get("relationship_ids", [])) - registries["relationships"])
+        if missing_stakeholders:
+            errors.append({"path": f"qbi_reading.actor_correlations.{index}.stakeholder_ids", "message": f"QBI correlation stakeholder reference unresolved: {', '.join(missing_stakeholders)}"})
+        if missing_relationships:
+            errors.append({"path": f"qbi_reading.actor_correlations.{index}.relationship_ids", "message": f"QBI correlation relationship reference unresolved: {', '.join(missing_relationships)}"})
+    signal_ids = {item.get("signal_id") for item in artifact.get("adoption_signals", []) + artifact.get("resistance_signals", []) if isinstance(item.get("signal_id"), str)}
+    cascade_ids = {item.get("cascade_id") for item in artifact.get("possible_cascades", []) if isinstance(item.get("cascade_id"), str)}
+    allowed_qbi_refs = set(registries["evidence"]) | set(registries["approved_assumptions"]) | registries["stakeholders"] | registries["relationships"] | registries["unknowns"] | signal_ids | cascade_ids
+    for index, item in enumerate(qbi.get("context_loss_vectors", [])):
+        missing = sorted(set(item.get("source_refs", [])) - allowed_qbi_refs)
+        if missing:
+            errors.append({"path": f"qbi_reading.context_loss_vectors.{index}.source_refs", "message": f"QBI context-loss source_ref does not resolve: {', '.join(missing)}"})
+    pressure = qbi.get("commitment_pressure") or {}
+    missing = sorted(set(pressure.get("decision_trigger_refs", [])) - allowed_qbi_refs)
+    if missing:
+        errors.append({"path": "qbi_reading.commitment_pressure.decision_trigger_refs", "message": f"QBI commitment trigger_ref does not resolve: {', '.join(missing)}"})
     return errors
 
 

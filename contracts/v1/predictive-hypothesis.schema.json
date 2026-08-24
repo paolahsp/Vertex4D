@@ -23,6 +23,7 @@
     "adoption_signals",
     "resistance_signals",
     "possible_cascades",
+    "qbi_reading",
     "uncertainty",
     "limitations",
     "confidence",
@@ -481,6 +482,205 @@
         }
       },
       "minItems": 1
+    },
+    "qbi_reading": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "qbi_version",
+        "model_boundary",
+        "interpretation_states",
+        "actor_correlations",
+        "context_loss_vectors",
+        "commitment_pressure"
+      ],
+      "properties": {
+        "qbi_version": {
+          "type": "string",
+          "const": "qbi_lite_v0.1"
+        },
+        "model_boundary": {
+          "type": "string",
+          "const": "Product-facing QBI reading only; this artifact does not execute the full formal QBI model."
+        },
+        "interpretation_states": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "state_id",
+              "statement",
+              "stakeholder_ids",
+              "assumption_ids",
+              "classification"
+            ],
+            "properties": {
+              "state_id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]*$"
+              },
+              "statement": {
+                "type": "string",
+                "minLength": 1
+              },
+              "stakeholder_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "assumption_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "classification": {
+                "type": "string",
+                "const": "hypothesis"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "actor_correlations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "correlation_id",
+              "statement",
+              "stakeholder_ids",
+              "relationship_ids",
+              "classification"
+            ],
+            "properties": {
+              "correlation_id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]*$"
+              },
+              "statement": {
+                "type": "string",
+                "minLength": 1
+              },
+              "stakeholder_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "relationship_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "classification": {
+                "type": "string",
+                "const": "hypothesis"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "context_loss_vectors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "vector_id",
+              "statement",
+              "source_refs",
+              "severity",
+              "classification"
+            ],
+            "properties": {
+              "vector_id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]*$"
+              },
+              "statement": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high"
+                ]
+              },
+              "classification": {
+                "type": "string",
+                "const": "hypothesis"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "commitment_pressure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "statement",
+            "collapse_risk",
+            "decision_trigger_refs",
+            "classification"
+          ],
+          "properties": {
+            "statement": {
+              "type": "string",
+              "minLength": 1
+            },
+            "collapse_risk": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "decision_trigger_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "classification": {
+              "type": "string",
+              "const": "hypothesis"
+            }
+          }
+        }
+      }
     },
     "uncertainty": {
       "type": "object",

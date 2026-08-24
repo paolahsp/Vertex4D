@@ -25,7 +25,7 @@ VERTEX 4D uses a layered theoretical foundation:
 | Design Thinking | Opens the problem and resists premature solutioning. | Alex problem framing and Socratic challenge. | Empathy, reframing, assumptions, prototype mindset. |
 | Systems Thinking | Shows actors, relationships, constraints and second-order effects. | SynapMap stakeholders, evidence, dependencies and tensions. | Mapping systems, feedback, leverage points and unintended consequences. |
 | QBI | Explains how collective interpretations coexist, interact, lose coherence and collapse into decisions. | The theoretical backbone behind Golden Path transitions. | The deeper framework connecting framing, behavior, context and decision. |
-| Behavioral Decision Science | Treats adoption, resistance and uncertainty as decision inputs. | D-Predict bounded adoption/resistance hypotheses. | Stakeholder behavior, resistance patterns and uncertainty language. |
+| Behavioral Decision Science | Treats adoption, resistance and uncertainty as decision inputs. | D-Predict bounded adoption/resistance hypotheses with QBI lite readings. | Stakeholder behavior, resistance patterns and uncertainty language. |
 | Financial Intelligence | Reads price, margin, cash flow and viability as survival signals. | Billie pricing, cost, break-even and 10-year projection. | Unit economics, pricing logic, runway, projection and decision discipline. |
 | Decision Records | Turns the journey into a traceable commitment. | DecisionRecord artifact with upstream links and success criteria. | How to make, defend and revisit a decision. |
 
@@ -45,7 +45,7 @@ The Golden Path is not just a workflow. It is the pedagogical spine of VERTEX: e
 | --- | --- | --- | --- |
 | Alex | What problem are we really solving? | ProblemFrame | The founder learns to frame before solving. |
 | SynapMap | Who and what changes if this idea moves? | SystemMap | The founder learns to see the system around the idea. |
-| D-Predict | Who may adopt, resist or remain uncertain? | PredictiveHypothesis | The founder learns to treat behavior as uncertain, not guaranteed. |
+| D-Predict | Who may adopt, resist or remain uncertain? | PredictiveHypothesis + QBI lite reading | The founder learns to treat behavior as uncertain, not guaranteed. |
 | Billie | Can this survive financially? | FinancialScenario | The founder learns to read price, margin, break-even and cash flow. |
 | DecisionRecord | What are we choosing, with what evidence and what unknowns? | DecisionRecord | The founder learns to make a traceable decision. |
 
@@ -77,6 +77,8 @@ Instead, QBI should appear as:
 - a method page called "How VERTEX Thinks";
 - internal language for why each artifact exists;
 - optional advanced material for students who want the deeper theory.
+
+In the current D-Predict implementation, QBI appears as a product-facing `qbi_reading` inside `PredictiveHypothesis`. This reading names four practical signals: coexisting interpretations, actor correlation, context loss and commitment pressure. It is deliberately labelled QBI lite and does not claim to execute the full formal QBI model.
 
 The product should not claim that it runs the full QBI model until the relevant simulations, measurements and validation protocols are implemented.
 

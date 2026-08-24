@@ -110,6 +110,66 @@
     return unique(unknowns).slice(0, 6);
   }
 
+  function buildQbiReading(stakeholders, relationships, assumptions, responses, signalIds, unknownIds) {
+    const runSuffix = safeId(runId || "runless");
+    const stakeholderIds = stakeholders.map((item) => item.stakeholder_id);
+    const relationshipIds = relationships.map((item) => item.relationship_id);
+    const assumptionIds = assumptions.map((item) => item.assumption_id);
+    const highestResistance = responses.reduce((current, item) => (
+      item.resistance_likelihood > current.resistance_likelihood ? item : current
+    ), responses[0]);
+    const highestAdoption = responses.reduce((current, item) => (
+      item.adoption_likelihood > current.adoption_likelihood ? item : current
+    ), responses[0]);
+    const adoptionGap = Math.abs(highestAdoption.adoption_likelihood - highestResistance.resistance_likelihood);
+    const collapseRisk = unknownIds.length > 2 || adoptionGap < 0.08 ? "high" : adoptionGap < 0.18 ? "medium" : "low";
+    const contextSeverity = relationships.length < 2 || assumptions.length < 2 ? "high" : collapseRisk === "high" ? "medium" : "low";
+    return {
+      qbi_version: "qbi_lite_v0.1",
+      model_boundary: "Product-facing QBI reading only; this artifact does not execute the full formal QBI model.",
+      interpretation_states: [
+        {
+          state_id: `qbi_state_adoption_${runSuffix}`,
+          statement: `${highestAdoption.stakeholder_id} may read the same venture as a low-friction adoption path if the approved assumptions hold.`,
+          stakeholder_ids: [highestAdoption.stakeholder_id],
+          assumption_ids: assumptionIds.slice(0, Math.max(1, Math.min(2, assumptionIds.length))),
+          classification: "hypothesis"
+        },
+        {
+          state_id: `qbi_state_resistance_${runSuffix}`,
+          statement: `${highestResistance.stakeholder_id} may read the same venture as added burden or risk until the context is tested.`,
+          stakeholder_ids: [highestResistance.stakeholder_id],
+          assumption_ids: assumptionIds.slice(-Math.max(1, Math.min(2, assumptionIds.length))),
+          classification: "hypothesis"
+        }
+      ],
+      actor_correlations: [
+        {
+          correlation_id: `qbi_corr_system_${runSuffix}`,
+          statement: "Stakeholder responses are treated as correlated through mapped relationships, so support or resistance can move through the system rather than appearing one actor at a time.",
+          stakeholder_ids: stakeholderIds.slice(0, Math.max(1, Math.min(3, stakeholderIds.length))),
+          relationship_ids: relationshipIds.slice(0, Math.max(1, Math.min(3, relationshipIds.length))),
+          classification: "hypothesis"
+        }
+      ],
+      context_loss_vectors: [
+        {
+          vector_id: `qbi_context_loss_${runSuffix}`,
+          statement: "The scenario can lose coherence if the team commits before observing whether mapped friction, workload or approval constraints appear in context.",
+          source_refs: unique([relationshipIds[0], assumptionIds[0], unknownIds[0]]).slice(0, 3),
+          severity: contextSeverity,
+          classification: "hypothesis"
+        }
+      ],
+      commitment_pressure: {
+        statement: "D-Predict keeps adoption, resistance and undecided readings open until a DecisionRecord collapses them into a reviewed next commitment.",
+        collapse_risk: collapseRisk,
+        decision_trigger_refs: unique([signalIds.adoption, signalIds.resistance, unknownIds[0]]).slice(0, 3),
+        classification: "hypothesis"
+      }
+    };
+  }
+
   function buildDraft() {
     if (!runId) throw new Error("Create a Golden Path run first.");
     if (!state.project || !state.problem || !state.system) throw new Error("D-Predict requires ProjectRecord, ProblemFrame and SystemMap upstream artifacts.");
@@ -214,15 +274,17 @@
         classification: "hypothesis",
         confidence: round2(clamp(confidence - 0.08, 0.28, 0.6))
       }],
+      qbi_reading: buildQbiReading(stakeholders, relationships, assumptions, responses, { adoption: adoptionSignalId, resistance: resistanceSignalId }, unknownIds),
       uncertainty: {
         level: uncertaintyLevel,
-        drivers: unique(["approved assumptions are still hypotheses", "stakeholder behavior has not been observed in a live pilot", "relationship strength comes from current SystemMap evidence"]),
+        drivers: unique(["approved assumptions are still hypotheses", "stakeholder behavior has not been observed in a live pilot", "relationship strength comes from current SystemMap evidence", "QBI lite keeps conflicting readings open until human review"]),
         unknowns_preserved: unknownIds
       },
       limitations: [
         "This is a bounded hypothesis, not evidence or a factual prediction.",
         "It uses only approved SystemMap inputs and does not describe identifiable people.",
-        "It should feed a DecisionRecord only after human review."
+        "It should feed a DecisionRecord only after human review.",
+        "The QBI reading is product-facing and does not execute the full formal QBI model."
       ],
       confidence: round2(confidence),
       run_metadata: {
@@ -276,6 +338,7 @@
     $("adoption-list").innerHTML = draft.adoption_signals.map((item) => signalCard(item)).join("");
     $("resistance-list").innerHTML = draft.resistance_signals.map((item) => signalCard(item)).join("");
     $("cascade-list").innerHTML = draft.possible_cascades.map((item) => signalCard(item)).join("");
+    $("qbi-list").innerHTML = qbiCards(draft.qbi_reading);
     $("uncertainty-tags").innerHTML = draft.uncertainty.drivers.map((item) => `<span class="tag">${escapeHtml(item)}</span>`).join("") + draft.uncertainty.unknowns_preserved.map((item) => `<span class="tag">${escapeHtml(item)}</span>`).join("");
     $("contract-json").textContent = JSON.stringify(draft, null, 2);
     $("contract-card").classList.add("active");
@@ -287,6 +350,21 @@
 
   function signalCard(item) {
     return `<div class="signal"><strong>${escapeHtml(item.signal_id || item.cascade_id)}</strong><p>${escapeHtml(item.statement)}</p><div class="tagrow"><span class="tag">${escapeHtml(item.classification)}</span><span class="tag">confidence ${pct(item.confidence)}</span></div></div>`;
+  }
+
+  function qbiCards(reading) {
+    if (!reading) return '<div class="signal"><strong>QBI pending</strong><p>Create a PredictiveHypothesis to see the QBI reading.</p></div>';
+    const states = (reading.interpretation_states || []).map((item) => (
+      `<div class="signal"><strong>${escapeHtml(item.state_id)}</strong><p>${escapeHtml(item.statement)}</p><div class="tagrow"><span class="tag">coexisting reading</span><span class="tag">${escapeHtml(item.classification)}</span></div></div>`
+    )).join("");
+    const correlations = (reading.actor_correlations || []).map((item) => (
+      `<div class="signal"><strong>${escapeHtml(item.correlation_id)}</strong><p>${escapeHtml(item.statement)}</p><div class="tagrow"><span class="tag">actor correlation</span><span class="tag">${escapeHtml(item.classification)}</span></div></div>`
+    )).join("");
+    const losses = (reading.context_loss_vectors || []).map((item) => (
+      `<div class="signal"><strong>${escapeHtml(item.vector_id)}</strong><p>${escapeHtml(item.statement)}</p><div class="tagrow"><span class="tag">context loss ${escapeHtml(item.severity)}</span><span class="tag">${escapeHtml(item.classification)}</span></div></div>`
+    )).join("");
+    const pressure = reading.commitment_pressure ? `<div class="signal"><strong>commitment pressure</strong><p>${escapeHtml(reading.commitment_pressure.statement)}</p><div class="tagrow"><span class="tag">collapse risk ${escapeHtml(reading.commitment_pressure.collapse_risk)}</span><span class="tag">${escapeHtml(reading.commitment_pressure.classification)}</span></div></div>` : "";
+    return `${states}${correlations}${losses}${pressure}`;
   }
 
   async function createDraft() {

@@ -267,6 +267,32 @@ def validate_business_rules(fixtures) -> None:
         require(set(signal["stakeholder_ids"]).issubset(stakeholder_ids), f"predictive signal stakeholder reference unresolved: {signal['signal_id']}")
     for cascade in predictive["possible_cascades"]:
         require(cascade["classification"] == "hypothesis", f"cascade must remain hypothesis: {cascade['cascade_id']}")
+    qbi = predictive["qbi_reading"]
+    require(qbi["qbi_version"] == "qbi_lite_v0.1", "PredictiveHypothesis QBI version cannot change")
+    require("does not execute the full formal QBI model" in qbi["model_boundary"], "PredictiveHypothesis QBI boundary cannot overclaim")
+    for state in qbi["interpretation_states"]:
+        require(state["classification"] == "hypothesis", f"QBI interpretation must remain hypothesis: {state['state_id']}")
+        require(set(state["stakeholder_ids"]).issubset(stakeholder_ids), f"QBI interpretation stakeholder reference unresolved: {state['state_id']}")
+        require(set(state["assumption_ids"]).issubset(approved_predictive), f"QBI interpretation uses unapproved predictive assumption: {state['state_id']}")
+    for correlation in qbi["actor_correlations"]:
+        require(correlation["classification"] == "hypothesis", f"QBI correlation must remain hypothesis: {correlation['correlation_id']}")
+        require(set(correlation["stakeholder_ids"]).issubset(stakeholder_ids), f"QBI correlation stakeholder reference unresolved: {correlation['correlation_id']}")
+        require(set(correlation["relationship_ids"]).issubset(relationship_ids), f"QBI correlation relationship reference unresolved: {correlation['correlation_id']}")
+    allowed_qbi_refs = (
+        all_evidence.keys()
+        | set(system_assumptions)
+        | stakeholder_ids
+        | relationship_ids
+        | registries["unknowns"]
+        | registries["predictive_signals"]
+        | registries["cascades"]
+    )
+    for vector in qbi["context_loss_vectors"]:
+        require(vector["classification"] == "hypothesis", f"QBI context-loss vector must remain hypothesis: {vector['vector_id']}")
+        require(set(vector["source_refs"]).issubset(allowed_qbi_refs), f"QBI context-loss source_ref does not resolve: {vector['vector_id']}")
+    pressure = qbi["commitment_pressure"]
+    require(pressure["classification"] == "hypothesis", "QBI commitment pressure must remain hypothesis")
+    require(set(pressure["decision_trigger_refs"]).issubset(allowed_qbi_refs), "QBI commitment trigger_ref does not resolve")
     require(set(financial["approved_assumption_references"]).issubset(approved_financial), "FinancialScenario uses unapproved financial assumption")
     used_financial_assumption_refs: set[str] = set()
     for collection_name in ["pricing_assumptions", "cost_assumptions", "volume_assumptions"]:
@@ -491,6 +517,11 @@ def run_negative_tests(schemas, fixtures) -> list[str]:
             "financial assumption used but absent from approved_assumption_references",
             lambda f: f["financial_scenario"].__setitem__("approved_assumption_references", [ref for ref in f["financial_scenario"]["approved_assumption_references"] if ref != "asm_setup_buffer"]),
             "FinancialScenario used source_assumption_ref set must equal approved_assumption_references",
+        ),
+        (
+            "unresolved QBI trigger reference",
+            lambda f: f["predictive_hypothesis"]["qbi_reading"]["commitment_pressure"]["decision_trigger_refs"].append("qbi_invented_trigger"),
+            "QBI commitment trigger_ref does not resolve",
         ),
     ]
     results: list[str] = []

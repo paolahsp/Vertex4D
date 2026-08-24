@@ -425,6 +425,7 @@ def build_system_map(run_id: str, project: dict, problem: dict, case: dict) -> d
 
 def build_predictive_hypothesis(run_id: str, project: dict, problem: dict, system: dict, case: dict) -> dict:
     artifact = update_common_artifact(load_fixture("predictive-hypothesis"), run_id, project, case, "predictive_hypothesis")
+    safe_run = run_id.replace("-", "_")
     artifact["preceding_artifacts"] = {
         "project_record_id": project["artifact_id"],
         "problem_frame_id": problem["artifact_id"],
@@ -435,6 +436,31 @@ def build_predictive_hypothesis(run_id: str, project: dict, problem: dict, syste
     artifact["simulated_stakeholder_responses"][0]["simulated_response"] = case["predictive"]
     for item in artifact["assumptions_used"]:
         item["source_artifact_id"] = system["artifact_id"]
+    qbi = artifact["qbi_reading"]
+    stakeholders = [item["stakeholder_id"] for item in system["stakeholders"]]
+    assumptions = [item["assumption_id"] for item in system["approved_assumptions"] if item["approved_for_predictive_processing"]]
+    relationships = [item["relationship_id"] for item in system["relationships"]]
+    qbi["interpretation_states"][0]["state_id"] = f"qbi_state_adoption_{safe_run}"
+    qbi["interpretation_states"][0]["statement"] = f"{case['stakeholders'][0]} may read {case['title']} as adoption-ready if the approved assumptions survive a bounded test."
+    qbi["interpretation_states"][0]["stakeholder_ids"] = stakeholders[:1]
+    qbi["interpretation_states"][0]["assumption_ids"] = assumptions[:2]
+    qbi["interpretation_states"][1]["state_id"] = f"qbi_state_resistance_{safe_run}"
+    qbi["interpretation_states"][1]["statement"] = f"{case['stakeholders'][-1]} may read the same decision as added friction until the blocker path is observed."
+    qbi["interpretation_states"][1]["stakeholder_ids"] = stakeholders[-1:]
+    qbi["interpretation_states"][1]["assumption_ids"] = assumptions[-1:]
+    qbi["actor_correlations"][0]["correlation_id"] = f"qbi_corr_system_{safe_run}"
+    qbi["actor_correlations"][0]["statement"] = "D-Predict treats stakeholder responses as correlated through the mapped system, not as isolated survey answers."
+    qbi["actor_correlations"][0]["stakeholder_ids"] = stakeholders[:2]
+    qbi["actor_correlations"][0]["relationship_ids"] = relationships[:1]
+    qbi["context_loss_vectors"][0]["vector_id"] = f"qbi_context_loss_{safe_run}"
+    qbi["context_loss_vectors"][0]["statement"] = f"The scenario can lose coherence if {case['baseline']['biggest_uncertainty']} appears during the pilot context."
+    qbi["context_loss_vectors"][0]["source_refs"] = [relationships[0], assumptions[0], "unk_repeat_return_rate"]
+    qbi["commitment_pressure"]["statement"] = "The team should keep adoption and resistance readings open until the final DecisionRecord commits to the next bounded action."
+    qbi["commitment_pressure"]["decision_trigger_refs"] = [
+        artifact["adoption_signals"][0]["signal_id"],
+        artifact["resistance_signals"][0]["signal_id"],
+        "unk_repeat_return_rate",
+    ]
     artifact["run_metadata"]["run_id"] = run_id
     artifact["run_metadata"]["is_fixture"] = False
     return artifact
