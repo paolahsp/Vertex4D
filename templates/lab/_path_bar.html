@@ -1,32 +1,29 @@
-{# Eje del Golden Path. Se incluye con {% with stage = N %} (1..6).
-   Es el ancla de "dónde estoy": la misma en todas las etapas, siempre
-   en el mismo sitio, para que reorientarse tras una interrupción no
-   cueste buscar. #}
+{# Shared Golden Path axis. Included with {% with stage = N %} (1..6). #}
 {% set stations = [
-  ('Alex',        'ProblemFrame',   '/dashboard/lab/alex'),
-  ('SynapMap',    'SystemMap',      '/dashboard/lab/synapmap'),
-  ('Aprobación',  'Supuestos',      '/dashboard/lab/assumption-approval'),
-  ('D-Predict',   'Hipótesis',      '/dashboard/lab/d-predict'),
-  ('Billie',      'Números',        '/dashboard/lab/billie'),
-  ('Decisión',    'Firma',          '/dashboard/lab/decision-record')
+  ('Alex',       'ProblemFrame', '/dashboard/lab/alex'),
+  ('SynapMap',   'SystemMap',    '/dashboard/lab/synapmap'),
+  ('Approval',   'Assumptions',  '/dashboard/lab/assumption-approval'),
+  ('D-Predict',  'Hypothesis',   '/dashboard/lab/d-predict'),
+  ('Billie',     'Numbers',      '/dashboard/lab/billie'),
+  ('Decision',   'Record',       '/dashboard/lab/decision-record')
 ] %}
 {% set stage = stage | default(1) %}
 <section class="v4-path">
   <div class="v4-rowcap">
     <h2>Golden Path</h2>
-    <p>problema · sistema · comportamiento · números · decisión</p>
+    <p>problem / system / behavior / numbers / decision</p>
   </div>
   <div class="v4-track"><i style="--fill: {{ ((stage - 1) / 5 * 100) | round(1) }}%"></i></div>
-  <nav class="v4-stations" aria-label="Etapas del Golden Path">
+  <nav class="v4-stations" aria-label="Golden Path stages">
     {% for name, artifact, href in stations %}
       {% set n = loop.index %}
       {% set state = 'ok' if n < stage else ('now' if n == stage else 'wait') %}
       <a class="v4-st {{ state }}" href="{{ href }}" data-run-link
          {% if state == 'now' %}aria-current="step"{% endif %}
-         title="Etapa {{ n }} de 6 — {{ name }}">
+         title="Stage {{ n }} of 6 - {{ name }}">
         <span class="v4-knob"></span>
         <h3>{{ name }}</h3>
-        <span>{% if state == 'now' %}aquí estás{% elif state == 'ok' %}{{ artifact }}{% else %}{{ artifact }}{% endif %}</span>
+        <span>{% if state == 'now' %}you are here{% elif state == 'ok' %}{{ artifact }}{% else %}{{ artifact }}{% endif %}</span>
       </a>
     {% endfor %}
   </nav>

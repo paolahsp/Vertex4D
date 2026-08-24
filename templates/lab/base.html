@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html class="light" lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+<html class="light" lang="en" data-theme="light" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>4D Lab | Vertex 4D</title>
+    <title>The Lab | Srsly Labs</title>
     <link rel="icon" href="/favicon.ico">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300..800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script>
         tailwind.config = {
@@ -13,19 +16,19 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#1946D1",
-                        "background-light": "#F4EBDC",
-                        "background-dark": "#181810",
-                        "coral-text": "#C13521",
+                        "primary": "#5b13ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#161022",
+                        "coral-text": "#FF6B6B",
 
-                        "olive-text": "#5F6320",
+                        "olive-text": "#00A86B",
 
-                        "cyber-lavender": "#E74530",
-                        "electric-mint": "#A4A760",
+                        "cyber-lavender": "#B2A4FF",
+                        "electric-mint": "#66FFB2",
                     },
                     fontFamily: {
-                        "display": ["Inter", "sans-serif"],
-                        "heading": ["Bricolage Grotesque", "sans-serif"],
+                        "display": ["Spline Sans", "sans-serif"],
+                        "heading": ["Spline Sans", "sans-serif"],
                     },
                 },
             },
@@ -38,7 +41,7 @@
     <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
 </head>
 
-<body class="app-shell glass-workbench font-display text-stone-900">
+<body class="srsly-classic app-shell glass-workbench font-display text-stone-900">
 {% include "_icon_sprite.html" %}
     <div class="min-h-screen">
         <header class="app-header sticky top-0 z-50 border-b px-4 py-3 sm:px-6 lg:px-10">
@@ -63,13 +66,13 @@
                 </div>
                 <div class="hidden items-center gap-5 text-sm md:flex">
                     <div>
-                        <p class="app-kicker">Evidence</p>
-                        <p class="font-bold">42 captured signals</p>
+                        <p class="app-kicker">Artifacts</p>
+                        <p class="font-bold">6 linked</p>
                     </div>
                     <div class="h-8 border-l border-stone-300"></div>
                     <div class="min-w-40">
                         <div class="mb-1 flex items-center justify-between">
-                            <p class="app-kicker">Confidence</p>
+                            <p class="app-kicker">Golden Path</p>
                             <p class="font-mono text-xs font-bold text-primary">35%</p>
                         </div>
                         <div class="h-1.5 bg-stone-200">
@@ -80,34 +83,33 @@
             </div>
         </header>
 
-        <main class="px-4 py-10 sm:px-6 lg:px-10">
-            <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
-                <section class="glass-panel space-y-6 p-6 sm:p-8">
-                    <p class="app-kicker">Intelligent product tools</p>
+        <main class="classic-lab-main px-4 py-10 sm:px-6 lg:px-10">
+            <div class="classic-lab-layout mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr] lg:items-start">
+                <section class="classic-lab-intro glass-panel space-y-6 p-6 sm:p-8">
+                    <p class="app-kicker">The Lab</p>
                     <h1 class="font-heading text-4xl leading-tight sm:text-5xl">
-                        Choose the system you need to make visible.
+                        Choose the next VERTEX module.
                     </h1>
                     <p class="max-w-xl text-base text-stone-600">
-                        Each workspace turns a different kind of ambiguity into inspectable evidence: relationships,
-                        assumptions, financial logic, and the next question worth testing.
+                        Move from problem framing to system mapping, adoption risk, financial viability, and a decision record.
                     </p>
                     <div class="glass-rail grid max-w-xl grid-cols-3 text-center">
                         <div class="border-r border-stone-300 p-4">
                             <p class="font-mono text-xs text-coral-text">01</p>
-                            <p class="mt-1 text-sm font-bold">Map</p>
+                            <p class="mt-1 text-sm font-bold">Frame</p>
                         </div>
                         <div class="border-r border-stone-300 p-4">
                             <p class="font-mono text-xs text-coral-text">02</p>
-                            <p class="mt-1 text-sm font-bold">Test</p>
+                            <p class="mt-1 text-sm font-bold">Map</p>
                         </div>
                         <div class="p-4">
                             <p class="font-mono text-xs text-coral-text">03</p>
-                            <p class="mt-1 text-sm font-bold">Model</p>
+                            <p class="mt-1 text-sm font-bold">Decide</p>
                         </div>
                     </div>
                 </section>
 
-                <section class="grid gap-5 md:grid-cols-2 xl:grid-cols-6">
+                <section class="classic-lab-tools grid gap-5 md:grid-cols-2 xl:grid-cols-6">
                     <a href="/dashboard/lab/how-vertex-thinks" data-index="00"
                         class="lab-hub-card group block p-6">
                         <div class="lab-hub-icon mb-8 text-primary">
@@ -133,7 +135,7 @@
                         <div class="lab-hub-icon mb-8 text-primary">
                             <svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg>
                         </div>
-                        <p class="app-kicker">Visible systems</p>
+                        <p class="app-kicker">System mapping</p>
                         <div class="lab-hub-visual visual-map">
                             <span class="line"></span>
                             <span class="line"></span>
@@ -156,7 +158,7 @@
                         <div class="lab-hub-icon mb-8 text-coral-text">
                             <svg class="ic" aria-hidden="true"><use href="#i-alex"/></svg>
                         </div>
-                        <p class="app-kicker">Human judgment</p>
+                        <p class="app-kicker">Problem framing</p>
                         <div class="lab-hub-visual visual-alex">
                             <div class="question-line"></div>
                             <div class="question-line"></div>
@@ -164,7 +166,7 @@
                         </div>
                         <h2 class="mt-2 font-heading text-2xl font-bold">Alex</h2>
                         <p class="mt-3 text-sm text-stone-600">
-                            Stress-test assumptions through an adversarial stakeholder interview and summary report.
+                            Challenge the first version of the problem, assumptions, risks, and missing evidence.
                         </p>
                         <p class="mt-8 inline-flex items-center gap-2 text-sm font-bold text-primary">
                             Start test
@@ -199,7 +201,7 @@
                         <div class="lab-hub-icon mb-8 text-olive-text">
                             <svg class="ic" aria-hidden="true"><use href="#i-billie"/></svg>
                         </div>
-                        <p class="app-kicker">Pricing & financial runway</p>
+                        <p class="app-kicker">Pricing and runway</p>
                         <div class="lab-hub-visual visual-billie">
                             <span></span>
                             <span></span>

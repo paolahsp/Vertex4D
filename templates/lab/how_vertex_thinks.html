@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+<html lang="en" data-theme="light" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
@@ -43,7 +43,7 @@
         @media (max-width: 640px) { .think-header { align-items: flex-start; flex-direction: column; } .think-link { margin: 4px 0 0; } }
     </style>
 </head>
-<body class="app-shell glass-workbench">
+<body class="srsly-module app-shell glass-workbench">
 {% include "_icon_sprite.html" %}
     <header class="think-header v4-bar"><a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Srsly Labs</i></span></a><span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-lab"/></svg> Cómo piensa VERTEX</span><nav><a class="-link v4-navlink" href="{{ back_href }}">{{ back_label }}</a><a class="-link v4-navlink" href="{{ access_href }}">{{ access_label }}</a></nav></header>
     <main class="think-main">

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html class="light" lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+<html class="light" lang="en" data-theme="light" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 
 
 
@@ -171,7 +171,7 @@
 
 
 
-<body class="font-display bg-background-light text-near-black">
+<body class="srsly-module font-display bg-background-light text-near-black">
 {% include "_icon_sprite.html" %}
 <div class="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col">
     <header class="v4-bar shrink-0">

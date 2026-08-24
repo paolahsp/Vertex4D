@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+<html lang="en" data-theme="light" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 
 <head>
     <meta charset="UTF-8">
@@ -393,7 +393,7 @@
     </style>
 </head>
 
-<body>
+<body class="srsly-module">
 {% include "_icon_sprite.html" %}
     <div class="gp-shell">
         <header class="gp-header v4-bar"><a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Srsly Labs</i></span></a><span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-run"/></svg> Golden Path</span><a class="gp-back" href="/dashboard/lab">Back to 4D Lab</a></header>
@@ -485,7 +485,7 @@
                 <p class="gp-kicker">${text(stage.agent)} / ${text(stage.status)}</p>
                 <h2>${text(stage.headline)}</h2>
                 <p>${text(stage.summary)}</p>
-                <p class="gp-artifact">${text(stage.label)} ? ${text(stage.artifact_id)}</p>
+                <p class="gp-artifact">${text(stage.label)} - ${text(stage.artifact_id)}</p>
             `;
         }
 
@@ -515,7 +515,7 @@
                 stageList.innerHTML = stages.map((stage, index) => `
                     <button class="gp-stage" type="button" data-stage-index="${index}">
                         <span class="gp-stage-top">
-                            <span class="gp-stage-label">${String(index + 1).padStart(2, "0")} ? ${text(stage.agent)}</span>
+                            <span class="gp-stage-label">${String(index + 1).padStart(2, "0")} - ${text(stage.agent)}</span>
                             <span class="gp-status">${text(stage.status)}</span>
                         </span>
                         <h2>${text(stage.label)}</h2>
@@ -528,7 +528,7 @@
 
                 addList("responses-list", data.stakeholder_responses, (item) => `
                     <div class="gp-list-item">
-                        <strong>${text(item.stakeholder_id)} ? adopt ${Math.round(item.adoption_likelihood * 100)}% / resist ${Math.round(item.resistance_likelihood * 100)}%</strong>
+                        <strong>${text(item.stakeholder_id)} - adopt ${Math.round(item.adoption_likelihood * 100)}% / resist ${Math.round(item.resistance_likelihood * 100)}%</strong>
                         <p>${text(item.simulated_response)}</p>
                     </div>
                 `);
