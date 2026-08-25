@@ -43,6 +43,8 @@ The missing layer is pedagogical direction.
 
 That layer should sit above the modules and explain what the next useful action is, why it matters, and what evidence will be produced.
 
+For the page-by-page audit method that governs this layer, see `docs/VERTEX_PRODUCT_UX_BUSINESS_AUDIT_SYSTEM.md`.
+
 ## UX Model
 
 VERTEX should organize every founder and facilitator experience into five visible layers:
