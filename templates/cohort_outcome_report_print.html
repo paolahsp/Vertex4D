@@ -67,9 +67,9 @@
     </section>
 
     <section class="section">
-        <h2>Decision Skill Movement</h2>
+        <h2>Observed Rubric Movement</h2>
         <table>
-            <thead><tr><th>Skill</th><th>Baseline avg</th><th>Post avg</th><th>Delta</th></tr></thead>
+            <thead><tr><th>Dimension</th><th>Baseline avg</th><th>Post avg</th><th>Delta</th></tr></thead>
             <tbody>
                 {% for skill in report.skill_movement %}
                 <tr><td>{{ skill.label }}</td><td>{{ skill.baseline or 'missing' }}</td><td>{{ skill.post or 'missing' }}</td><td>{{ skill.delta if skill.delta is not none else 'missing' }}</td></tr>

@@ -110,7 +110,7 @@ Click:
 
 - Open `/dashboard/facilitator/cohorts/{cohort_id}/outcome-report`.
 - Show paired cases, decision changes, interventions and missing paired data.
-- Show decision skill movement.
+- Show observed movement in the decision-quality rubric.
 - Show one before -> after case.
 
 Say:

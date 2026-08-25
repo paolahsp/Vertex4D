@@ -6,11 +6,11 @@ This document defines how VERTEX should evolve from a set of powerful modules in
 
 The goal is not to add a generic course layer, LMS, CRM, chatbot, or content portal.
 
-The goal is to make VERTEX feel like a decision coach that always tells the founder and facilitator:
+The goal is to make VERTEX feel like a decision system that observes a Decision Case and helps the founder and facilitator see:
 
 1. What to do now.
 2. Why this step matters.
-3. What decision skill is being developed.
+3. What unresolved evidence, contradiction or decision risk makes the step necessary.
 4. What artifact must be produced.
 5. What to do if the team is stuck.
 6. How the facilitator should intervene.
@@ -39,25 +39,64 @@ Decision Case
 -> Cohort Outcome Report
 ```
 
-The missing layer is pedagogical direction.
+The missing layer is product direction.
 
 That layer should sit above the modules and explain what the next useful action is, why it matters, and what evidence will be produced.
 
 For the page-by-page audit method that governs this layer, see `docs/VERTEX_PRODUCT_UX_BUSINESS_AUDIT_SYSTEM.md`.
 
+## Product Architecture Guardrails
+
+VERTEX can teach without becoming an LMS.
+
+Learning should appear inside the founder's real decision work, not as separate course content.
+
+Founder-facing language should feel like:
+
+```text
+Here is what still does not fit.
+Here is what you need to decide.
+Here is what evidence would make that decision stronger.
+```
+
+It should not feel like:
+
+```text
+You are now learning six decision skills.
+```
+
+Use `decision_skill` internally for metadata, rubric design and facilitator/buyer interpretation.
+
+Expose it lightly to founders, usually as reflection or artifact summary, not as persistent instructional language.
+
+Rule:
+
+```text
+Founder sees the decision problem.
+Facilitator sees the intervention reason.
+Buyer sees reviewed reasoning change.
+The system stores the skill metadata.
+```
+
 ## UX Model
 
-VERTEX should organize every founder and facilitator experience into five visible layers:
+VERTEX should organize every founder and facilitator experience into five layers, but not all should be equally visible:
 
 ```text
 Layer 1: What do I do now?
 Layer 2: Why does this matter?
-Layer 3: What decision skill am I developing?
+Layer 3: What unresolved evidence, contradiction or risk makes this necessary?
 Layer 4: What artifact should exist after this step?
 Layer 5: What should I do if I am stuck?
 ```
 
 This solves the main failure mode found in dense learning portals: they show what exists, but not what matters next.
+
+Founder UI should emphasize Layer 1 and Layer 3.
+
+Facilitator UI should emphasize intervention reason and recommended move.
+
+Buyer UI should emphasize reviewed reasoning change and missing data.
 
 ## User Types
 
@@ -91,7 +130,7 @@ The facilitator should see:
 
 - decision interventions;
 - workflow attention;
-- decision skill affected;
+- decision-quality dimension affected;
 - recommended facilitator move;
 - unresolved comments;
 - rubric baseline/post movement;
@@ -110,7 +149,7 @@ The buyer should see:
 - stakeholder deltas;
 - pricing deltas;
 - intervention needs;
-- cohort-level decision skill movement;
+- observed movement in the decision-quality rubric;
 - Outcome Report.
 
 ## Founder Journey
@@ -597,7 +636,7 @@ Each case should answer:
 ```text
 What is wrong?
 Why does it matter?
-Which decision skill is affected?
+Which decision-quality dimension is affected?
 What should the facilitator do next?
 ```
 
@@ -628,7 +667,7 @@ SkillBridge Studio
 Why it matters
 School consent path is unresolved. The founder may be treating the user as the buyer.
 
-Decision skill affected
+Decision-quality dimension affected
 System awareness / behavioral logic.
 
 Recommended facilitator move
@@ -662,7 +701,25 @@ Capture post rubric after DecisionRecord review.
 
 ## Rubric Connection
 
-The rubric should become the visible skill model.
+The rubric should remain a measurement and reflection model until it is validated with real users.
+
+Do not overstate it as acquired skill.
+
+Use buyer-facing language like:
+
+```text
+observed movement in the decision-quality rubric
+change in reviewed reasoning
+baseline/post rubric movement
+```
+
+Avoid early-stage claims like:
+
+```text
+decision skill developed
+cohort skill movement
+VERTEX improved founder skill
+```
 
 Current dimensions:
 
@@ -694,25 +751,33 @@ Recommended next move
 Evidence/artifact linked
 ```
 
+Validation needed before stronger language:
+
+- inter-rater reliability;
+- facilitator interpretability;
+- buyer usefulness;
+- evidence that dimensions capture meaningful decision behavior;
+- repeated use across cohorts.
+
 ## Buyer Journey
 
 The buyer does not need every artifact detail.
 
-The buyer needs proof that the program changed founder reasoning.
+The buyer needs evidence that founder reasoning changed during the program.
 
 Outcome Report should answer:
 
 ```text
 What changed across the cohort?
 Where did facilitators intervene?
-Which decision skills improved?
+Where did the decision-quality rubric move?
 Which cases stayed incomplete?
 What evidence can leadership/funders keep?
 ```
 
 Recommended additions to Outcome Report:
 
-- decision skill movement summary;
+- observed rubric movement summary;
 - top decision interventions;
 - common blocker patterns;
 - number of cases with QBI context-loss risk;
@@ -733,6 +798,28 @@ It shows how founder reasoning changed from initial belief to reviewed decision.
 
 Create a small server-side or client-side helper that computes `next_best_action`.
 
+Core rule:
+
+```text
+A Next Best Action should not only tell the user where to go.
+Whenever possible, it should explain what unresolved evidence,
+contradiction or decision risk makes that action necessary.
+```
+
+Weak:
+
+```text
+Now go to D-Predict.
+```
+
+Strong:
+
+```text
+Before advancing, resolve who approves the purchase:
+your FinancialScenario assumes the school pays,
+but your SystemMap does not identify who has budget authority.
+```
+
 Inputs:
 
 - run exists;
@@ -748,24 +835,41 @@ Output:
 
 ```json
 {
-  "next_action": "Create PredictiveHypothesis",
-  "why_now": "D-Predict can only run after SystemMap and approved predictive assumptions exist.",
-  "decision_skill": "Behavioral logic",
+  "next_action": "Resolve budget authority before D-Predict",
+  "why_now": "The financial model assumes the school pays, but the SystemMap does not identify who has budget authority.",
+  "decision_quality_dimension": "System awareness / economic coherence",
   "expected_artifact": "PredictiveHypothesis",
-  "if_stuck": "Return to Approval Gate and approve at least one predictive assumption.",
-  "severity": "required"
+  "if_stuck": "Name the payer, approver and blocker before creating a reviewed adoption hypothesis.",
+  "severity": "soft_gate",
+  "can_continue": true
 }
 ```
 
 ### Artifact Readiness Rules
 
-Rules:
+Use hard gates only when traceability would break.
+
+Use soft gates when the founder can continue, but should see the uncertainty explicitly.
+
+Hard gates:
 
 - No D-Predict before `ProblemFrame`, `SystemMap` and predictive approvals.
 - No Billie before `ProblemFrame`, `SystemMap` and financial approvals.
-- No DecisionRecord before `PredictiveHypothesis` and `FinancialScenario`.
 - No final report should infer missing data.
 - Missing data must be labelled honestly.
+
+Soft gates:
+
+- DecisionRecord can proceed with missing PredictiveHypothesis or FinancialScenario only if the missing artifact is recorded as an uncertainty.
+- Founder can continue with an unresolved payer/approver split, but the risk must remain visible.
+- Founder can continue with weak evidence, but it must not be promoted to fact.
+- Buyer/facilitator views should show when a completed case still carried major unresolved assumptions.
+
+Soft gate language:
+
+```text
+You can continue, but VERTEX will carry this as an unresolved decision risk.
+```
 
 ### Intervention Classification
 
@@ -796,15 +900,15 @@ Add:
 Add to each station:
 
 - artifact status;
-- decision skill;
-- blocked/unblocked state.
+- decision risk or unresolved evidence;
+- hard gate / soft gate / ready state.
 
 Example:
 
 ```text
 D-Predict
-Behavioral logic
-Blocked: no approved predictive assumptions
+Soft gate: approver missing
+You can continue, but adoption risk will remain unresolved.
 ```
 
 ### 3. Alex
@@ -884,7 +988,7 @@ Already includes:
 Add next:
 
 - "What changed from baseline" block.
-- "Decision skill developed" block.
+- "Observed change in reviewed reasoning" block.
 
 ### 10. Cohort Management
 
@@ -895,14 +999,14 @@ Already improved:
 Add next:
 
 - recommended facilitator move per case;
-- affected decision skill;
+- affected decision-quality dimension;
 - suggested comment template.
 
 ### 11. Outcome Report
 
 Add:
 
-- cohort skill movement;
+- observed rubric movement;
 - top intervention categories;
 - missing data warnings;
 - examples of before/after reasoning.
@@ -917,9 +1021,10 @@ Suggested derived fields:
 
 ```text
 next_best_action
-decision_skill_current
+decision_quality_dimension_current
 artifact_readiness
-blocked_reason
+gate_type
+risk_reason
 recommended_facilitator_move
 decision_intervention_type
 workflow_attention_type
@@ -931,23 +1036,27 @@ Possible future persisted object:
 {
   "run_id": "run_...",
   "stage": "d_predict",
-  "decision_skill": "behavioral_logic",
-  "next_best_action": "Create PredictiveHypothesis",
-  "blocked_reason": null,
-  "recommended_facilitator_move": "Review whether resistance has been converted into an experiment.",
+  "decision_quality_dimension": "behavioral_logic",
+  "next_best_action": "Resolve the approver/payer split before treating adoption as likely.",
+  "gate_type": "soft_gate",
+  "risk_reason": "Buyer benefit and implementation authority sit with different actors.",
+  "recommended_facilitator_move": "Ask the team to identify who approves implementation and what evidence would reduce that risk.",
   "updated_at": "..."
 }
 ```
 
 ## Implementation Plan
 
-### Phase 1: Direction Copy and Rules
+### Phase 1: Minimum Direction Layer
 
 Scope:
 
 - Create a shared stage metadata map.
 - Add direction panels to Start Golden Path, D-Predict, Billie and DecisionRecord.
 - Keep copy short and product-facing.
+- Make sure the founder is never lost.
+- Keep `decision_skill` mostly internal.
+- Use soft-gate language where traceability can be preserved.
 
 Files likely affected:
 
@@ -959,12 +1068,33 @@ Files likely affected:
 - `templates/lab/decision_record.html`
 - `static/css/vertex4d.css`
 
-### Phase 2: Next Best Action Engine
+### Phase 2: Facilitator Coaching Layer
+
+Scope:
+
+- Add affected decision-quality dimension to intervention cards.
+- Add recommended facilitator move.
+- Separate decision interventions from workflow attention more clearly.
+- Test whether facilitators understand "where to intervene and why" without a live explanation.
+
+Decision intervention categories:
+
+- framing_confusion;
+- stakeholder_gap;
+- evidence_gap;
+- approval_path_gap;
+- behavioral_resistance_gap;
+- qbi_context_loss_risk;
+- economic_viability_gap;
+- decision_record_mismatch.
+
+### Phase 3: Contradiction Detection + Contextual Next Best Action
 
 Scope:
 
 - Compute next action from run/artifact/baseline state.
-- Return same object to founder and facilitator views.
+- Detect contradictions across baseline, SystemMap, approvals, D-Predict, QBI and Billie.
+- Return the same decision-risk object to founder and facilitator views.
 - Use it in dashboard and stage pages.
 
 Rules:
@@ -982,32 +1112,26 @@ No DecisionRecord -> go to DecisionRecord
 Complete -> review Decision Memo
 ```
 
-### Phase 3: Facilitator Coaching Layer
+But do not stop at navigation.
+
+The value appears when the engine explains:
+
+```text
+what unresolved evidence,
+contradiction,
+or decision risk
+makes the action necessary.
+```
+
+### Phase 4: Rubric Reliability Model
 
 Scope:
 
-- Add affected skill to intervention cards.
-- Add recommended facilitator move.
-- Separate decision interventions from workflow attention more clearly.
-
-Decision intervention categories:
-
-- framing_confusion;
-- stakeholder_gap;
-- evidence_gap;
-- approval_path_gap;
-- behavioral_resistance_gap;
-- qbi_context_loss_risk;
-- economic_viability_gap;
-- decision_record_mismatch.
-
-### Phase 4: Rubric as Skill Model
-
-Scope:
-
-- Show rubric dimensions as decision skills.
+- Keep rubric dimensions connected to artifacts.
 - Connect each score to artifacts.
 - Show what blocked improvement.
+- Test inter-rater reliability before stronger claims.
+- Use "observed rubric movement" rather than "skill developed".
 
 Example:
 
@@ -1017,19 +1141,21 @@ Raised by: saved PredictiveHypothesis and QBI lite reading.
 Still blocked by: high context-loss risk.
 ```
 
-### Phase 5: Buyer Artifact Upgrade
+### Phase 5: Advanced Outcome Report
 
 Scope:
 
-- Add cohort-level skill movement to Outcome Report.
+- Add buyer-validated metrics to Outcome Report.
+- Keep observed rubric movement, not skill acquisition claims.
 - Add top decision intervention patterns.
 - Add before/after reasoning examples.
+- Remove metrics buyers do not understand or value.
 
 Buyer-facing message:
 
 ```text
 This cohort did not just complete tasks.
-VERTEX shows how their decision reasoning changed.
+VERTEX shows observed changes in reviewed reasoning.
 ```
 
 ## Success Criteria
@@ -1083,7 +1209,7 @@ I know what to do next.
 Facilitator:
 I know which teams need help.
 I know why they need help.
-I know which decision skill is weak.
+I know which decision-quality dimension needs attention.
 I know what intervention to make.
 
 Buyer:
@@ -1093,4 +1219,4 @@ I know what artifacts I can keep.
 I know what this pilot proved and did not prove.
 ```
 
-That is the product shape: a pedagogical direction system powered by decision artifacts.
+That is the product shape: a decision direction system powered by artifacts, evidence and intervention signals.

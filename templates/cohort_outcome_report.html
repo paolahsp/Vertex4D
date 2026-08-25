@@ -58,7 +58,7 @@
     </section>
     <section class="cor-exec">
         <article class="v4-panel">
-            <p class="v4-plabel">Decision skill movement</p>
+            <p class="v4-plabel">Observed rubric movement</p>
             <div class="cor-movement">
                 {% for skill in report.skill_movement %}
                 <div class="cor-move"><span class="cor-chip">{{ skill.label }}</span><div class="cor-track"><i style="--value: {{ (skill.post or 0) * 20 }}%"></i></div><span class="cor-chip">{{ skill.baseline or 'missing' }} -> {{ skill.post or 'missing' }}</span></div>
