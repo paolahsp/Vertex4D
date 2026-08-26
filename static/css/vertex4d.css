@@ -918,6 +918,10 @@ header, .head, .sgp-header, .fd-header, .gp-header, .think-header, .aa-header {
     grid-template-columns: minmax(0, 1fr) 218px;
     padding: 30px clamp(16px, 2vw, 24px) 26px;
 }
+.v4-head.v4-head,
+.v4-head.v4-head > *,
+.v4-tally.v4-tally,
+.v4-t.v4-t { min-width: 0; }
 .v4-eyebrow {
     align-items: center; color: var(--fg2); display: inline-flex; gap: 9px;
     font: 400 10.5px/1 var(--font-mono); margin-bottom: 13px;
@@ -925,10 +929,10 @@ header, .head, .sgp-header, .fd-header, .gp-header, .think-header, .aa-header {
 .v4-eyebrow s { background: var(--ok); border-radius: 2px; height: 2px; text-decoration: none; width: 18px; }
 .v4-h1 {
     font: 800 clamp(28px, 3.4vw, 43px)/1.04 var(--font-display) !important;
-    letter-spacing: -1.3px; margin: 0; max-width: 500px;
+    letter-spacing: -1.3px; margin: 0; max-width: min(500px, 100%); overflow-wrap: anywhere;
 }
 .v4-h1 em { color: var(--act); font-style: normal; }
-.v4-lede { color: var(--fg2); font-size: 14.5px; line-height: 1.68; margin-top: 13px; max-width: 460px; }
+.v4-lede { color: var(--fg2); font-size: 14.5px; line-height: 1.68; margin-top: 13px; max-width: min(460px, 100%); overflow-wrap: anywhere; }
 
 /* Una sola acción siguiente, siempre en el mismo sitio, con estimación
    de tiempo: la ceguera temporal estorba más que la navegación. */
