@@ -14,6 +14,7 @@ DOCS = [
     "docs/BUYER_FOLLOW_UP_EMAIL.md",
     "docs/FOUNDER_ONBOARDING_SCRIPT.md",
     "docs/FACILITATOR_RUN_OF_SHOW.md",
+    "docs/VERTEX_ACCELERATOR_EDUCATIONAL_DEMO.md",
 ]
 
 

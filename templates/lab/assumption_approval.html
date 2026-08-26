@@ -69,6 +69,7 @@
             <aside class="v4-tally"><div class="v4-t"><b id="approval-counts">0 / 0</b><span>Finance / predictive</span></div><div class="v4-t up"><b>Gate</b><span>Human approval</span></div><div class="v4-t"><b>03</b><span>Golden Path stage</span></div></aside>
         </section>
         {% with stage = 3 %}{% include "lab/_path_bar.html" %}{% endwith %}
+        {% with direction_key = 'approval' %}{% include "lab/_direction_strip.html" %}{% endwith %}
         <section class="aa-table v4-panel" id="assumption-list" aria-label="Assumptions for approval"></section>
     </main>
 <script>

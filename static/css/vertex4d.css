@@ -991,14 +991,85 @@ header, .head, .sgp-header, .fd-header, .gp-header, .think-header, .aa-header {
 .v4-st.wait h3, .v4-st.wait span { color: var(--fg3) !important; }
 [data-motion="full"] .v4-st.now .v4-knob { animation: breathe 1.6s cubic-bezier(.22,.61,.36,1) 3; }
 
+/* Student direction layer: visible learning without turning VERTEX into an LMS. */
+.v4-direction {
+    background: var(--glass2);
+    border: 1px solid var(--edge2);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 16px clamp(16px, 2vw, 22px);
+}
+.v4-path + .v4-direction { margin-top: -4px; }
+.v4-direction + .flex-1,
+.v4-direction + .v4-two,
+.v4-direction + .aa-table,
+.v4-direction + .screen,
+.v4-direction + .metrics { margin-top: 0; }
+.v4-dir-head {
+    align-items: baseline;
+    border-bottom: 1px solid var(--edge);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: space-between;
+    padding-bottom: 11px;
+}
+.v4-dir-head span {
+    color: var(--risk-text);
+    font: 700 10.5px/1.25 var(--font-mono);
+}
+.v4-dir-head strong {
+    color: var(--fg);
+    font: 700 12px/1.25 var(--font-mono);
+}
+.v4-dir-grid {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.v4-dir-grid article {
+    border-left: 4px solid var(--edge2);
+    min-width: 0;
+    padding-left: 11px;
+}
+.v4-dir-grid article:nth-child(1) { border-left-color: var(--act); }
+.v4-dir-grid article:nth-child(2) { border-left-color: var(--mint); }
+.v4-dir-grid article:nth-child(3) { border-left-color: var(--coral); }
+.v4-dir-grid article:nth-child(4) { border-left-color: var(--lav); }
+.v4-dir-grid b {
+    color: var(--fg);
+    display: block;
+    font: 700 11px/1.25 var(--font-mono);
+    margin-bottom: 5px;
+}
+.v4-dir-grid p,
+.v4-dir-gate {
+    color: var(--fg2);
+    font-size: 12.5px;
+    line-height: 1.5;
+    margin: 0;
+}
+.v4-dir-gate {
+    background: var(--risk-chip);
+    border: 1px solid color-mix(in srgb, var(--coral) 32%, transparent);
+    border-radius: 10px;
+    color: var(--risk-text);
+    padding: 9px 11px;
+}
+
 @media (max-width: 860px) {
     .v4-head.v4-head { grid-template-columns: minmax(0, 1fr); }
     .v4-tally.v4-tally { grid-template-columns: repeat(4, minmax(0, 1fr)); }
     .v4-stations { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px 0; margin-top: 0; }
     .v4-track { display: none; }
+    .v4-dir-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 520px) {
     .v4-tally.v4-tally, .v4-stations { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .v4-dir-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* ── Iconografía propia ──────────────────────────────────────

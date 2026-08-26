@@ -17,6 +17,8 @@ Do not demo every feature. Demo the transformation:
 
 The buyer should not feel that VERTEX is a form builder, course platform, CRM, or generic AI assistant. The buyer should feel that VERTEX makes founder reasoning change visible enough to manage.
 
+For the module-by-module student workspace and deliverables map, use `docs/VERTEX_ACCELERATOR_EDUCATIONAL_DEMO.md`.
+
 Buyer promise:
 
 "Know where to intervene. Show what changed."

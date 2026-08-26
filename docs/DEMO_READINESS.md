@@ -8,6 +8,12 @@ The seeded path supports:
 
 Dashboard -> Cohort -> Intervention queue -> Case comments -> Rubric scores -> Decision Memo -> Outcome Report
 
+For the accelerator-facing educational proposal, student workspace, module map and deliverables, see:
+
+```text
+docs/VERTEX_ACCELERATOR_EDUCATIONAL_DEMO.md
+```
+
 ## Seed demo data
 
 From the repo root:
