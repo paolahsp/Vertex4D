@@ -24,7 +24,6 @@ ROUTES = [
 LAB_TOOL_ROUTES = [
     ("/dashboard/lab", "Srsly Labs Lab", "VERTEX 4D Quest is separate"),
     ("/dashboard/lab/d-predict", "D-Predict / MiroFish", "reserved"),
-    ("/dashboard/lab/billie", "Billie", "reserved"),
     ("/dashboard/lab/finops", "FinOps Central", "coming soon"),
 ]
 
@@ -106,6 +105,16 @@ def main() -> None:
         tangle_vertex = assert_200(client.get("/dashboard/vertex/tangle"), "vertex tangle")
         for marker in ["Tangle", "SystemMap", "Student direction and deliverable", "Next action", "Gatekeeper", "artifacts/system_map/save"]:
             assert_contains(tangle_vertex, marker, "vertex tangle")
+
+        billie_lab = assert_200(client.get("/dashboard/lab/billie"), "lab billie")
+        for marker in ["Billie Storyteller", "Srsly Labs Lab", "Positioning Statement", "Safe Claims"]:
+            assert_contains(billie_lab, marker, "lab billie")
+        for forbidden in ["FinancialScenario", "pricing calculator"]:
+            assert_not_contains(billie_lab, forbidden, "lab billie")
+
+        ledger_vertex = assert_200(client.get("/dashboard/vertex/ledger"), "vertex ledger")
+        assert_contains(ledger_vertex, "Ledger", "vertex ledger")
+        assert_contains(ledger_vertex, "FinancialScenario", "vertex ledger")
 
         doc_path = REPO_DIR / "docs" / "VERTEX_ACCELERATOR_EDUCATIONAL_DEMO.md"
         doc = doc_path.read_text(encoding="utf-8")

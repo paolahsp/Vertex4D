@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html class="light" lang="en" data-theme="light" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Billie Storyteller | Srsly Labs Lab</title>
+    <link rel="icon" href="/favicon.ico">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#5b13ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#161022",
+                        "coral-text": "#FF6B6B",
+                        "olive-text": "#00A86B",
+                        "cyber-lavender": "#B2A4FF",
+                        "electric-mint": "#66FFB2",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"],
+                        "heading": ["Spline Sans", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
+    <style>
+        .story-field label { display: block; margin-bottom: 0.45rem; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #57534e; }
+        .story-field input,
+        .story-field textarea,
+        .story-field select { width: 100%; border: 1px solid rgba(41, 37, 36, 0.16); background: rgba(255, 255, 255, 0.72); padding: 0.78rem 0.9rem; font-size: 0.92rem; line-height: 1.45; color: #1c1917; }
+        .story-field textarea { min-height: 88px; resize: vertical; }
+        .story-output-card { border: 1px solid rgba(41, 37, 36, 0.14); background: rgba(255, 255, 255, 0.72); padding: 1rem; }
+        .story-output-card h3 { margin: 0 0 0.55rem; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #5b13ec; }
+        .story-output-card p { margin: 0; color: #44403c; font-size: 0.92rem; line-height: 1.55; white-space: pre-wrap; }
+        .story-list { display: grid; gap: 0.55rem; }
+        .story-list li { border: 1px solid rgba(41, 37, 36, 0.12); background: rgba(255, 255, 255, 0.64); padding: 0.72rem 0.8rem; color: #44403c; font-size: 0.9rem; line-height: 1.45; }
+        .billie-status.is-error { color: #B42318; }
+        .billie-status.is-ok { color: #027A48; }
+    </style>
+</head>
+
+<body class="srsly-classic app-shell glass-workbench font-display text-stone-900">
+{% include "_icon_sprite.html" %}
+    <div class="min-h-screen">
+        <header class="app-header sticky top-0 z-50 border-b px-4 py-3 sm:px-6 lg:px-10">
+            <div class="mx-auto flex max-w-7xl items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <a href="/dashboard/lab" class="app-nav-link inline-flex items-center gap-2">
+                        <svg class="ic" aria-hidden="true"><use href="#i-back"/></svg>
+                        Srsly Labs Lab
+                    </a>
+                    <span class="hidden h-5 border-l border-stone-300 sm:block"></span>
+                    <div class="brand-lockup">
+                        <span class="brand-mark">SL</span>
+                        <span class="brand-wordmark">Srsly Labs</span>
+                        <span class="vertex-product-label">Lab</span>
+                    </div>
+                </div>
+                <nav class="hidden items-center gap-3 text-sm md:flex" aria-label="Lab navigation">
+                    <a class="app-nav-link" href="/dashboard/lab/alex">Alex</a>
+                    <a class="app-nav-link" href="/dashboard/lab/synapmap">SynapMap</a>
+                    <a class="app-nav-link" href="/dashboard/vertex/ledger">VERTEX Ledger</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="classic-lab-main px-4 py-8 sm:px-6 lg:px-10">
+            <section class="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[0.92fr_1.35fr_0.78fr]">
+                <aside class="glass-panel p-5 sm:p-6">
+                    <p class="app-kicker">Billie Storyteller</p>
+                    <h1 class="mt-3 font-heading text-4xl leading-tight sm:text-5xl">Turn evidence into language people can repeat.</h1>
+                    <p class="mt-4 text-sm leading-6 text-stone-600">
+                        Billie converts founder judgment, technical context and evidence available into clear narrative. It helps with positioning, pitch language, content angles and claim discipline.
+                    </p>
+                    <div class="mt-5 grid gap-2 text-sm">
+                        <span class="inline-flex items-center gap-2 font-bold text-olive-text"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg> Evidence available</span>
+                        <span class="inline-flex items-center gap-2 font-bold text-primary"><svg class="ic" aria-hidden="true"><use href="#i-signal"/></svg> Observed signal</span>
+                        <span class="inline-flex items-center gap-2 font-bold text-coral-text"><svg class="ic" aria-hidden="true"><use href="#i-warning"/></svg> Do not say yet</span>
+                    </div>
+                    <div class="mt-6 border border-coral-text/30 bg-white/70 p-4 text-sm leading-6 text-stone-700">
+                        Do not paste sensitive data, third-party personal data or confidential information unless you have permission. Billie only sends the fields on this page when you click Generate narrative.
+                    </div>
+                    <div class="mt-4 border border-stone-200 bg-white/70 p-4 text-sm leading-6 text-stone-600">
+                        Billie v1 does not make decks, invent evidence, decide for the founder or replace the finance workflow. Financial modeling stays in VERTEX Ledger.
+                    </div>
+                </aside>
+
+                <section class="grid gap-6">
+                    <article class="glass-panel p-5 sm:p-6">
+                        <div class="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                                <p class="app-kicker">Narrative inputs</p>
+                                <h2 class="mt-2 font-heading text-2xl font-bold">What should Billie shape?</h2>
+                            </div>
+                            <span id="billie-status" class="billie-status text-sm font-bold">Draft narrative</span>
+                        </div>
+                        <form id="billie-form" class="mt-5 grid gap-4 md:grid-cols-2">
+                            <div class="story-field">
+                                <label for="project-name">Project name</label>
+                                <input id="project-name" name="projectName" type="text" placeholder="Northstar Schools" autocomplete="off">
+                            </div>
+                            <div class="story-field">
+                                <label for="audience">Audience</label>
+                                <select id="audience" name="audience">
+                                    <option value="accelerator">Accelerator or program team</option>
+                                    <option value="buyer">Institutional buyer</option>
+                                    <option value="user">End user</option>
+                                    <option value="investor">Investor or funder</option>
+                                    <option value="partner">Strategic partner</option>
+                                    <option value="internal">Internal team</option>
+                                </select>
+                            </div>
+                            <div class="story-field md:col-span-2">
+                                <label for="problem">Problem</label>
+                                <textarea id="problem" name="problem" placeholder="What pain, friction or decision problem does this project address?"></textarea>
+                            </div>
+                            <div class="story-field md:col-span-2">
+                                <label for="founder-insight">Founder insight</label>
+                                <textarea id="founder-insight" name="founderInsight" placeholder="What do you see that others may be missing?"></textarea>
+                            </div>
+                            <div class="story-field md:col-span-2">
+                                <label for="available-evidence">Available evidence</label>
+                                <textarea id="available-evidence" name="availableEvidence" placeholder="Paste interview notes, observed signals, SynapMap/Tangle notes, Alex/Riddle framing, Stamp decisions or Ledger numbers if they matter."></textarea>
+                            </div>
+                            <div class="story-field">
+                                <label for="tone">Desired tone</label>
+                                <select id="tone" name="tone">
+                                    <option value="clear and credible">Clear and credible</option>
+                                    <option value="institutional and calm">Institutional and calm</option>
+                                    <option value="founder-led and direct">Founder-led and direct</option>
+                                    <option value="warm and human">Warm and human</option>
+                                    <option value="technical but plain">Technical but plain</option>
+                                    <option value="bold but careful">Bold but careful</option>
+                                </select>
+                            </div>
+                            <div class="story-field">
+                                <label for="channel">Channel</label>
+                                <select id="channel" name="channel">
+                                    <option value="pitch opening">Pitch opening</option>
+                                    <option value="demo intro">Demo intro</option>
+                                    <option value="email">Email</option>
+                                    <option value="landing page">Landing page</option>
+                                    <option value="program application">Program application</option>
+                                    <option value="founder update">Founder update</option>
+                                </select>
+                            </div>
+                            <div class="story-field md:col-span-2">
+                                <label for="communication-goal">Communication goal</label>
+                                <textarea id="communication-goal" name="communicationGoal" placeholder="What should the audience understand, feel or do next?"></textarea>
+                            </div>
+                            <div class="story-field md:col-span-2">
+                                <label for="cannot-claim">Things we cannot claim yet</label>
+                                <textarea id="cannot-claim" name="cannotClaim" placeholder="Claims, numbers, outcomes or market statements that should stay out for now."></textarea>
+                            </div>
+                        </form>
+                        <div class="mt-5 flex flex-wrap gap-3">
+                            <button id="generate-story" class="classic-button" type="button">Generate narrative</button>
+                            <button id="save-story" class="classic-button secondary" type="button">Save draft</button>
+                            <button id="clear-story" class="classic-button secondary" type="button">Clear</button>
+                        </div>
+                    </article>
+
+                    <article class="glass-panel p-5 sm:p-6">
+                        <div class="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                                <p class="app-kicker">Generated outputs</p>
+                                <h2 class="mt-2 font-heading text-2xl font-bold">Narrative draft</h2>
+                            </div>
+                            <button id="copy-story" class="classic-button secondary" type="button">Copy output</button>
+                        </div>
+                        <div class="mt-5 grid gap-4">
+                            <section class="story-output-card"><h3>Positioning Statement</h3><p id="out-positioning">No draft yet.</p></section>
+                            <section class="story-output-card"><h3>One-Liner</h3><p id="out-one-liner">No draft yet.</p></section>
+                            <section class="story-output-card"><h3>Founder Story</h3><p id="out-founder-story">No draft yet.</p></section>
+                            <section class="story-output-card"><h3>Buyer / Program Narrative</h3><p id="out-buyer-narrative">No draft yet.</p></section>
+                            <section class="story-output-card"><h3>Pitch Opening</h3><p id="out-pitch-opening">No draft yet.</p></section>
+                            <section class="story-output-card"><h3>Content Angles</h3><ul id="out-content-angles" class="story-list"><li>No draft yet.</li></ul></section>
+                        </div>
+                    </article>
+                </section>
+
+                <aside class="glass-panel p-5 sm:p-6">
+                    <p class="app-kicker">Claim discipline</p>
+                    <h2 class="mt-2 font-heading text-2xl font-bold">What can be said?</h2>
+                    <section class="mt-5">
+                        <h3 class="text-sm font-bold text-olive-text">Safe Claims</h3>
+                        <p class="mt-1 text-xs text-stone-500">Claim supported by current notes.</p>
+                        <ul id="out-safe-claims" class="story-list mt-3"><li>No claims drafted yet.</li></ul>
+                    </section>
+                    <section class="mt-6">
+                        <h3 class="text-sm font-bold text-coral-text">Unsafe Claims</h3>
+                        <p class="mt-1 text-xs text-stone-500">Claim needs more evidence. Do not say yet.</p>
+                        <ul id="out-unsafe-claims" class="story-list mt-3"><li>No claims flagged yet.</li></ul>
+                    </section>
+                    <section class="mt-6">
+                        <h3 class="text-sm font-bold text-primary">Next Evidence Needed</h3>
+                        <ul id="out-next-evidence" class="story-list mt-3"><li>No evidence gaps listed yet.</li></ul>
+                    </section>
+                </aside>
+            </section>
+        </main>
+    </div>
+    <script src="/static/js/billie_storyteller.js?v={{ asset_v }}"></script>
+</body>
+
+</html>

@@ -127,6 +127,17 @@ def main() -> None:
         assert_contains(tangle_vertex, "Student direction and deliverable", "vertex tangle")
         assert_contains(tangle_vertex, "artifacts/system_map/save", "vertex tangle")
 
+        billie_lab = assert_200(client.get("/dashboard/lab/billie"), "lab billie")
+        assert_contains(billie_lab, "Billie Storyteller", "lab billie")
+        assert_contains(billie_lab, "Positioning Statement", "lab billie")
+        assert_contains(billie_lab, "Safe Claims", "lab billie")
+        assert_not_contains(billie_lab, "FinancialScenario", "lab billie")
+        assert_not_contains(billie_lab, "pricing calculator", "lab billie")
+
+        ledger_vertex = assert_200(client.get("/dashboard/vertex/ledger"), "vertex ledger")
+        assert_contains(ledger_vertex, "Ledger", "vertex ledger")
+        assert_contains(ledger_vertex, "FinancialScenario", "vertex ledger")
+
         memo_print = assert_200(
             client.get("/dashboard/lab/decision-memo/print?run_id=run_demo_complete"),
             "decision memo print",

@@ -1450,7 +1450,7 @@ async def billie(request: Request):
     user = get_current_user(request)
     if not user:
         return RedirectResponse(url="/login")
-    return render_lab_tool(request, user, "billie")
+    return templates.TemplateResponse(request, "lab/billie_storyteller.html", {"user": user})
 
 @app.get("/dashboard/lab/finops", response_class=HTMLResponse)
 async def finops_alias(request: Request):
