@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>SynapMap - The Visionary | Srsly Labs Lab</title>
+    <title>Tangle | VERTEX 4D</title>
     <link rel="icon" href="/favicon.ico">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -14,19 +14,19 @@
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#5b13ec",
-                        "background-light": "#f6f6f8",
-                        "background-dark": "#161022",
-                        "vapor-grey": "#F0F2F5",
-                        "coral-text": "#FF6B6B",
+                        "primary": "#1946D1",
+                        "background-light": "#F4EBDC",
+                        "background-dark": "#181810",
+                        "vapor-grey": "#F3DFBF",
+                        "coral-text": "#C13521",
 
-                        "olive-text": "#00A86B",
+                        "olive-text": "#5F6320",
 
-                        "cyber-lavender": "#B2A4FF",
-                        "hyper-coral": "#FF6B6B",
-                        "electric-mint": "#66FFB2",
-                        "near-black": "#1A1A1A",
-                        "medium-grey": "#8A8A8A"
+                        "cyber-lavender": "#E74530",
+                        "hyper-coral": "#E74530",
+                        "electric-mint": "#A4A760",
+                        "near-black": "#181810",
+                        "medium-grey": "#6E6660"
                     },
                     fontFamily: {
                         "display": ["Inter", "sans-serif"]
@@ -39,19 +39,20 @@
         
 
         .bg-dots {
-            background-image: radial-gradient(#E0E0E0 1px, transparent 1px);
+            background-image: linear-gradient(rgba(25, 70, 209, 0.09) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(25, 70, 209, 0.09) 1px, transparent 1px);
             background-size: 16px 16px;
         }
 
         #system-map-svg line {
-            stroke: rgba(178, 164, 255, 0.4);
+            stroke: rgba(25, 70, 209, 0.36);
             stroke-width: 2px;
             transition: stroke 0.2s, stroke-width 0.2s;
             cursor: pointer;
         }
 
         #system-map-svg line:hover {
-            stroke: #B2A4FF;
+            stroke: #1946D1;
             stroke-width: 4px;
         }
 
@@ -72,96 +73,59 @@
     <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
 </head>
 
-<body class="srsly-classic font-display bg-background-light text-near-black">
+<body class="srsly-module font-display bg-background-light text-near-black">
 {% include "_icon_sprite.html" %}
-<div class="flex h-screen overflow-hidden">
-    <aside class="classic-sidebar classic-rail-sidebar flex flex-col items-center gap-6 border-r border-vapor-grey bg-vapor-grey/50 p-3">
-        <a class="classic-mark mt-1" href="/dashboard/lab" aria-label="Srsly Labs Lab">
-            <svg class="ic" aria-hidden="true"><use href="#i-lab"/></svg>
-        </a>
-        <nav class="flex flex-col items-center gap-3" aria-label="Lab tools">
-            <a class="classic-nav-item is-active !h-14 !w-14 !justify-center !p-0" href="/dashboard/lab/synapmap" title="SynapMap" aria-label="SynapMap">
-                <svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg>
-            </a>
-            <a class="classic-nav-item !h-14 !w-14 !justify-center !p-0" href="/dashboard/lab/alex" title="Alex" aria-label="Alex">
-                <svg class="ic" aria-hidden="true"><use href="#i-alex"/></svg>
-            </a>
-            <a class="classic-nav-item !h-14 !w-14 !justify-center !p-0" href="/dashboard/lab/billie" title="Billie" aria-label="Billie">
-                <svg class="ic" aria-hidden="true"><use href="#i-billie"/></svg>
-            </a>
-        </nav>
-        <div class="mt-auto flex flex-col items-center gap-4">
-            <button id="save-map-btn" class="classic-nav-item !h-14 !w-14 !justify-center !p-0" type="button" title="Save map" aria-label="Save map">
-                <svg class="ic" aria-hidden="true"><use href="#i-save"/></svg>
-            </button>
-            <button id="delete-map-btn" class="classic-nav-item !h-14 !w-14 !justify-center !p-0" type="button" title="Delete map" aria-label="Delete map">
-                <svg class="ic" aria-hidden="true"><use href="#i-trash"/></svg>
-            </button>
-        </div>
-    </aside>
-    <main class="classic-main flex min-w-0 flex-1 flex-col overflow-hidden bg-background-light">
-        <header class="classic-topbar flex items-center justify-between border-b border-vapor-grey bg-background-light/80 px-6 py-3 backdrop-blur-sm lg:px-10">
-            <div class="classic-breadcrumb flex items-center gap-2 text-sm">
-                <a class="hover:text-primary" href="/dashboard/lab">Srsly Labs Lab</a>
-                <span>/</span>
-                <span class="font-bold text-near-black">SynapMap</span>
+<div class="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col">
+    <header class="v4-bar shrink-0">
+        <a class="v4-brand" href="/dashboard/vertex/spark"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Quest</i></span></a>
+        <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg> Tangle &middot; SystemMap</span>
+        <nav><a class="app-nav-link v4-navlink" data-run-link href="/dashboard/vertex/riddle">Back to Riddle</a><a class="app-nav-link v4-navlink" data-run-link href="/dashboard/vertex/gatekeeper">Gatekeeper</a></nav>
+    </header>
+    <main class="flex-1 min-h-0 flex flex-col">
+        <section class="v4-head shrink-0">
+            <div class="focusable">
+                <p class="v4-eyebrow"><s></s>Etapa 2 de 6 &middot; Tangle</p>
+                <h1 class="v4-h1">Make the system visible.<br><em>Then name the dependencies.</em></h1>
+                <p class="v4-lede">Tangle turns scattered context into stakeholders, relationships, bottlenecks and RACI signals for Gatekeeper. SynapMap remains the full Srsly Labs visual system tool.</p>
+                <div class="v4-next"><button class="btn primary" type="button" id="save-map-btn"><svg class="ic" aria-hidden="true"><use href="#i-save"/></svg> Save map</button><button class="btn ghost" type="button" id="delete-map-btn"><svg class="ic" aria-hidden="true"><use href="#i-trash"/></svg> Delete map</button><span class="v4-eta">&asymp; 10 min &middot; D3 map stays interactive</span></div>
             </div>
-            <div class="hidden items-center gap-6 md:flex">
-                <div class="flex items-center gap-2">
-                    <span class="font-bold text-near-black">live</span>
-                    <span class="text-sm text-medium-grey">System canvas</span>
-                </div>
-                <div class="flex w-48 flex-col gap-1.5">
-                    <div class="flex items-center justify-between">
-                        <p class="text-sm font-bold text-near-black">System Health</p>
-                        <p class="text-sm font-bold text-primary">open</p>
+            <aside class="v4-tally"><div class="v4-t"><b>02</b><span>SystemMap stage</span></div><div class="v4-t up"><b>RACI</b><span>Matrix target</span></div><div class="v4-t"><b>35%</b><span>Confidence seed</span></div></aside>
+        </section>
+        {% with stage = 2 %}{% include "lab/_path_bar.html" %}{% endwith %}
+        {% with direction_key = 'synapmap' %}{% include "lab/_direction_strip.html" %}{% endwith %}
+        <section class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-0 lg:overflow-hidden">
+            <aside class="lg:col-span-3 min-w-0 flex flex-col border-b lg:border-b-0 lg:border-r border-vapor-grey p-4">
+                <article class="v4-panel flex-1 min-h-0 flex flex-col p-0 overflow-hidden">
+                    <div class="px-4 py-4 border-b border-vapor-grey"><p class="v4-plabel" style="margin:0">System prompt</p></div>
+                    <div id="chat-container" class="flex-1 overflow-y-auto p-4">
+                        <div class="v4-item v4-hy"><span class="v4-sig"></span><p><b>Tangle</b><br>Describe your project. I will generate stakeholders, dependencies, bottlenecks and a RACI matrix.</p><span class="v4-chip">ready</span></div>
                     </div>
-                    <div class="classic-progress-track">
-                        <div class="classic-progress-fill" style="width: 35%;"></div>
-                    </div>
-                </div>
-            </div>
-        </header>
-        <section class="grid min-h-0 flex-1 grid-cols-1 overflow-hidden lg:grid-cols-12">
-            <aside class="min-w-0 border-b border-vapor-grey bg-white lg:col-span-3 lg:border-b-0 lg:border-r">
-                <div class="flex h-full min-h-0 flex-col">
-                    <div id="chat-container" class="flex-1 overflow-y-auto p-5">
-                        <div class="flex items-start gap-3">
-                            <div class="classic-tool-icon map flex size-10 shrink-0 items-center justify-center">
-                                <svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg>
-                            </div>
-                            <div class="rounded-2xl rounded-tl-none bg-vapor-grey p-3">
-                                <p class="font-bold text-near-black text-sm">SynapMap</p>
-                                <p class="text-medium-grey text-xs">Describe your project. I will generate stakeholders, dependencies, bottlenecks and a RACI matrix.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="border-t border-vapor-grey bg-white p-3">
+                    <div class="border-t border-vapor-grey p-3">
                         <div id="status-message" class="mb-2 text-center text-xs"></div>
                         <div class="relative">
                             <input type="file" id="file-input" class="hidden" accept=".txt,.pdf,.ppt,.pptx,.doc,.docx,image/*,audio/*" />
                             <textarea id="idea-input" class="w-full resize-none rounded-xl border-vapor-grey bg-vapor-grey p-3 pr-20 text-near-black text-sm placeholder:text-medium-grey focus:border-cyber-lavender focus:ring-2 focus:ring-cyber-lavender/50" placeholder="Describe your idea..." rows="3"></textarea>
                             <div class="absolute bottom-2 right-2 flex gap-1">
-                                <button id="upload-btn" onclick="document.getElementById('file-input').click()" class="flex size-7 items-center justify-center rounded-lg bg-vapor-grey text-medium-grey transition-colors hover:bg-cyber-lavender/20 hover:text-primary"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg></button>
-                                <button id="analyze-btn" class="flex size-7 items-center justify-center rounded-lg bg-primary text-white transition-colors hover:bg-primary/80"><svg class="ic" aria-hidden="true"><use href="#i-assist"/></svg></button>
+                                <button id="upload-btn" onclick="document.getElementById('file-input').click()" class="flex size-7 items-center justify-center rounded-lg bg-vapor-grey text-medium-grey transition-colors hover:bg-cyber-lavender/20 hover:text-coral-text"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg></button>
+                                <button id="analyze-btn" class="flex size-7 items-center justify-center rounded-lg bg-coral-text text-white transition-colors hover:bg-cyber-lavender/80"><svg class="ic" aria-hidden="true"><use href="#i-assist"/></svg></button>
                             </div>
                         </div>
                     </div>
-                </div>
+                </article>
             </aside>
-            <section class="relative min-h-[420px] min-w-0 bg-dots lg:col-span-6 lg:min-h-0">
+            <section class="lg:col-span-6 min-w-0 relative bg-dots min-h-[420px] lg:min-h-0">
                 <div id="system-map-container" class="h-full w-full"><svg id="system-map-svg" class="h-full w-full"></svg><div id="d3-tooltip" class="d3-tooltip"></div></div>
-                <button id="reset-zoom-btn" class="absolute left-4 top-4 flex size-10 items-center justify-center rounded-lg border border-vapor-grey bg-white text-primary shadow-lg hover:bg-cyber-lavender/10" title="Reset Zoom"><svg class="ic" aria-hidden="true"><use href="#i-focus"/></svg></button>
+                <button id="reset-zoom-btn" class="absolute top-4 left-4 flex size-10 items-center justify-center rounded-lg bg-white border border-vapor-grey shadow-lg text-coral-text hover:bg-cyber-lavender/10" title="Reset Zoom"><svg class="ic" aria-hidden="true"><use href="#i-focus"/></svg></button>
             </section>
-            <aside class="min-w-0 overflow-y-auto border-t border-vapor-grey bg-white lg:col-span-3 lg:border-l lg:border-t-0">
-                <section class="border-b border-vapor-grey p-4">
-                    <p class="classic-muted text-xs font-bold uppercase tracking-[0.14em]">RACI Matrix</p>
-                    <div id="raci-container" class="mt-3 text-xs"><div class="text-center text-medium-grey">No matrix yet. Run the map to see who is responsible, accountable, consulted and informed.</div></div>
-                </section>
-                <section class="p-4">
-                    <p class="classic-muted text-xs font-bold uppercase tracking-[0.14em]">System Health</p>
-                    <div id="insights-container" class="mt-3 text-xs space-y-3"><div class="text-center text-medium-grey">No analysis yet. Bottlenecks, risks, opportunities and conflicts will appear here after SynapMap generates a system.</div></div>
-                </section>
+            <aside class="lg:col-span-3 min-w-0 flex flex-col gap-4 border-t lg:border-t-0 lg:border-l border-vapor-grey p-4 lg:overflow-y-auto">
+                <article class="v4-panel">
+                    <p class="v4-plabel">RACI Matrix</p>
+                    <div id="raci-container" class="text-xs"><div class="v4-empty">No matrix yet. Run the map to see who is responsible, accountable, consulted and informed.</div></div>
+                </article>
+                <article class="v4-panel is-strong">
+                    <p class="v4-plabel">System Analysis</p>
+                    <div id="insights-container" class="text-xs space-y-3"><div class="v4-empty">No analysis yet. Bottlenecks, risks, opportunities and conflicts will appear here after Tangle generates a system.</div></div>
+                </article>
             </aside>
         </section>
     </main>
@@ -228,7 +192,7 @@
                 <svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg>
             </div>
             <div class="rounded-2xl rounded-tl-none bg-vapor-grey p-3">
-                <p class="font-bold text-near-black text-sm">SynapMap</p>
+                <p class="font-bold text-near-black text-sm">Tangle</p>
                 <p class="text-medium-grey text-xs">${content}</p>
             </div>
         `;
@@ -324,7 +288,7 @@ ${JSON.stringify(currentAnalysis)}
             const contentToSend = `[NEW INPUT]:\n${fullContent}\n${contextPrompt}`;
             attachedFileContent = "";
 
-            const systemPrompt = `You are SynapMap, an expert Systems Thinking AI inside the Srsly Labs Lab.
+            const systemPrompt = `You are Tangle, a VERTEX systems-thinking module.
 
 TASK: ${taskInstruction}
 
@@ -652,7 +616,7 @@ RULES:
                 role: mapRole(node.category),
                 influence: 'medium',
                 interest: 'medium',
-                incentives: ['Needs explicit validation before the team acts on this map'],
+                incentives: ['Needs explicit validation in the Quest run'],
                 evidence_refs: [evidenceId],
                 is_identifiable_person: false
             }));
@@ -690,7 +654,7 @@ RULES:
                 created_at: now,
                 created_by_role: 'synapmap',
                 status: 'draft',
-                provenance: { source_kind: 'user_supplied', source_label: 'SynapMap generated system map', ip_owner: 'Paola Hintze', external_components_used: [], notes: 'Mapped from SynapMap D3/RACI analysis into a SystemMap draft.' },
+                provenance: { source_kind: 'user_supplied', source_label: 'Tangle generated system map', ip_owner: 'Paola Hintze', external_components_used: [], notes: 'Mapped from Tangle D3/RACI analysis into a SystemMap draft.' },
                 human_approval: { required: true, state: 'pending', approved_by_role: 'facilitator', approved_at: now, notes: 'Pending facilitator review.' },
                 validation_errors: [],
                 preceding_artifacts: { project_record_id: projectRecord?.artifact_id || 'missing_upstream_project_record', problem_frame_id: problemFrame?.artifact_id || 'missing_upstream_problem_frame' },
@@ -698,7 +662,7 @@ RULES:
                 relationships,
                 tensions,
                 dependencies,
-                evidence_references: [{ evidence_id: evidenceId, label: 'SynapMap session output', source_type: 'synthetic_observation', classification: 'hypothesis', contains_personal_data: false, evidence_context: 'synthetic_fixture' }],
+                evidence_references: [{ evidence_id: evidenceId, label: 'Tangle session output', source_type: 'synthetic_observation', classification: 'hypothesis', contains_personal_data: false, evidence_context: 'synthetic_fixture' }],
                 unknowns,
                 system_boundaries: { included: ['Current mapped stakeholder system'], excluded: ['Unmapped external market'], time_horizon: 'pilot decision window', geography: 'team-defined geography' },
                 approved_assumptions: approvedAssumptions,
@@ -740,6 +704,7 @@ RULES:
 
             localStorage.setItem('synapmap_current', JSON.stringify(mapData));
             setStatus('Map saved locally', 'success');
+            await saveSystemMapArtifactToRun();
             setTimeout(() => setStatus(''), 2000);
         }
 
@@ -757,7 +722,7 @@ RULES:
                             <svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg>
                         </div>
                         <div class="rounded-2xl rounded-tl-none bg-vapor-grey p-3">
-                            <p class="font-bold text-near-black text-sm">SynapMap</p>
+                            <p class="font-bold text-near-black text-sm">Tangle</p>
                             <p class="text-medium-grey text-xs">Describe your project. I will generate a system map with stakeholders, dependencies, bottlenecks, and a RACI matrix.</p>
                         </div>
                     </div>`;

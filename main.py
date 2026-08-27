@@ -1312,7 +1312,7 @@ async def vertex_tangle(request: Request):
     user = get_current_user(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse(request, "lab/synapmap.html", {"user": user})
+    return templates.TemplateResponse(request, "lab/tangle.html", {"user": user})
 
 @app.get("/dashboard/vertex/gatekeeper", response_class=HTMLResponse)
 async def vertex_gatekeeper(request: Request):

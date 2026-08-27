@@ -49,6 +49,10 @@ def assert_contains(text: str, needle: str, label: str) -> None:
     assert needle.lower() in text.lower(), f"{label} missing expected text: {needle}"
 
 
+def assert_not_contains(text: str, needle: str, label: str) -> None:
+    assert needle.lower() not in text.lower(), f"{label} should not contain: {needle}"
+
+
 def main() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         tmp_path = Path(tmp)
@@ -94,6 +98,14 @@ def main() -> None:
             text = assert_200(client.get(route), route)
             for marker in markers:
                 assert_contains(text, marker, route)
+
+        synapmap_lab = assert_200(client.get("/dashboard/lab/synapmap"), "lab synapmap")
+        for forbidden in ["Tangle", "Gatekeeper", "Student direction and deliverable", "Next action", "_path_bar", "_direction_strip"]:
+            assert_not_contains(synapmap_lab, forbidden, "lab synapmap")
+
+        tangle_vertex = assert_200(client.get("/dashboard/vertex/tangle"), "vertex tangle")
+        for marker in ["Tangle", "SystemMap", "Student direction and deliverable", "Next action", "Gatekeeper", "artifacts/system_map/save"]:
+            assert_contains(tangle_vertex, marker, "vertex tangle")
 
         doc_path = REPO_DIR / "docs" / "VERTEX_ACCELERATOR_EDUCATIONAL_DEMO.md"
         doc = doc_path.read_text(encoding="utf-8")

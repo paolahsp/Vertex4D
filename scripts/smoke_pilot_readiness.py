@@ -27,6 +27,10 @@ def assert_contains(text: str, needle: str, label: str) -> None:
     assert needle.lower() in text.lower(), f"{label} missing expected text: {needle}"
 
 
+def assert_not_contains(text: str, needle: str, label: str) -> None:
+    assert needle.lower() not in text.lower(), f"{label} should not contain: {needle}"
+
+
 def main() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         tmp_path = Path(tmp)
@@ -114,6 +118,14 @@ def main() -> None:
         assert_contains(synapmap_lab, "/api/process-file", "lab synapmap")
         assert_contains(synapmap_lab, "RACI Matrix", "lab synapmap")
         assert_contains(synapmap_lab, "system-map-svg", "lab synapmap")
+        for forbidden in ["Tangle", "Gatekeeper", "Student direction and deliverable", "Next action"]:
+            assert_not_contains(synapmap_lab, forbidden, "lab synapmap")
+
+        tangle_vertex = assert_200(client.get("/dashboard/vertex/tangle"), "vertex tangle")
+        assert_contains(tangle_vertex, "Tangle", "vertex tangle")
+        assert_contains(tangle_vertex, "SystemMap", "vertex tangle")
+        assert_contains(tangle_vertex, "Student direction and deliverable", "vertex tangle")
+        assert_contains(tangle_vertex, "artifacts/system_map/save", "vertex tangle")
 
         memo_print = assert_200(
             client.get("/dashboard/lab/decision-memo/print?run_id=run_demo_complete"),
