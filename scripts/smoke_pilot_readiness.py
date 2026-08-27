@@ -134,6 +134,14 @@ def main() -> None:
         assert_not_contains(billie_lab, "FinancialScenario", "lab billie")
         assert_not_contains(billie_lab, "pricing calculator", "lab billie")
 
+        dpredict_lab = assert_200(client.get("/dashboard/lab/d-predict"), "lab d-predict")
+        assert_contains(dpredict_lab, "D-Predict / MiroFish", "lab d-predict")
+        assert_contains(dpredict_lab, "Scenario Stress Test", "lab d-predict")
+        assert_contains(dpredict_lab, "Readings, not forecasts", "lab d-predict")
+        assert_contains(dpredict_lab, "not a factual prediction", "lab d-predict")
+        assert_not_contains(dpredict_lab, "PredictiveHypothesis", "lab d-predict")
+        assert_not_contains(dpredict_lab, "Student direction and deliverable", "lab d-predict")
+
         ledger_vertex = assert_200(client.get("/dashboard/vertex/ledger"), "vertex ledger")
         assert_contains(ledger_vertex, "Ledger", "vertex ledger")
         assert_contains(ledger_vertex, "FinancialScenario", "vertex ledger")

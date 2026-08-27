@@ -23,7 +23,7 @@ ROUTES = [
 
 LAB_TOOL_ROUTES = [
     ("/dashboard/lab", "Srsly Labs Lab", "VERTEX 4D Quest is separate"),
-    ("/dashboard/lab/d-predict", "D-Predict / MiroFish", "reserved"),
+    ("/dashboard/lab/d-predict", "D-Predict / MiroFish", "Scenario Stress Test"),
     ("/dashboard/lab/finops", "FinOps Central", "coming soon"),
 ]
 
@@ -111,6 +111,16 @@ def main() -> None:
             assert_contains(billie_lab, marker, "lab billie")
         for forbidden in ["FinancialScenario", "pricing calculator"]:
             assert_not_contains(billie_lab, forbidden, "lab billie")
+
+        dpredict_lab = assert_200(client.get("/dashboard/lab/d-predict"), "lab d-predict")
+        for marker in ["D-Predict / MiroFish", "Scenario Stress Test", "quantum-like behavioral simulation", "localStorage only", "Readings, not forecasts"]:
+            assert_contains(dpredict_lab, marker, "lab d-predict")
+        for forbidden in ["PredictiveHypothesis", "Student direction and deliverable", "Next action", "_path_bar", "_direction_strip"]:
+            assert_not_contains(dpredict_lab, forbidden, "lab d-predict")
+
+        ripple_vertex = assert_200(client.get("/dashboard/vertex/ripple"), "vertex ripple")
+        for marker in ["Ripple", "PredictiveHypothesis", "QBI lite", "Student direction and deliverable"]:
+            assert_contains(ripple_vertex, marker, "vertex ripple")
 
         ledger_vertex = assert_200(client.get("/dashboard/vertex/ledger"), "vertex ledger")
         assert_contains(ledger_vertex, "Ledger", "vertex ledger")

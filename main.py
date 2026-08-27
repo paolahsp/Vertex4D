@@ -1436,7 +1436,7 @@ async def d_predict(request: Request):
     user = get_current_user(request)
     if not user:
         return RedirectResponse(url="/login")
-    return render_lab_tool(request, user, "d-predict")
+    return templates.TemplateResponse(request, "lab/d_predict_mirofish.html", {"user": user})
 
 @app.get("/dashboard/lab/dpredict", response_class=HTMLResponse)
 async def dpredict_alias(request: Request):
