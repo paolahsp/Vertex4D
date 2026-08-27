@@ -17,12 +17,26 @@ ROUTES = [
     ("/dashboard/vertex/ledger", "FinancialScenario", "Create a FinancialScenario"),
     ("/dashboard/vertex/stamp", "Stamp / DecisionRecord", "Create and save a Stamp"),
     ("/dashboard/lab/start-golden-path", "Locked Baseline + ProjectRecord", "Create a Spark case"),
-    ("/dashboard/lab/alex", "ProblemFrame", "Save a ProblemFrame"),
-    ("/dashboard/lab/synapmap", "SystemMap", "Save a SystemMap"),
     ("/dashboard/lab/assumption-approval", "Approved assumption register", "Approve only assumptions"),
-    ("/dashboard/lab/d-predict", "PredictiveHypothesis + QBI lite reading", "Create a PredictiveHypothesis"),
-    ("/dashboard/lab/billie", "FinancialScenario", "Create a FinancialScenario"),
     ("/dashboard/lab/decision-record", "Stamp / DecisionRecord", "Create and save a Stamp"),
+]
+
+LAB_TOOL_ROUTES = [
+    ("/dashboard/lab", "Srsly Labs Lab", "VERTEX 4D Quest is separate"),
+    ("/dashboard/lab/d-predict", "D-Predict / MiroFish", "reserved"),
+    ("/dashboard/lab/billie", "Billie", "reserved"),
+    ("/dashboard/lab/finops", "FinOps Central", "coming soon"),
+]
+
+FUNCTIONAL_LAB_ROUTES = [
+    (
+        "/dashboard/lab/alex",
+        ["Alex", "/api/alex/chat", "download-pdf-btn", "Socratic chat"],
+    ),
+    (
+        "/dashboard/lab/synapmap",
+        ["SynapMap", "d3.forceSimulation", "/api/process-file", "RACI Matrix", "system-map-svg"],
+    ),
 ]
 
 
@@ -70,13 +84,29 @@ def main() -> None:
             assert_contains(text, artifact, route)
             assert_contains(text, next_action, route)
 
+        for route, name, status in LAB_TOOL_ROUTES:
+            text = assert_200(client.get(route), route)
+            assert_contains(text, name, route)
+            assert_contains(text, "Srsly Labs Lab", route)
+            assert_contains(text, status, route)
+
+        for route, markers in FUNCTIONAL_LAB_ROUTES:
+            text = assert_200(client.get(route), route)
+            for marker in markers:
+                assert_contains(text, marker, route)
+
         doc_path = REPO_DIR / "docs" / "VERTEX_ACCELERATOR_EDUCATIONAL_DEMO.md"
         doc = doc_path.read_text(encoding="utf-8")
         assert_contains(doc, "Where Students Work", str(doc_path))
         assert_contains(doc, "Module And Deliverable Map", str(doc_path))
         assert_contains(doc, "Ready for guided accelerator demo", str(doc_path))
 
-        print(f"STUDENT DIRECTION SMOKE PASS: {len(ROUTES)} module routes render direction layer")
+        print(
+            "STUDENT DIRECTION SMOKE PASS: "
+            f"{len(ROUTES)} Quest routes render direction layer; "
+            f"{len(LAB_TOOL_ROUTES)} Lab status routes render honestly; "
+            f"{len(FUNCTIONAL_LAB_ROUTES)} Lab tools keep functional markers"
+        )
 
 
 if __name__ == "__main__":

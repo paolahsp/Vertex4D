@@ -87,12 +87,15 @@ def main() -> None:
             ("/dashboard/vertex/brief?run_id=run_demo_complete", "Brief"),
             ("/dashboard/vertex/brief/print?run_id=run_demo_complete", "Brief"),
             ("/dashboard/vertex/quest", "Quest"),
+            ("/dashboard/lab", "Srsly Labs Lab"),
+            ("/dashboard/lab/alex", "Alex"),
+            ("/dashboard/lab/synapmap", "SynapMap"),
+            ("/dashboard/lab/d-predict", "D-Predict / MiroFish"),
+            ("/dashboard/lab/billie", "Billie"),
+            ("/dashboard/lab/finops", "FinOps Central"),
+            ("/dashboard/orbit", "The Orbit"),
             ("/dashboard/lab/start-golden-path", "Spark"),
-            ("/dashboard/lab/alex", "Riddle"),
-            ("/dashboard/lab/synapmap", "Tangle"),
             ("/dashboard/lab/assumption-approval", "Gatekeeper"),
-            ("/dashboard/lab/d-predict", "Ripple"),
-            ("/dashboard/lab/billie", "Ledger"),
             ("/dashboard/lab/decision-record", "Stamp"),
             ("/dashboard/lab/decision-memo?run_id=run_demo_complete", "Brief"),
             ("/dashboard/lab/decision-memo/print?run_id=run_demo_complete", "Brief"),
@@ -100,6 +103,17 @@ def main() -> None:
         ]
         for path, expected in route_checks:
             assert_contains(assert_200(client.get(path), path), expected, path)
+
+        alex_lab = assert_200(client.get("/dashboard/lab/alex"), "lab alex")
+        assert_contains(alex_lab, "/api/alex/chat", "lab alex")
+        assert_contains(alex_lab, "download-pdf-btn", "lab alex")
+        assert_contains(alex_lab, "Socratic chat", "lab alex")
+
+        synapmap_lab = assert_200(client.get("/dashboard/lab/synapmap"), "lab synapmap")
+        assert_contains(synapmap_lab, "d3.forceSimulation", "lab synapmap")
+        assert_contains(synapmap_lab, "/api/process-file", "lab synapmap")
+        assert_contains(synapmap_lab, "RACI Matrix", "lab synapmap")
+        assert_contains(synapmap_lab, "system-map-svg", "lab synapmap")
 
         memo_print = assert_200(
             client.get("/dashboard/lab/decision-memo/print?run_id=run_demo_complete"),

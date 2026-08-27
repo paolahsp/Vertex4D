@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html class="light" lang="en" data-theme="light" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>{{ tool.name }} | Srsly Labs Lab</title>
+    <link rel="icon" href="/favicon.ico">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#5b13ec",
+                        "background-light": "#f6f6f8",
+                        "coral-text": "#FF6B6B",
+                        "olive-text": "#00A86B",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"],
+                        "heading": ["Spline Sans", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
+</head>
+
+<body class="srsly-classic app-shell glass-workbench font-display text-stone-900">
+{% include "_icon_sprite.html" %}
+    <div class="min-h-screen">
+        <header class="app-header sticky top-0 z-50 border-b px-4 py-3 sm:px-6 lg:px-10">
+            <div class="mx-auto flex max-w-7xl items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <a href="/dashboard/lab" class="app-nav-link inline-flex items-center gap-2">
+                        <svg class="ic" aria-hidden="true"><use href="#i-back"/></svg>
+                        Srsly Labs Lab
+                    </a>
+                    <span class="hidden h-5 border-l border-stone-300 sm:block"></span>
+                    <div class="brand-lockup">
+                        <span class="brand-mark">SL</span>
+                        <span class="brand-wordmark">Srsly Labs</span>
+                        <span class="vertex-product-label">Lab</span>
+                    </div>
+                </div>
+                <nav class="hidden items-center gap-3 text-sm md:flex" aria-label="Tool navigation">
+                    <a class="app-nav-link" href="/dashboard/vertex/quest">VERTEX Quest</a>
+                    <a class="app-nav-link" href="/dashboard/lab/how-vertex-thinks">Method</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="classic-lab-main px-4 py-10 sm:px-6 lg:px-10">
+            <section class="glass-panel mx-auto max-w-5xl p-6 sm:p-8">
+                <div class="flex flex-wrap items-start justify-between gap-5">
+                    <div>
+                        <p class="app-kicker">{{ tool.category }}</p>
+                        <h1 class="mt-3 font-heading text-4xl leading-tight sm:text-5xl">{{ tool.name }}</h1>
+                        <p class="mt-4 max-w-3xl text-base text-stone-600">{{ tool.detail }}</p>
+                    </div>
+                    <span class="rounded-full border border-stone-300 px-3 py-1 text-xs font-bold uppercase tracking-[0.12em] text-stone-600">
+                        {{ tool.status }}
+                    </span>
+                </div>
+
+                <div class="mt-8 grid gap-5 md:grid-cols-3">
+                    {% for note in tool.notes %}
+                    <article class="lab-hub-card p-5">
+                        <p class="app-kicker">{{ note.label }}</p>
+                        <p class="mt-3 text-sm text-stone-600">{{ note.copy }}</p>
+                    </article>
+                    {% endfor %}
+                </div>
+
+                <div class="mt-8 flex flex-wrap gap-3">
+                    {% if tool.primary_href %}
+                    <a class="classic-button" href="{{ tool.primary_href }}">{{ tool.primary_label }}</a>
+                    {% endif %}
+                    {% if tool.secondary_href %}
+                    <a class="classic-button secondary" href="{{ tool.secondary_href }}">{{ tool.secondary_label }}</a>
+                    {% endif %}
+                    <a class="classic-button secondary" href="/dashboard/lab">Back to Lab</a>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>

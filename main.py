@@ -1193,6 +1193,93 @@ async def roadmap(request: Request, user: dict = Depends(get_current_user)):
     return templates.TemplateResponse(request, "dashboard/roadmap.html", {"user": user})
 
 
+LAB_TOOL_DETAILS = {
+    "alex": {
+        "name": "Alex",
+        "category": "Srsly Labs Lab tool",
+        "status": "prototype shell",
+        "detail": "Alex is the original Srsly Labs Socratic agent for pressure-testing the founder's framing, risks, assumptions and blind spots. This page preserves Alex as a Lab tool without pretending the full agent has been rebuilt inside VERTEX Quest.",
+        "primary_label": "Open Riddle in Quest",
+        "primary_href": "/dashboard/vertex/riddle",
+        "secondary_label": "How Lab and Quest connect",
+        "secondary_href": "/dashboard/lab/how-vertex-thinks",
+        "notes": [
+            {"label": "What it is", "copy": "A full Lab agent identity reserved for deeper Socratic diagnosis."},
+            {"label": "Current state", "copy": "Prototype shell. The guided decision version currently lives as Riddle."},
+            {"label": "Honest boundary", "copy": "Opening Alex from the Lab should not rename Riddle as if it were the complete Alex product."},
+        ],
+    },
+    "synapmap": {
+        "name": "SynapMap",
+        "category": "Srsly Labs Lab tool",
+        "status": "prototype shell",
+        "detail": "SynapMap is the original Srsly Labs visual system mapping tool for actors, relationships, signals and contextual friction. This page keeps that identity distinct from Tangle, the VERTEX Quest module that captures a bounded SystemMap artifact.",
+        "primary_label": "Open Tangle in Quest",
+        "primary_href": "/dashboard/vertex/tangle",
+        "secondary_label": "How Lab and Quest connect",
+        "secondary_href": "/dashboard/lab/how-vertex-thinks",
+        "notes": [
+            {"label": "What it is", "copy": "A full Lab mapping environment reserved for richer ecosystem visualization."},
+            {"label": "Current state", "copy": "Prototype shell. The guided decision version currently lives as Tangle."},
+            {"label": "Honest boundary", "copy": "SynapMap remains a Lab tool; Tangle is the VERTEX decision artifact path."},
+        ],
+    },
+    "billie": {
+        "name": "Billie",
+        "category": "Reserved full Lab tool",
+        "status": "reserved",
+        "detail": "Billie is reserved for the full storyteller around narrative, brand, content and pitch. It is not presented here as the VERTEX finance module. The current pricing and runway workflow belongs to Ledger inside Quest.",
+        "primary_label": "Open Ledger in Quest",
+        "primary_href": "/dashboard/vertex/ledger",
+        "secondary_label": "Open FinOps Central status",
+        "secondary_href": "/dashboard/lab/finops",
+        "notes": [
+            {"label": "What it is", "copy": "A future/full Lab storyteller for founder narrative and market-facing communication."},
+            {"label": "Current state", "copy": "Reserved for the full Lab tool. Not rebuilt in this block."},
+            {"label": "Honest boundary", "copy": "FinancialScenario work remains in Ledger, not Billie."},
+        ],
+    },
+    "d-predict": {
+        "name": "D-Predict / MiroFish",
+        "category": "Reserved full Lab tool",
+        "status": "reserved",
+        "detail": "D-Predict/MiroFish is reserved for the full predictive simulator. This page does not present the reduced Quest reading as the complete simulator. The bounded decision workflow currently lives in Ripple.",
+        "primary_label": "Open Ripple in Quest",
+        "primary_href": "/dashboard/vertex/ripple",
+        "secondary_label": "How Lab and Quest connect",
+        "secondary_href": "/dashboard/lab/how-vertex-thinks",
+        "notes": [
+            {"label": "What it is", "copy": "A future/full Lab simulator for richer adoption, resistance and behavioral scenarios."},
+            {"label": "Current state", "copy": "Reserved prototype space. Not rebuilt in this block."},
+            {"label": "Honest boundary", "copy": "PredictiveHypothesis work remains in Ripple, not the full D-Predict/MiroFish product."},
+        ],
+    },
+    "finops": {
+        "name": "FinOps Central",
+        "category": "Srsly Labs Lab tool",
+        "status": "coming soon",
+        "detail": "FinOps Central is reserved for full finance operations across pricing, cash flow, reporting and operating cadence. The current decision-level finance read remains Ledger inside VERTEX Quest.",
+        "primary_label": "Open Ledger in Quest",
+        "primary_href": "/dashboard/vertex/ledger",
+        "secondary_label": "Back to Lab",
+        "secondary_href": "/dashboard/lab",
+        "notes": [
+            {"label": "What it is", "copy": "A future Lab operations hub for finance beyond a single decision artifact."},
+            {"label": "Current state", "copy": "Coming soon. Not rebuilt in this block."},
+            {"label": "Honest boundary", "copy": "Ledger is the current VERTEX module for decision-level pricing and runway."},
+        ],
+    },
+}
+
+
+def render_lab_tool(request: Request, user: dict, slug: str):
+    return templates.TemplateResponse(
+        request,
+        "lab/tool_detail.html",
+        {"user": user, "tool": LAB_TOOL_DETAILS[slug]},
+    )
+
+
 @app.get("/dashboard/lab", response_class=HTMLResponse)
 async def lab_home(request: Request, user: dict = Depends(get_current_user)):
     if not user:
@@ -1349,7 +1436,7 @@ async def d_predict(request: Request):
     user = get_current_user(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse(request, "lab/d_predict.html", {"user": user})
+    return render_lab_tool(request, user, "d-predict")
 
 @app.get("/dashboard/lab/dpredict", response_class=HTMLResponse)
 async def dpredict_alias(request: Request):
@@ -1363,14 +1450,14 @@ async def billie(request: Request):
     user = get_current_user(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse(request, "lab/billie.html", {"user": user})
+    return render_lab_tool(request, user, "billie")
 
 @app.get("/dashboard/lab/finops", response_class=HTMLResponse)
 async def finops_alias(request: Request):
     user = get_current_user(request)
     if not user:
         return RedirectResponse(url="/login")
-    return RedirectResponse(url="/dashboard/lab/billie", status_code=303)
+    return render_lab_tool(request, user, "finops")
 
 @app.get("/dashboard/lab/decision-record", response_class=HTMLResponse)
 async def decision_record(request: Request):
