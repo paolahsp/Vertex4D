@@ -85,7 +85,7 @@
 
   function predictionSummary() {
     const response = (state.predictive?.simulated_stakeholder_responses || []).slice().sort((a, b) => (b.resistance_likelihood || 0) - (a.resistance_likelihood || 0))[0];
-    const summary = response ? response.simulated_response : state.predictive?.scenario_question || "D-Predict produced a bounded stakeholder adoption/resistance hypothesis.";
+    const summary = response ? response.simulated_response : state.predictive?.scenario_question || "Ripple produced a bounded stakeholder adoption/resistance hypothesis.";
     return [{
       hypothesis_id: state.predictive.artifact_id,
       summary,
@@ -100,7 +100,7 @@
     const cash = state.financial?.cash_requirement?.value;
     return [{
       financial_scenario_id: state.financial.artifact_id,
-      summary: `Billie estimates ${money(revenue, currency)} revenue and ${money(cash, currency)} cash requirement under current assumptions.`,
+      summary: `Ledger estimates ${money(revenue, currency)} revenue and ${money(cash, currency)} cash requirement under current assumptions.`,
       classification: "hypothesis",
       uses_fixture_values: Boolean(state.financial?.run_metadata?.is_fixture || (state.financial?.pricing_assumptions || []).some((item) => item.is_fixture_value))
     }];
@@ -125,9 +125,9 @@
   }
 
   function buildDecisionRecord() {
-    if (!runId) throw new Error("Create a Golden Path run first.");
+    if (!runId) throw new Error("Create a Quest run first from Spark.");
     for (const type of artifactTypes) {
-      if (!state[typeToState(type)]) throw new Error(`${type} is required before DecisionRecord.`);
+      if (!state[typeToState(type)]) throw new Error(`${type} is required before Stamp.`);
     }
     const now = new Date();
     const nowIso = now.toISOString();
@@ -135,9 +135,9 @@
     const evidence = evidenceSummary();
     const assumptions = assumptionSummary();
     const unknownRefs = sourceUnknownIds();
-    if (!evidence.length) throw new Error("DecisionRecord requires factual evidence summaries.");
-    if (!assumptions.length) throw new Error("DecisionRecord requires approved assumptions.");
-    if (!unknownRefs.length) throw new Error("DecisionRecord must preserve upstream unknowns.");
+    if (!evidence.length) throw new Error("Stamp requires factual evidence summaries.");
+    if (!assumptions.length) throw new Error("Stamp requires approved assumptions.");
+    if (!unknownRefs.length) throw new Error("Stamp must preserve upstream unknowns.");
 
     const alternatives = [
       { alternative_id: "alt_full_launch", statement: "Move directly to a broad launch.", classification: "hypothesis" },
@@ -164,17 +164,17 @@
       status: "approved",
       provenance: {
         source_kind: "system_generated",
-        source_label: "VERTEX reduced DecisionRecord",
+        source_label: "VERTEX Stamp DecisionRecord",
         ip_owner: state.project?.provenance?.ip_owner || "VERTEX team",
         external_components_used: [],
-        notes: "Assembled locally from the active VERTEX Golden Path chain."
+        notes: "Assembled locally from the active VERTEX Quest chain."
       },
       human_approval: {
         required: true,
         state: "approved",
         approved_by_role: "facilitator",
         approved_at: nowIso,
-        notes: "Approved as the final DecisionRecord for this VERTEX run."
+        notes: "Approved as the final Stamp for this VERTEX run."
       },
       validation_errors: [],
       linked_upstream_artifact_ids: {
@@ -197,7 +197,7 @@
         source_refs: [state.predictive.artifact_id]
       }, {
         id: `risk_financial_learning_${safeId(runSuffix)}`,
-        statement: "Financial viability may depend on assumptions that Billie has modelled but the team has not yet observed in market.",
+        statement: "Financial viability may depend on assumptions that Ledger has modelled but the team has not yet observed in market.",
         classification: "hypothesis",
         source_refs: [state.financial.artifact_id]
       }],
@@ -218,10 +218,10 @@
         statement: "Run a limited pilot before committing to a broader launch.",
         decision_type: "limited_pilot"
       },
-      rationale: "The upstream evidence, approved assumptions, D-Predict hypothesis and Billie financial scenario support a bounded learning commitment. They do not yet justify full launch or indefinite desk research.",
+      rationale: "The upstream evidence, approved assumptions, Ripple hypothesis and Ledger financial scenario support a bounded learning commitment. They do not yet justify full launch or indefinite desk research.",
       rejected_alternatives: [{
         alternative_id: "alt_full_launch",
-        reason: "D-Predict and Billie still preserve enough uncertainty to make broad launch premature."
+        reason: "Ripple and Ledger still preserve enough uncertainty to make broad launch premature."
       }, {
         alternative_id: "alt_continue_discovery",
         reason: "The next important unknowns require observed behavior and financial learning in a real pilot window."
@@ -301,7 +301,7 @@
       target_value: Math.max(1, Math.round(Number(state.financial?.cash_requirement?.value || 1000))),
       unit: state.financial?.currency || "currency units",
       measurement_window: "pilot close",
-      data_source: "Billie scenario and actual spend log",
+      data_source: "Ledger scenario and actual spend log",
       classification: "hypothesis"
     }];
   }
@@ -314,9 +314,9 @@
     setText("finance-state", state.financial?.status || "missing");
     const warning = $("chain-warning");
     if (loaded === 5) {
-      warning.textContent = userRole === "facilitator" ? "Ready for facilitator close-out." : "DecisionRecord can be drafted, but final save requires a facilitator session.";
+      warning.textContent = userRole === "facilitator" ? "Ready for facilitator close-out." : "Stamp can be drafted, but final save requires a facilitator session.";
     } else {
-      warning.textContent = "Complete D-Predict and Billie before creating the final record.";
+      warning.textContent = "Complete Ripple and Ledger before creating the final record.";
     }
     $("chain-list").innerHTML = artifactTypes.map((type) => {
       const artifact = state[typeToState(type)];
@@ -362,11 +362,11 @@
       });
       const result = await response.json();
       if (!response.ok || !result.valid) {
-        const message = (result.errors && result.errors[0] && result.errors[0].message) || result.detail || "DecisionRecord did not validate";
+        const message = (result.errors && result.errors[0] && result.errors[0].message) || result.detail || "Stamp did not validate";
         throw new Error(message);
       }
       renderDraft(result.artifact || draft);
-      status.textContent = "DecisionRecord created and validated.";
+      status.textContent = "Stamp created and validated.";
       status.className = "copy status-ok";
     } catch (error) {
       status.textContent = error.message;
@@ -378,7 +378,7 @@
   async function saveDraft() {
     if (!state.draft) return;
     saveButton.disabled = true;
-    status.textContent = "Saving final DecisionRecord...";
+    status.textContent = "Saving final Stamp...";
     status.className = "copy";
     try {
       const response = await fetch(`/api/vertex/runs/${encodeURIComponent(runId)}/artifacts/decision_record/save`, {
@@ -388,10 +388,10 @@
       });
       const result = await response.json();
       if (!response.ok || !result.saved) {
-        const message = (result.errors && result.errors[0] && result.errors[0].message) || result.detail || "DecisionRecord was not saved";
+        const message = (result.errors && result.errors[0] && result.errors[0].message) || result.detail || "Stamp was not saved";
         throw new Error(message);
       }
-      status.textContent = "Saved. The VERTEX Golden Path now has a complete traceable decision chain.";
+      status.textContent = "Saved. The VERTEX Quest now has a complete traceable decision chain.";
       status.className = "copy status-ok";
       $("contract-badge").textContent = "Saved";
       $("contract-badge").className = "badge ok";
@@ -462,7 +462,7 @@
     updateLinks();
     setText("metric-role", userRole);
     if (!runId) {
-      status.textContent = "Create a Golden Path run first.";
+      status.textContent = "Create a Quest run first from Spark.";
       status.className = "copy status-bad";
       buildButton.disabled = true;
       return;
@@ -473,11 +473,11 @@
       artifactTypes.forEach((type, index) => { state[typeToState(type)] = loaded[index]; });
       renderChain();
       await revealPilotFeedbackIfRecordExists();
-      status.textContent = userRole === "facilitator" ? "Ready. Facilitator session can close the DecisionRecord." : "Ready to preview. Final save requires facilitator role.";
+      status.textContent = userRole === "facilitator" ? "Ready. Facilitator session can close Stamp." : "Ready to preview. Final save requires facilitator role.";
       status.className = "copy status-ok";
     } catch (error) {
       renderChain();
-      status.textContent = `${error.message}. Complete the Golden Path chain first.`;
+      status.textContent = `${error.message}. Complete the Quest chain first.`;
       status.className = "copy status-bad";
       buildButton.disabled = true;
     }

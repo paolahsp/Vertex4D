@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Assumption Approval | VERTEX 4D</title>
+    <title>Gatekeeper | VERTEX 4D</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
     <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
@@ -48,25 +48,25 @@
 <body class="srsly-module app-shell glass-workbench">
 {% include "_icon_sprite.html" %}
     <header class="aa-header v4-bar">
-        <a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Srsly Labs</i></span></a>
-        <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-approval"/></svg> Approval Gate</span>
-        <nav><a class="aa-link v4-navlink" data-run-link href="/dashboard/lab/synapmap">Back to SynapMap</a><a class="aa-link v4-navlink" data-run-link href="/dashboard/lab/d-predict">Open D-Predict</a></nav>
+        <a class="v4-brand" href="/dashboard/vertex/spark"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Quest</i></span></a>
+        <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-approval"/></svg> Gatekeeper</span>
+        <nav><a class="aa-link v4-navlink" data-run-link href="/dashboard/vertex/tangle">Back to Tangle</a><a class="aa-link v4-navlink" data-run-link href="/dashboard/vertex/ripple">Open Ripple</a></nav>
     </header>
     <main class="aa-main v4-main">
         <section class="v4-head">
             <div class="focusable">
-                <p class="v4-eyebrow"><s></s>Etapa 3 de 6 &middot; Aprobaci&oacute;n</p>
+                <p class="v4-eyebrow"><s></s>Etapa 3 de 6 &middot; Gatekeeper</p>
                 <h1 class="v4-h1">Choose which assumptions<br><em>can carry weight.</em></h1>
-                <p class="v4-lede">Mark only the assumptions you are willing to let D-Predict or Billie consume. This is a governance gate, not a cleanup screen.</p>
+                <p class="v4-lede">Mark only the assumptions you are willing to let Ripple or Ledger consume. This is a governance gate, not a cleanup screen.</p>
                 <div class="aa-controls v4-next">
                     <div class="aa-field"><label for="approver-role-display">Approver role</label><input id="approver-role-display" value="{{ user.get('role', 'founder') }}" disabled></div>
                     <div class="aa-field"><label for="approval-note">Approval note</label><input id="approval-note" value="Approved for bounded VERTEX processing."></div>
                     <button class="aa-button" id="save-approvals" type="button" disabled>Save approvals</button>
-                    <a class="aa-button secondary" data-run-link href="/dashboard/lab/d-predict">Continue to D-Predict</a>
+                    <a class="aa-button secondary" data-run-link href="/dashboard/vertex/ripple">Continue to Ripple</a>
                 </div>
                 <p class="aa-status" id="approval-status">Loading active run...</p>
             </div>
-            <aside class="v4-tally"><div class="v4-t"><b id="approval-counts">0 / 0</b><span>Finance / predictive</span></div><div class="v4-t up"><b>Gate</b><span>Human approval</span></div><div class="v4-t"><b>03</b><span>Golden Path stage</span></div></aside>
+            <aside class="v4-tally"><div class="v4-t"><b id="approval-counts">0 / 0</b><span>Ledger / Ripple</span></div><div class="v4-t up"><b>Gate</b><span>Human approval</span></div><div class="v4-t"><b>03</b><span>Quest stage</span></div></aside>
         </section>
         {% with stage = 3 %}{% include "lab/_path_bar.html" %}{% endwith %}
         {% with direction_key = 'approval' %}{% include "lab/_direction_strip.html" %}{% endwith %}
@@ -121,7 +121,7 @@
     function render() {
         const assumptions = mergedAssumptions();
         if (!assumptions.length) {
-            list.innerHTML = '<article class="v4-empty"><b>No assumptions found.</b><br>Return to Alex and save a ProblemFrame before approving assumptions.</article>';
+            list.innerHTML = '<article class="v4-empty"><b>No assumptions found.</b><br>Return to Riddle and save a ProblemFrame before approving assumptions.</article>';
             saveButton.disabled = true;
             return;
         }
@@ -131,7 +131,7 @@
             <article class="v4-item ${stateClass} assumption-row" data-id="${escapeHtml(item.assumption_id)}">
                 <span class="v4-sig"></span>
                 <p><b>${escapeHtml(item.statement)}</b><br>${escapeHtml(item.assumption_id)} - ${escapeHtml(item.classification || "hypothesis")} - confidence ${Number(item.confidence || 0).toFixed(2)}</p>
-                <div class="aa-approval-actions"><span class="v4-chip">${escapeHtml(item.approval_state || "pending")}</span><label class="aa-check"><input class="predictive-toggle" type="checkbox" ${item.approved_for_predictive_processing ? "checked" : ""}><span>D-Predict</span></label><label class="aa-check"><input class="finance-toggle" type="checkbox" ${item.approved_for_financial_processing ? "checked" : ""}><span>Billie</span></label></div>
+                <div class="aa-approval-actions"><span class="v4-chip">${escapeHtml(item.approval_state || "pending")}</span><label class="aa-check"><input class="predictive-toggle" type="checkbox" ${item.approved_for_predictive_processing ? "checked" : ""}><span>Ripple</span></label><label class="aa-check"><input class="finance-toggle" type="checkbox" ${item.approved_for_financial_processing ? "checked" : ""}><span>Ledger</span></label></div>
             </article>`;
         }).join("");
         list.querySelectorAll("input").forEach((input) => input.addEventListener("change", syncCounts));
@@ -161,7 +161,7 @@
         const financeCount = approvals.filter((item) => item.approved_for_financial_processing).length;
         const predictiveCount = approvals.filter((item) => item.approved_for_predictive_processing).length;
         if (!financeCount && !predictiveCount) {
-            status.textContent = "Approve at least one assumption for Billie or D-Predict.";
+            status.textContent = "Approve at least one assumption for Ledger or Ripple.";
             status.className = "aa-status bad";
             return;
         }
@@ -185,7 +185,7 @@
             }
             [problemFrame, systemMap] = await Promise.all([loadArtifact("problem_frame"), loadArtifact("system_map")]);
             render();
-            status.textContent = `Approvals saved by ${result.approved_by_role}. Billie and D-Predict now have explicit approved inputs to consume.`;
+            status.textContent = `Approvals saved by ${result.approved_by_role}. Ledger and Ripple now have explicit approved inputs to consume.`;
             status.className = "aa-status good";
         } catch (error) {
             status.textContent = `Approval save failed: ${error.message}`;
@@ -199,7 +199,7 @@
     async function init() {
         updateLinks();
         if (!runId) {
-            status.textContent = "Create a Golden Path run first.";
+            status.textContent = "Create a Quest run first from Spark.";
             status.className = "aa-status bad";
             return;
         }
@@ -208,7 +208,7 @@
             [problemFrame, systemMap] = await Promise.all([loadArtifact("problem_frame"), loadArtifact("system_map")]);
             render();
         } catch (error) {
-            status.textContent = `${error.message}. Complete Alex and SynapMap before approval.`;
+            status.textContent = `${error.message}. Complete Riddle and Tangle before approval.`;
             status.className = "aa-status bad";
         }
     }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Decision Case | VERTEX 4D</title>
+    <title>Spark | VERTEX 4D</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
     <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
@@ -60,19 +60,19 @@
 {% include "_icon_sprite.html" %}
 <header class="sgp-header v4-bar">
     <a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Srsly Labs</i></span></a>
-    <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-run"/></svg> Decision Case</span>
-    <nav><a class="sgp-link v4-navlink" href="/dashboard/lab">Back to 4D Lab</a><a class="sgp-link v4-navlink" href="/dashboard/lab/golden-path">View contract chain</a></nav>
+    <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-run"/></svg> Spark &middot; Spark case</span>
+    <nav><a class="sgp-link v4-navlink" href="/dashboard/lab">Srsly Labs Lab</a><a class="sgp-link v4-navlink" href="/dashboard/vertex/quest">View Quest chain</a></nav>
 </header>
 <main class="v4-main sgp-main">
     <section class="v4-head">
         <div class="focusable">
-            <p class="v4-eyebrow"><s></s>Etapa 1 de 6 &middot; Puerta de entrada</p>
-            <h1 class="v4-h1">Open a Decision Case.<br><em>Lock the first snapshot.</em></h1>
-            <p class="v4-lede">Capture what the team believes before Alex. VERTEX keeps this Decision Snapshot locked so the Golden Path can reveal what changed.</p>
-            <div class="v4-next"><button class="sgp-button" type="button" id="create-run-btn">Create Decision Case</button><a class="sgp-button secondary" data-run-link href="/dashboard/lab/alex">Start with Alex</a><span class="v4-eta">&asymp; 7 min &middot; snapshot locks on create</span></div>
-            <p class="sgp-copy" id="run-status" style="margin-top:16px;font-size:14px">No active Decision Case yet. Create one to connect the five artifacts.</p>
+            <p class="v4-eyebrow"><s></s>Etapa 1 de 6 &middot; Spark</p>
+            <h1 class="v4-h1">Open Spark.<br><em>Lock the first snapshot.</em></h1>
+            <p class="v4-lede">Capture what the team believes before Riddle. VERTEX keeps this Decision Snapshot locked so Quest can show what changed.</p>
+            <div class="v4-next"><button class="sgp-button" type="button" id="create-run-btn">Create Spark case</button><a class="sgp-button secondary" data-run-link href="/dashboard/vertex/riddle">Start with Riddle</a><span class="v4-eta">&asymp; 7 min &middot; snapshot locks on create</span></div>
+            <p class="sgp-copy" id="run-status" style="margin-top:16px;font-size:14px">No active Spark case yet. Create one to connect the five artifacts.</p>
         </div>
-        <aside class="v4-tally" aria-label="Golden Path readiness">
+        <aside class="v4-tally" aria-label="Quest readiness">
             <div class="v4-t"><b>6</b><span>Stages in the chain</span></div>
             <div class="v4-t up"><b>1</b><span>Decision Snapshot to lock</span></div>
             <div class="v4-t"><b>5</b><span>Contract artifacts ahead</span></div>
@@ -84,9 +84,9 @@
         <article class="v4-panel">
             <p class="v4-plabel">Decision Snapshot</p>
             <p class="v4-ask">What should VERTEX preserve before the system answers back?</p>
-            <div class="v4-empty" style="margin-bottom:16px">Evidence Gate: separate what the team knows, what it is assuming, and what still needs proof before the final DecisionRecord.</div>
+            <div class="v4-empty" style="margin-bottom:16px">Gatekeeper: separate what the team knows, what it is assuming, and what still needs evidence before the final Stamp.</div>
             <div class="sgp-run-form" aria-label="Run setup">
-                <div class="sgp-field full"><label for="run-title-input">Decision Case title</label><input id="run-title-input" name="title" value="VERTEX Decision Case"></div>
+                <div class="sgp-field full"><label for="run-title-input">Spark case title</label><input id="run-title-input" name="title" value="VERTEX Spark case"></div>
                 <div class="sgp-field"><label for="run-mode-input">Mode</label><select id="run-mode-input" name="mode"><option value="solo">Solo</option><option value="cohort">Cohort</option></select></div>
                 <div class="sgp-field"><label for="run-cohort-input">Cohort</label><select id="run-cohort-input" name="cohort_id"><option value="">No cohort</option></select></div>
                 <div class="sgp-field"><label for="run-stage-input">Stage</label><select id="run-stage-input" name="venture_stage"><option value="idea">Idea</option><option value="discovery">Discovery</option><option value="prototype">Prototype</option><option value="pilot">Pilot</option><option value="launched">Launched</option></select></div>
@@ -95,7 +95,7 @@
                 <div class="sgp-field"><label for="run-city-input">Primary city</label><input id="run-city-input" name="primary_city" placeholder="Mexico City"></div>
                 <div class="sgp-field"><label for="run-country-input">Country</label><input id="run-country-input" name="country" placeholder="Mexico"></div>
                 <div class="sgp-field full"><p class="v4-plabel" style="margin:10px 0 4px">Privacy</p></div>
-                <div class="sgp-checks"><label><input id="run-synthetic-input" name="is_synthetic" type="checkbox"> Synthetic case</label><label><input id="run-predictive-input" name="approved_for_predictive_processing" type="checkbox" checked> Approved for D-Predict</label><label><input id="run-identifiable-input" name="contains_identifiable_people" type="checkbox"> Contains identifiable people</label><label><input id="run-consent-predictive-input" name="allows_predictive_processing" type="checkbox"> Consent allows D-Predict</label></div>
+                <div class="sgp-checks"><label><input id="run-synthetic-input" name="is_synthetic" type="checkbox"> Synthetic case</label><label><input id="run-predictive-input" name="approved_for_predictive_processing" type="checkbox" checked> Approved for Ripple</label><label><input id="run-identifiable-input" name="contains_identifiable_people" type="checkbox"> Contains identifiable people</label><label><input id="run-consent-predictive-input" name="allows_predictive_processing" type="checkbox"> Consent allows Ripple</label></div>
                 <div class="sgp-field"><label for="run-consent-basis-input">Consent basis</label><select id="run-consent-basis-input" name="consent_basis"><option value="explicit_consent">Explicit consent</option><option value="institutional_dpa">Institutional DPA</option><option value="anonymized_before_processing">Anonymized before processing</option></select></div>
                 <div class="sgp-field"><label for="run-consent-ref-input">Consent record</label><input id="run-consent-ref-input" name="consent_record_ref" placeholder="consent_form_batch_001"></div>
                 <div class="sgp-field full"><p class="v4-plabel" style="margin:10px 0 4px">Baseline metrics</p></div>
@@ -108,8 +108,8 @@
                 <div class="sgp-field"><label for="baseline-decision-input">Current decision</label><select id="baseline-decision-input" name="current_decision"><option value="">Choose</option><option value="build">Build</option><option value="test">Test</option><option value="pivot">Pivot</option><option value="pause">Pause</option><option value="stop">Stop</option></select></div>
                 <div class="sgp-field full"><label for="baseline-stakeholders-input">Stakeholders you already see</label><textarea id="baseline-stakeholders-input" name="initial_stakeholders" placeholder="One per line, or separated by commas"></textarea></div>
                 <div class="sgp-field full"><label for="baseline-assumptions-input">Assumptions that must be true</label><textarea id="baseline-assumptions-input" name="initial_assumptions" placeholder="One per line, or separated by commas"></textarea></div>
-                <div class="sgp-field full"><label for="baseline-evidence-input">Evidence you already have</label><textarea id="baseline-evidence-input" name="initial_evidence" placeholder="Interviews, observations, sales, usage, or other proof"></textarea></div>
-                <div class="sgp-field"><label for="baseline-price-input">Before Billie: intuition price</label><input id="baseline-price-input" name="baseline_intuition_price" type="number" step="0.01" placeholder="49.00"></div>
+                <div class="sgp-field full"><label for="baseline-evidence-input">Evidence you already have</label><textarea id="baseline-evidence-input" name="initial_evidence" placeholder="Interviews, observations, sales, usage, or other evidence"></textarea></div>
+                <div class="sgp-field"><label for="baseline-price-input">Before Ledger: intuition price</label><input id="baseline-price-input" name="baseline_intuition_price" type="number" step="0.01" placeholder="49.00"></div>
                 <div class="sgp-field"><label for="baseline-price-currency-input">Price currency</label><input id="baseline-price-currency-input" name="baseline_price_currency" placeholder="MXN"></div>
                 <div class="sgp-field full"><label for="baseline-pricing-note-input">Why that price?</label><input id="baseline-pricing-note-input" name="baseline_pricing_note" placeholder="What makes this feel right before seeing the numbers?"></div>
                 <div class="sgp-field full"><label for="baseline-variable-costs-input">Main variable costs</label><textarea id="baseline-variable-costs-input" name="main_variable_costs" placeholder="One per line, or separated by commas"></textarea></div>
@@ -126,7 +126,7 @@
                 <div class="v4-meter v4-hy"><div class="v4-lbl"><span>Artifacts linked</span><b>0 / 5</b></div><div class="v4-mt"><i style="--value:0%"></i></div></div>
                 <div class="v4-meter v4-ev"><div class="v4-lbl"><span>Next action clarity</span><b>Create run</b></div><div class="v4-mt"><i style="--value:32%"></i></div></div>
             </div>
-            <div class="v4-empty" style="margin-top:18px">Until a Decision Case exists, downstream links stay ready but unbound. Creating the case adds the same <code>run_id</code> to Alex, SynapMap, Billie and DecisionRecord.</div>
+            <div class="v4-empty" style="margin-top:18px">Until a Spark case exists, downstream links stay ready but unbound. Creating the case adds the same <code>run_id</code> to Riddle, Tangle, Ripple, Ledger and Stamp.</div>
             <div class="v4-next"><a class="sgp-button secondary" href="/dashboard/lab/how-vertex-thinks">How VERTEX thinks</a></div>
         </aside>
     </section>
@@ -147,9 +147,9 @@
     function setRun(runId) {
         if (runId) {
             localStorage.setItem(storageKey, runId);
-            status.textContent = `Active Decision Case: ${runId}. The snapshot is locked and the next artifacts will be connected to this chain.`;
+            status.textContent = `Active Spark case: ${runId}. The snapshot is locked and the next artifacts will be connected to this chain.`;
         } else {
-            status.textContent = "No active Decision Case yet. Create one to connect the five artifacts.";
+            status.textContent = "No active Spark case yet. Create one to connect the five artifacts.";
         }
         updateLinks(runId);
     }
@@ -173,14 +173,14 @@
 
     async function createRun() {
         createButton.disabled = true;
-        status.textContent = "Creating Decision Case and locking snapshot...";
+        status.textContent = "Creating Spark case and locking snapshot...";
         try {
             const cohortId = document.getElementById("run-cohort-input").value;
             const response = await fetch("/api/vertex/runs", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    title: document.getElementById("run-title-input").value || "VERTEX Decision Case",
+                    title: document.getElementById("run-title-input").value || "VERTEX Spark case",
                     mode: cohortId ? "cohort" : document.getElementById("run-mode-input").value,
                     cohort_id: cohortId,
                     deadline: document.getElementById("run-deadline-input").value,

@@ -14,6 +14,8 @@
         .fd-stats { display: grid; gap: 12px; grid-template-columns: repeat(4,minmax(0,1fr)); }
         .fd-panel, .fd-stat, .fd-table-wrap { background: var(--glass); border: 1px solid var(--edge); border-radius: 16px; box-shadow: var(--shadow); backdrop-filter: blur(18px) saturate(1.05); }
         .fd-panel { padding: 20px; }
+        .fd-demo { border-color: var(--edge2); display: grid; gap: 14px; grid-template-columns: minmax(0,1fr) auto; }
+        .fd-demo-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
         .fd-stat { padding: 16px; }
         .fd-stat strong { display: block; font-family: var(--font-display); font-size: clamp(28px,3.4vw,42px); line-height: 1; }
         .fd-stat span { color: var(--fg2); display: block; font-size: 11px; font-weight: 700; margin-top: 7px; }
@@ -40,7 +42,7 @@
         td { color: var(--fg2); font-size: 13.5px; line-height: 1.45; }
         td strong { color: var(--fg); display: block; margin-bottom: 4px; }
         .fd-status { color: var(--fg2); font-size: 13px; margin-top: 10px; min-height: 20px; }
-        @media (max-width: 1080px) { .fd-grid, .fd-stats { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 1080px) { .fd-grid, .fd-stats { grid-template-columns: 1fr 1fr; } .fd-demo { grid-template-columns: 1fr; } .fd-demo-actions { justify-content: flex-start; } }
         @media (max-width: 720px) { .fd-grid, .fd-stats, .fd-form { grid-template-columns: 1fr; } }
     </style>
 </head>
@@ -49,23 +51,34 @@
 <header class="v4-bar">
     <a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Facilitator</i></span></a>
     <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-cohort"/></svg> Cohort management</span>
-    <nav><a class="fd-pill" href="/dashboard/lab">4D Lab</a><a class="fd-pill" href="/dashboard/lab/start-golden-path">Decision Case</a></nav>
+    <nav><a class="fd-pill" href="/dashboard/lab">Srsly Labs Lab</a><a class="fd-pill" href="/dashboard/vertex/spark">Spark case</a></nav>
 </header>
 <main class="fd-main">
     <section class="v4-head">
         <div>
             <p class="v4-eyebrow"><s></s>Facilitator workbench</p>
             <h1 class="v4-h1">Run the cohort.<br><em>Track the decisions.</em></h1>
-            <p class="v4-lede">Create cohorts, open active case rooms, score decision quality, and move straight to memos or outcome reports.</p>
+            <p class="v4-lede">Create cohorts, open active case rooms, score decision quality, and move straight to Briefs or Outcome Reports.</p>
         </div>
         <aside class="v4-tally">
-            <div class="v4-t"><b>{{ metrics.totals.runs }}</b><span>Decision Cases</span></div>
+            <div class="v4-t"><b>{{ metrics.totals.runs }}</b><span>Spark cases</span></div>
             <div class="v4-t up"><b>{{ metrics.totals.locked_baselines }}</b><span>Locked snapshots</span></div>
             <div class="v4-t"><b>{{ metrics.totals.open_comments }}</b><span>Open comments</span></div>
         </aside>
     </section>
+    <section class="fd-panel fd-demo" aria-label="Accelerator demo mode">
+        <div>
+            <p class="v4-plabel">Accelerator Demo Mode</p>
+            <h2>Buyer-facing presentation flow</h2>
+            <p class="fd-copy">Open the demo cohort as a clean institutional walkthrough: Intervention Radar, two star cases, Briefs, and Outcome Report without administrative forms dominating the first read.</p>
+        </div>
+        <div class="fd-demo-actions">
+            <a class="fd-btn" href="/dashboard/facilitator/accelerator-demo">Open demo mode</a>
+            <a class="fd-btn secondary" href="/dashboard/facilitator">Facilitator dashboard</a>
+        </div>
+    </section>
     <section class="fd-stats">
-        <div class="fd-stat"><strong>{{ metrics.totals.complete }}</strong><span>DecisionRecords</span></div>
+        <div class="fd-stat"><strong>{{ metrics.totals.complete }}</strong><span>Stamps</span></div>
         <div class="fd-stat"><strong>{{ metrics.totals.completion_rate }}%</strong><span>Completion rate</span></div>
         <div class="fd-stat"><strong>{{ metrics.totals.stakeholder_delta }}</strong><span>Stakeholder delta</span></div>
         <div class="fd-stat"><strong>{{ metrics.totals.ai_calls }}</strong><span>LLM calls</span></div>
@@ -100,12 +113,12 @@
                     </div>
                 </div>
                 {% else %}
-                <div class="v4-empty">No cohorts yet. Create the first program cohort to start grouping Decision Cases.</div>
+                <div class="v4-empty">No cohorts yet. Create the first program cohort to start grouping Spark cases.</div>
                 {% endfor %}
             </div>
         </article>
     </section>
-    <section class="fd-table-wrap" aria-label="Decision Case metrics table">
+    <section class="fd-table-wrap" aria-label="Spark case metrics table">
         <table>
             <thead>
                 <tr><th>Case</th><th>Cohort</th><th>Stage</th><th>Problem delta</th><th>Stakeholder delta</th><th>Price delta</th><th>Decision</th><th>Feedback</th><th>Review</th><th>AI</th></tr>
@@ -113,7 +126,7 @@
             <tbody>
                 {% for run in metrics.runs %}
                 <tr>
-                    <td><strong>{{ run.title }}</strong>{{ run.team_name }} / {{ run.run_id }}<br><a class="fd-pill" href="/dashboard/lab/decision-memo?run_id={{ run.run_id }}">Decision Memo</a></td>
+                    <td><strong>{{ run.title }}</strong>{{ run.team_name }} / {{ run.run_id }}<br><a class="fd-pill" href="/dashboard/vertex/brief?run_id={{ run.run_id }}">Brief</a></td>
                     <td>{% if run.cohort_id %}<strong>{{ run.cohort_name or run.cohort_id }}</strong><a class="fd-pill" href="/dashboard/facilitator/cohorts/{{ run.cohort_id }}">Manage</a><a class="fd-pill" href="/dashboard/facilitator/cohorts/{{ run.cohort_id }}/outcome-report">Report</a>{% else %}<span class="fd-pill warn">solo</span>{% endif %}</td>
                     <td><span class="fd-pill">{{ run.stage }}</span><span class="fd-pill {% if run.baseline_locked %}ok{% else %}warn{% endif %}">{% if run.baseline_locked %}snapshot locked{% else %}baseline missing{% endif %}</span><br>{{ run.artifacts_saved }} artifacts</td>
                     <td><span class="fd-pill {% if run.problem_changed %}ok{% else %}warn{% endif %}">{% if run.problem_changed %}changed{% else %}pending{% endif %}</span><br>Before: {{ run.initial_problem or 'not captured' }}<br>After: {{ run.final_problem or 'not saved yet' }}</td>
@@ -125,7 +138,7 @@
                     <td><strong>{{ run.ai_calls }} calls</strong>{{ run.ai_tokens }} tokens</td>
                 </tr>
                 {% else %}
-                <tr><td colspan="10">No Decision Cases yet.</td></tr>
+                <tr><td colspan="10">No Spark cases yet.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

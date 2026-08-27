@@ -85,7 +85,7 @@
     {% endif %}
     <section class="cor-stats">
         <div class="v4-panel"><span class="v4-num">{{ report.totals.locked_baselines }}</span><p class="v4-plabel">Locked baselines</p></div>
-        <div class="v4-panel"><span class="v4-num">{{ report.totals.decision_records }}</span><p class="v4-plabel">DecisionRecords</p></div>
+        <div class="v4-panel"><span class="v4-num">{{ report.totals.decision_records }}</span><p class="v4-plabel">Stamps</p></div>
         <div class="v4-panel"><span class="v4-num">{{ report.totals.stakeholder_delta }}</span><p class="v4-plabel">Stakeholder delta</p></div>
         <div class="v4-panel"><span class="v4-num">{{ report.totals.price_changes }}</span><p class="v4-plabel">Price changes</p></div>
         <div class="v4-panel"><span class="v4-num">{{ report.quality_scores.avg_delta if report.quality_scores.avg_delta is not none else 'missing' }}</span><p class="v4-plabel">Rubric delta</p></div>
@@ -110,7 +110,7 @@
                 {% for case in report.cases %}
                 <tr>
                     <td><strong>{{ case.case_title }}</strong>{{ case.team_name }}<br>{{ case.run_id }}</td>
-                    <td><span class="cor-chip">{{ case.stage }}</span>{% if case.baseline_locked %}<span class="cor-chip">baseline locked</span>{% else %}<span class="cor-chip warn">baseline missing</span>{% endif %}{% if case.completed %}<span class="cor-chip">DecisionRecord</span>{% else %}<span class="cor-chip warn">not closed</span>{% endif %}</td>
+                    <td><span class="cor-chip">{{ case.stage }}</span>{% if case.baseline_locked %}<span class="cor-chip">baseline locked</span>{% else %}<span class="cor-chip warn">baseline missing</span>{% endif %}{% if case.completed %}<span class="cor-chip">Stamp</span>{% else %}<span class="cor-chip warn">not closed</span>{% endif %}</td>
                     <td>Stakeholders +{{ case.stakeholder_delta }}<br>Price: {{ case.price_changed if case.price_changed is not none else 'missing' }}<br>Decision: {{ case.decision_changed if case.decision_changed is not none else 'missing' }}</td>
                     <td>Pay: {{ case.would_pay }}<br>Recommend: {{ case.would_recommend }}<br>AI: {{ case.ai_calls }} calls</td>
                     <td>Before: {{ case.quality_scores.baseline_avg or 'missing' }}<br>After: {{ case.quality_scores.post_avg or 'missing' }}<br>Delta: {{ case.quality_scores.delta or 'missing' }}</td>

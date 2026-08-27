@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accelerator Demo Mode | VERTEX 4D</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
+    <style>
+        body { color: var(--fg); margin: 0; min-height: 100vh; }
+        .adm-main { display: grid; gap: 20px; margin: 0 auto; max-width: 1440px; min-width: 0; padding: clamp(22px,2.8vw,30px); width: 100%; }
+        .adm-main > *, .adm-grid > *, .adm-stars > *, .adm-actions > * { min-width: 0; }
+        .adm-panel, .adm-case, .adm-step { background: var(--glass); border: 1px solid var(--edge); border-radius: 16px; box-shadow: var(--shadow); color: var(--fg); min-width: 0; padding: 20px; }
+        .adm-panel.is-focus, .adm-case.is-star { background: var(--glass2); border-color: var(--edge2); }
+        .adm-grid { display: grid; gap: 16px; grid-template-columns: minmax(0,1fr) minmax(300px,.48fr); }
+        .adm-stars { display: grid; gap: 16px; grid-template-columns: repeat(2,minmax(0,1fr)); }
+        .adm-flow { display: grid; gap: 12px; grid-template-columns: repeat(4,minmax(0,1fr)); }
+        .adm-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+        .adm-btn, .adm-chip { align-items: center; border: 1px solid var(--edge); border-radius: 8px; display: inline-flex; font-weight: 800; text-decoration: none; }
+        .adm-btn { background: var(--actfill); color: #fff; justify-content: center; min-height: 40px; padding: 0 14px; }
+        .adm-btn.secondary { background: transparent; color: var(--act); }
+        .adm-chip { background: var(--glass2); color: var(--act); font: 700 10.5px/1.2 var(--font-mono); margin: 2px 4px 2px 0; max-width: 100%; overflow-wrap: anywhere; padding: 6px 8px; }
+        .adm-chip.warn { color: var(--risk-text); }
+        .adm-chip.ok { color: var(--evidence-text); }
+        .adm-copy { color: var(--fg2); font-size: 14px; line-height: 1.6; margin: 8px 0 0; }
+        .adm-title { font: 800 clamp(24px,3vw,36px)/1.04 var(--font-display); margin: 6px 0 8px; overflow-wrap: anywhere; }
+        .adm-list { display: grid; gap: 10px; margin-top: 12px; }
+        .adm-signal { border-left: 4px solid var(--lav); display: grid; gap: 6px; padding: 8px 0 8px 12px; }
+        .adm-signal.is-decision { border-left-color: var(--coral); }
+        .adm-signal strong { color: var(--fg); font: 700 14px/1.25 var(--font-display); }
+        .adm-signal p { color: var(--fg2); font-size: 13px; line-height: 1.5; margin: 0; }
+        .adm-step { display: grid; gap: 8px; }
+        .adm-step b { color: var(--fg); font: 800 15px/1.25 var(--font-display); }
+        .adm-step span { color: var(--fg2); font-size: 13px; line-height: 1.45; }
+        @media (max-width: 1000px) { .adm-grid, .adm-stars, .adm-flow { grid-template-columns: minmax(0,1fr); } }
+        @media (max-width: 720px) { .adm-main { padding: 18px 14px 24px; } .adm-actions { align-items: stretch; flex-direction: column; } .adm-btn { width: 100%; } }
+    </style>
+</head>
+<body class="srsly-module app-shell glass-workbench">
+{% include "_icon_sprite.html" %}
+<header class="v4-bar">
+    <a class="v4-brand" href="/dashboard/facilitator"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-cohort"/></svg></span><span><b>VERTEX 4D</b><i>Accelerators</i></span></a>
+    <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-run"/></svg> Accelerator Demo Mode</span>
+    <nav><a class="adm-chip" href="/dashboard/facilitator">Dashboard</a>{% if not demo.missing %}<a class="adm-chip" href="{{ demo.outcome_report_url }}">Outcome report</a>{% endif %}</nav>
+</header>
+<main class="adm-main">
+    {% if demo.missing %}
+    <section class="v4-head">
+        <div>
+            <p class="v4-eyebrow"><s></s>Demo cohort missing</p>
+            <h1 class="v4-h1">Seed the accelerator demo.<br><em>Then reopen demo mode.</em></h1>
+            <p class="v4-lede">No demo cohort named "Demo Cohort - Decision Quality Pilot" is available to this facilitator session.</p>
+            <div class="adm-actions">
+                <span class="adm-chip">{{ demo.seed_command }}</span>
+                <a class="adm-btn secondary" href="/dashboard/facilitator">Back to dashboard</a>
+            </div>
+        </div>
+    </section>
+    {% else %}
+    <section class="v4-head">
+        <div>
+            <p class="v4-eyebrow"><s></s>{{ demo.cohort.institution_name }} &middot; buyer presentation</p>
+            <h1 class="v4-h1">{{ demo.cohort.cohort_name }}<br><em>Accelerator Demo Mode</em></h1>
+            <p class="v4-lede">A clean walkthrough for program leads: who needs attention, what changed, and which artifacts make the evidence visible.</p>
+            <div class="adm-actions">
+                <a class="adm-btn" href="{{ demo.intervention_radar_url }}">Open Intervention Radar</a>
+                <a class="adm-btn secondary" href="{{ demo.outcome_report_url }}">Open Outcome Report</a>
+                <a class="adm-btn secondary" href="{{ demo.cohort_room_url }}">Cohort Room</a>
+            </div>
+        </div>
+        <aside class="v4-tally">
+            <div class="v4-t"><b>{{ demo.totals.cases }}</b><span>Spark cases</span></div>
+            <div class="v4-t up"><b>{{ demo.totals.decision_interventions }}</b><span>Decision interventions</span></div>
+            <div class="v4-t"><b>{{ demo.totals.needs_intervention }}</b><span>Workflow attention</span></div>
+        </aside>
+    </section>
+
+    <section class="adm-flow" aria-label="Buyer presentation flow">
+        <article class="adm-step"><b>1. Cohort</b><span>Start with the institutional context and demo scope.</span></article>
+        <article class="adm-step"><b>2. Intervention Radar</b><span>Show which teams need attention and why.</span></article>
+        <article class="adm-step"><b>3. Star cases</b><span>Open economics-changed and decision-changed stories.</span></article>
+        <article class="adm-step"><b>4. Outcome Report</b><span>Close with cohort-level evidence and missing data.</span></article>
+    </section>
+
+    <section class="adm-grid">
+        <article class="adm-panel is-focus" id="intervention-radar">
+            <p class="v4-plabel">Intervention Radar preview</p>
+            <h2 class="adm-title">Who needs attention first?</h2>
+            <p class="adm-copy">Decision interventions are substantive reasoning issues. Workflow attention is operational missing data.</p>
+            <div class="adm-list">
+                {% for case in demo.intervention_cases[:3] %}
+                <div class="adm-signal {% if case.has_decision_intervention %}is-decision{% endif %}">
+                    <strong>{{ case.case_title or case.title }}</strong>
+                    <p>{{ case.team_name }} / {{ case.run_id }}</p>
+                    {% for item in case.decision_interventions %}
+                        <span class="adm-chip warn">decision: {{ item.label }}</span>
+                    {% endfor %}
+                    {% for item in case.workflow_attention[:3] %}
+                        <span class="adm-chip">workflow: {{ item.label }}</span>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="v4-empty">No intervention needs in this cohort.</div>
+                {% endfor %}
+            </div>
+            <div class="adm-actions"><a class="adm-btn secondary" href="{{ demo.intervention_radar_url }}">Open full radar</a></div>
+        </article>
+        <aside class="adm-panel">
+            <p class="v4-plabel">Buyer evidence points</p>
+            <h2 class="adm-title">What this demo should show</h2>
+            <p class="adm-copy">VERTEX does not predict startup success. It makes decision quality visible: baseline, artifacts, facilitator review, final decision, and cohort-level evidence.</p>
+            <div class="adm-actions">
+                <a class="adm-btn secondary" href="{{ demo.outcome_report_url }}">Outcome Report</a>
+                <a class="adm-btn secondary" href="{{ demo.cohort_room_url }}">Operational Cohort Room</a>
+            </div>
+        </aside>
+    </section>
+
+    <section>
+        <p class="v4-plabel">Two star cases</p>
+        <div class="adm-stars">
+            {% for star in demo.star_cases %}
+            <article class="adm-case is-star" id="{{ star.run_id }}">
+                <span class="adm-chip ok">{{ star.label }}</span>
+                <h2 class="adm-title">{{ star.case.case_title or star.case.title }}</h2>
+                <p class="adm-copy">{{ star.why }}</p>
+                <div class="adm-list">
+                    <div>
+                        <span class="adm-chip">team: {{ star.case.team_name }}</span>
+                        <span class="adm-chip">run: {{ star.run_id }}</span>
+                        {% if star.outcome.price_changed %}<span class="adm-chip ok">Pricing changed</span>{% endif %}
+                        {% if star.outcome.decision_changed %}<span class="adm-chip ok">Decision changed</span>{% endif %}
+                    </div>
+                    <p class="adm-copy">Rubric: baseline {{ star.case.score_summary.baseline_avg or 'missing' }} / post {{ star.case.score_summary.post_avg or 'missing' }} / delta {{ star.case.score_summary.delta if star.case.score_summary.delta is not none else 'missing' }}</p>
+                </div>
+                <div class="adm-actions">
+                <a class="adm-btn" href="{{ star.memo_url }}">Brief</a>
+                    <a class="adm-btn secondary" href="{{ demo.outcome_report_url }}">Outcome Report</a>
+                    <a class="adm-btn secondary" href="{{ demo.cohort_room_url }}#case-{{ star.run_id }}">Open case</a>
+                </div>
+            </article>
+            {% else %}
+            <article class="adm-case"><p class="adm-copy">Star demo cases are missing from this cohort. Reseed demo data before presenting.</p></article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+</main>
+</body>
+</html>

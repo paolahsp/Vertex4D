@@ -64,7 +64,7 @@
     const interest = { low: -0.04, medium: 0.02, high: 0.08 }[stakeholder.interest] || 0.02;
     const incentiveText = (stakeholder.incentives || []).join(" ").toLowerCase();
     const frictionWords = ["avoid", "burden", "slow", "risk", "complaint", "uncertain", "limited"];
-    const supportWords = ["prove", "reduce", "convenience", "support", "maintain", "predictable", "visible"];
+    const supportWords = ["show", "reduce", "convenience", "support", "maintain", "predictable", "visible"];
     const friction = frictionWords.some((word) => incentiveText.includes(word)) ? -0.08 : 0;
     const support = supportWords.some((word) => incentiveText.includes(word)) ? 0.08 : 0;
     const assumptionLift = Math.min(0.12, assumptions.length * 0.025);
@@ -87,10 +87,10 @@
   function stakeholderSentence(stakeholder, score) {
     const label = stakeholder.label || stakeholder.stakeholder_id;
     if (score.adoption_likelihood >= score.resistance_likelihood + 0.12) {
-      return `${label} may support the next step if the workflow is visible, low-friction and tied to the incentives already mapped in SynapMap.`;
+      return `${label} may support the next step if the workflow is visible, low-friction and tied to the incentives already mapped in Tangle.`;
     }
     if (score.resistance_likelihood >= score.adoption_likelihood + 0.12) {
-      return `${label} may resist if the mapped dependencies add work, uncertainty or social friction before value is proven.`;
+      return `${label} may resist if the mapped dependencies add work, uncertainty or social friction before value is visible.`;
     }
     return `${label} may remain divided until the team tests the strongest assumption with a small observable experiment.`;
   }
@@ -162,7 +162,7 @@
         }
       ],
       commitment_pressure: {
-        statement: "D-Predict keeps adoption, resistance and undecided readings open until a DecisionRecord collapses them into a reviewed next commitment.",
+        statement: "Ripple keeps adoption, resistance and undecided readings open until Stamp collapses them into a reviewed next commitment.",
         collapse_risk: collapseRisk,
         decision_trigger_refs: unique([signalIds.adoption, signalIds.resistance, unknownIds[0]]).slice(0, 3),
         classification: "hypothesis"
@@ -171,10 +171,10 @@
   }
 
   function buildDraft() {
-    if (!runId) throw new Error("Create a Golden Path run first.");
-    if (!state.project || !state.problem || !state.system) throw new Error("D-Predict requires ProjectRecord, ProblemFrame and SystemMap upstream artifacts.");
+    if (!runId) throw new Error("Create a Quest run first from Spark.");
+    if (!state.project || !state.problem || !state.system) throw new Error("Ripple requires ProjectRecord, ProblemFrame and SystemMap upstream artifacts.");
     const assumptions = approvedPredictiveAssumptions();
-    if (!assumptions.length) throw new Error("D-Predict requires at least one SystemMap assumption approved for predictive processing.");
+    if (!assumptions.length) throw new Error("Ripple requires at least one SystemMap assumption approved for predictive processing.");
     const stakeholders = (state.system.stakeholders || []).slice(0, 4);
     const relationships = (state.system.relationships || []).slice(0, 6);
     const evidenceIds = collectEvidenceIds(assumptions);
@@ -218,7 +218,7 @@
       status: "pending_review",
       provenance: {
         source_kind: "system_generated",
-        source_label: "D-Predict reduced deterministic scenario",
+        source_label: "Ripple reduced deterministic scenario",
         ip_owner: state.project?.provenance?.ip_owner || "VERTEX team",
         external_components_used: [],
         notes: "Generated locally from approved SystemMap inputs. No external model, API or adapter was executed."
@@ -228,7 +228,7 @@
         state: "pending",
         approved_by_role: "founder",
         approved_at: now,
-        notes: "Pending facilitator review before DecisionRecord inclusion."
+        notes: "Pending facilitator review before Stamp inclusion."
       },
       validation_errors: [],
       preceding_artifacts: {
@@ -283,7 +283,7 @@
       limitations: [
         "This is a bounded hypothesis, not evidence or a factual prediction.",
         "It uses only approved SystemMap inputs and does not describe identifiable people.",
-        "It should feed a DecisionRecord only after human review.",
+        "It should feed Stamp only after human review.",
         "The QBI reading is product-facing and does not execute the full formal QBI model."
       ],
       confidence: round2(confidence),
@@ -310,16 +310,16 @@
     setText("input-count", String(assumptions.length + stakeholders.length + relationships.length));
     const warning = $("input-warning");
     if (!state.system) {
-      warning.textContent = "Complete SynapMap before generating a scenario.";
+      warning.textContent = "Complete Tangle before generating a scenario.";
       warning.style.display = "block";
     } else if (!assumptions.length) {
-      warning.textContent = "No assumptions are approved for D-Predict yet. Open the approval gate first.";
+      warning.textContent = "No assumptions are approved for Ripple yet. Open Gatekeeper first.";
       warning.style.display = "block";
     } else {
       warning.textContent = "Only these approved predictive assumptions will be consumed.";
       warning.style.display = "block";
     }
-    $("input-list").innerHTML = assumptions.map((item) => `<div class="signal"><strong>${escapeHtml(item.assumption_id)}</strong><p>${escapeHtml(item.statement)}</p><div class="tagrow"><span class="tag">predictive approved</span><span class="tag">${escapeHtml(item.approval_state || "approved")}</span></div></div>`).join("") || '<div class="signal"><strong>No approved predictive inputs</strong><p>Use the Approval Gate to mark at least one assumption for D-Predict.</p></div>';
+    $("input-list").innerHTML = assumptions.map((item) => `<div class="signal"><strong>${escapeHtml(item.assumption_id)}</strong><p>${escapeHtml(item.statement)}</p><div class="tagrow"><span class="tag">predictive approved</span><span class="tag">${escapeHtml(item.approval_state || "approved")}</span></div></div>`).join("") || '<div class="signal"><strong>No approved predictive inputs</strong><p>Use Gatekeeper to mark at least one assumption for Ripple.</p></div>';
   }
 
   function renderDraft(draft) {
@@ -344,7 +344,7 @@
     $("contract-card").classList.add("active");
     $("contract-badge").textContent = "Pending review";
     $("contract-badge").className = "badge";
-    $("contract-status").textContent = "Draft created locally. Save it to attach this PredictiveHypothesis to the active Golden Path run.";
+    $("contract-status").textContent = "Draft created locally. Save it to attach this PredictiveHypothesis to the active Quest run.";
     saveButton.disabled = false;
   }
 
@@ -393,7 +393,7 @@
   async function saveDraft() {
     if (!state.draft) return;
     saveButton.disabled = true;
-    status.textContent = "Saving PredictiveHypothesis into the Golden Path run...";
+    status.textContent = "Saving PredictiveHypothesis into the Quest run...";
     status.className = "copy";
     try {
       const response = await fetch(`/api/vertex/runs/${encodeURIComponent(runId)}/artifacts/predictive_hypothesis/save`, {
@@ -406,7 +406,7 @@
         const message = (result.errors && result.errors[0] && result.errors[0].message) || result.detail || "PredictiveHypothesis was not saved";
         throw new Error(message);
       }
-      status.textContent = "Saved. D-Predict can now feed Billie and the DecisionRecord.";
+      status.textContent = "Saved. Ripple can now feed Ledger and Stamp.";
       status.className = "copy status-ok";
       $("contract-badge").textContent = "Saved";
       $("contract-badge").className = "badge ok";
@@ -423,7 +423,7 @@
   async function init() {
     updateLinks();
     if (!runId) {
-      status.textContent = "Create a Golden Path run first.";
+      status.textContent = "Create a Quest run first from Spark.";
       status.className = "copy status-bad";
       buildButton.disabled = true;
       return;
@@ -436,10 +436,10 @@
         loadArtifact("system_map")
       ]);
       renderInputs();
-      status.textContent = "Ready. D-Predict will consume only approved predictive assumptions.";
+      status.textContent = "Ready. Ripple will consume only approved predictive assumptions.";
       status.className = "copy status-ok";
     } catch (error) {
-      status.textContent = `${error.message}. Complete Alex, SynapMap and the Approval Gate first.`;
+      status.textContent = `${error.message}. Complete Riddle, Tangle and Gatekeeper first.`;
       status.className = "copy status-bad";
       buildButton.disabled = true;
       renderInputs();

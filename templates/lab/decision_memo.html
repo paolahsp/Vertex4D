@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decision Memo | VERTEX 4D</title>
+    <title>Brief | VERTEX 4D</title>
     <link rel="icon" href="/favicon.ico">
     <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
     <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
@@ -44,20 +44,20 @@
 <body class="srsly-module app-shell glass-workbench">
 {% include "_icon_sprite.html" %}
 <header class="v4-bar">
-    <a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Srsly Labs</i></span></a>
-    <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-decision"/></svg> Decision Memo</span>
-    <nav>{% if run_id %}<a class="v4-navlink" href="/dashboard/lab/decision-memo/print?run_id={{ run_id }}">Print</a>{% endif %}<a class="v4-navlink" href="/dashboard/lab/decision-record{% if run_id %}?run_id={{ run_id }}{% endif %}">DecisionRecord</a><a class="v4-navlink" href="/dashboard/facilitator">Facilitator</a></nav>
+    <a class="v4-brand" href="/dashboard/vertex/spark"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Quest</i></span></a>
+    <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-decision"/></svg> Brief &middot; Case artifact</span>
+    <nav>{% if run_id %}<a class="v4-navlink" href="/dashboard/vertex/brief/print?run_id={{ run_id }}">Print</a>{% endif %}<a class="v4-navlink" href="/dashboard/vertex/stamp{% if run_id %}?run_id={{ run_id }}{% endif %}">Stamp</a><a class="v4-navlink" href="/dashboard/facilitator">Facilitator</a></nav>
 </header>
 <main class="memo-main">
     {% if not memo %}
     <section class="v4-head">
-        <div><p class="v4-eyebrow"><s></s>Decision Memo</p><h1 class="v4-h1">Choose a Decision Case.<br><em>The memo needs a run_id.</em></h1><p class="v4-lede">Open this page from a Decision Case or add <code>?run_id=...</code>.</p></div>
+        <div><p class="v4-eyebrow"><s></s>Brief</p><h1 class="v4-h1">Choose a Spark case.<br><em>The brief needs a run_id.</em></h1><p class="v4-lede">Open this page from a Spark case or add <code>?run_id=...</code>.</p></div>
     </section>
     {% else %}
     <section class="v4-head">
         <div>
             <p class="v4-eyebrow"><s></s>{{ memo.baseline_status }} &middot; {{ memo.run_id }}</p>
-            <h1 class="v4-h1">{{ memo.case_title }}<br><em>Decision Memo</em></h1>
+            <h1 class="v4-h1">{{ memo.case_title }}<br><em>Brief</em></h1>
             <p class="v4-lede">{{ memo.note }}</p>
         </div>
         <aside class="v4-tally">
@@ -70,7 +70,7 @@
         <div>
             <p class="memo-decision-label">What changed?</p>
             <h2>Baseline belief became a reviewed next commitment.</h2>
-            <p>This memo is the founder-level decision artifact: what changed, why it changed, what remains uncertain, and what the team should test next.</p>
+            <p>This brief is the founder-level decision artifact: what changed, why it changed, what remains uncertain, and what the team should test next.</p>
         </div>
         <div class="memo-change">
             <div class="memo-change-side"><b>baseline</b><p>{{ memo.what_changed.baseline_decision }}</p><span class="memo-chip">price: {{ memo.what_changed.baseline_price }}</span><span class="memo-chip">stakeholders: {{ memo.what_changed.baseline_stakeholders }}</span></div>
@@ -112,7 +112,7 @@
                     <span class="memo-chip">{{ label }}: {{ artifact_id or 'missing' }}</span>
                 {% endfor %}
             </div>
-            <a class="memo-print-cta" href="/dashboard/lab/decision-memo/print?run_id={{ run_id }}">Open print artifact</a>
+            <a class="memo-print-cta" href="/dashboard/vertex/brief/print?run_id={{ run_id }}">Open print artifact</a>
         </aside>
     </section>
     <section class="memo-grid">
@@ -122,7 +122,7 @@
                 {% for item in memo.evidence_supporting_decision %}
                     <li>{{ item.summary }} <span class="memo-chip">{{ item.evidence_id }}</span></li>
                 {% else %}
-                    <li>Missing saved DecisionRecord evidence.</li>
+                    <li>Missing saved Stamp evidence.</li>
                 {% endfor %}
             </ul>
         </article>

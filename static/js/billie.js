@@ -35,28 +35,28 @@ const state = {
 };
 
 const fields = [
-  { id: "businessType", block: "Identity", label: "What kind of business are we pricing?", type: "select", options: [["physical", "Physical product"], ["saas", "SaaS"], ["service", "Service"], ["marketplace", "Marketplace"]], help: "This changes how Billie thinks about cost structure." },
-  { id: "country", block: "Identity", label: "Where will this model operate first?", type: "select", options: [["mexico", "Mexico"], ["usa", "United States"], ["eu", "European Union"], ["uk", "United Kingdom"], ["other", "Other / custom"]], help: "Billie uses this for currency, tax and inflation presets." },
-  { id: "currency", block: "Identity", label: "What currency should Billie show?", type: "text", help: "Examples: MXN, USD, EUR, GBP." },
+  { id: "businessType", block: "Identity", label: "What kind of business are we pricing?", type: "select", options: [["physical", "Physical product"], ["saas", "SaaS"], ["service", "Service"], ["marketplace", "Marketplace"]], help: "This changes how Ledger thinks about cost structure." },
+  { id: "country", block: "Identity", label: "Where will this model operate first?", type: "select", options: [["mexico", "Mexico"], ["usa", "United States"], ["eu", "European Union"], ["uk", "United Kingdom"], ["other", "Other / custom"]], help: "Ledger uses this for currency, tax and inflation presets." },
+  { id: "currency", block: "Identity", label: "What currency should Ledger show?", type: "text", help: "Examples: MXN, USD, EUR, GBP." },
   { id: "revenueModel", block: "Identity", label: "How do customers pay?", type: "select", options: [["one_time", "One-time purchase"], ["subscription", "Subscription"], ["usage", "Per use"], ["commission", "Marketplace commission"]], help: "The model still projects annual revenue from units, seats or paid uses." },
   { id: "variableCost", block: "Costs", label: "What does one unit/use cost to deliver?", type: "number", step: "0.01", help: "Materials, payment fees, shipping, handling or direct service cost." },
   { id: "fixedCostsMonthly", block: "Costs", label: "What fixed cost do you carry each month?", type: "number", step: "1", help: "Rent, base payroll, software, recurring marketing or minimum operations." },
   { id: "semiVariableCostMonthly", block: "Costs", label: "What cost starts scaling in blocks?", type: "number", step: "1", help: "Example: one extra route, ops person, support pod or server tier." },
   { id: "semiVariableStepUnits", block: "Costs", label: "Every how many units does that step cost appear?", type: "number", step: "1", help: "Set the volume block that triggers semi-variable cost." },
-  { id: "competitorPrice", block: "Pricing", label: "What is the closest competitor/reference price?", type: "number", step: "0.01", help: "Use 0 if unknown and Billie will rely on cost-plus pricing." },
+  { id: "competitorPrice", block: "Pricing", label: "What is the closest competitor/reference price?", type: "number", step: "0.01", help: "Use 0 if unknown and Ledger will rely on cost-plus pricing." },
   { id: "desiredMargin", block: "Pricing", label: "What gross margin would feel healthy?", type: "percent", step: "0.01", help: "45% means price equals unit cost times 1.45." },
-  { id: "minContributionMargin", block: "Pricing", label: "What contribution margin is the floor?", type: "percent", step: "0.01", help: "Billie will not recommend a price below this floor." },
+  { id: "minContributionMargin", block: "Pricing", label: "What contribution margin is the floor?", type: "percent", step: "0.01", help: "Ledger will not recommend a price below this floor." },
   { id: "pricePosition", block: "Pricing", label: "How do you want to position the offer?", type: "select", options: [["penetration", "Penetration"], ["competitive", "Competitive"], ["premium", "Premium"]], help: "This nudges the market anchor." },
   { id: "unitsYear1", block: "10-year growth", label: "How many units or paid uses in year 1?", type: "number", step: "1", help: "For SaaS, treat this as paid seats or subscriptions." },
-  { id: "growthRate", block: "10-year growth", label: "What yearly growth rate should Billie test?", type: "percent", step: "0.01", help: "Use a conservative target, not pitch-deck fantasy." },
+  { id: "growthRate", block: "10-year growth", label: "What yearly growth rate should Ledger test?", type: "percent", step: "0.01", help: "Use a conservative target, not pitch-deck fantasy." },
   { id: "seasonality", block: "10-year growth", label: "How seasonal is demand?", type: "select", options: [["none", "Not seasonal"], ["moderate", "Moderate"], ["high", "High"]], help: "For now this stays as a risk note; later it can become monthly cash flow." },
   { id: "capex", block: "Capital", label: "How much CAPEX is needed?", type: "number", step: "1", help: "Equipment, technology, setup or one-time operational investment." },
   { id: "capexYear", block: "Capital", label: "In which year does CAPEX happen?", type: "number", step: "1", help: "Use 1 to 10." },
-  { id: "usefulLife", block: "Capital", label: "Over how many years is that CAPEX useful?", type: "number", step: "1", help: "Billie uses straight-line depreciation." },
+  { id: "usefulLife", block: "Capital", label: "Over how many years is that CAPEX useful?", type: "number", step: "1", help: "Ledger uses straight-line depreciation." },
   { id: "debt", block: "Capital", label: "How much debt is financing this?", type: "number", step: "1", help: "Set 0 if there is no debt." },
   { id: "interestRate", block: "Advanced", label: "Debt interest rate, if any", type: "percent", step: "0.01", help: "Affects FCFE; skip if there is no debt." },
   { id: "taxRate", block: "Advanced", label: "Corporate tax rate", type: "percent", step: "0.01", help: "Preset from country, editable if needed." },
-  { id: "wacc", block: "Advanced", label: "Discount rate", type: "percent", step: "0.01", help: "Billie hides the jargon; advanced users can adjust it." },
+  { id: "wacc", block: "Advanced", label: "Discount rate", type: "percent", step: "0.01", help: "Ledger hides the jargon; advanced users can adjust it." },
   { id: "terminalGrowth", block: "Advanced", label: "Long-term terminal growth", type: "percent", step: "0.005", help: "Used for terminal value after year 10." },
   { id: "workingCapitalPct", block: "Advanced", label: "Working capital as % of new revenue", type: "percent", step: "0.01", help: "Higher inventory or receivables usually means a higher cash reserve." },
 ];
@@ -84,7 +84,7 @@ async function loadVertexRunContextForBillie() {
   entries.forEach(([artifactType, artifact]) => {
     if (artifact) vertexRun.upstream[artifactType] = artifact;
   });
-  setText("artifact-id", vertexRun.upstream.system_map ? `Billie output - ${vertexRun.runId} - upstream linked` : `Billie output - ${vertexRun.runId} - waiting for upstream artifacts`);
+  setText("artifact-id", vertexRun.upstream.system_map ? `Ledger output - ${vertexRun.runId} - upstream linked` : `Ledger output - ${vertexRun.runId} - waiting for upstream artifacts`);
 }
 
 function money(value, currency = state.currency) {
@@ -255,7 +255,7 @@ function updateAll() {
   setText("hero-margin", pct(model.contributionMargin));
   setText("hero-npv", money(model.npv));
   setText("hero-irr", Number.isFinite(model.irr) ? pct(model.irr) : "n/a");
-  setText("artifact-id", `Billie draft - ${state.businessType} - ${state.currency} - FinancialScenario`);
+  setText("artifact-id", `Ledger draft - ${state.businessType} - ${state.currency} - FinancialScenario`);
   setText("suggested-price", money(model.suggestedPrice));
   setText("breakeven-units", Number.isFinite(model.breakevenUnits) ? Math.ceil(model.breakevenUnits).toLocaleString() : "n/a");
   setText("contribution-margin", pct(model.contributionMargin));
@@ -284,14 +284,14 @@ function buildFinancialScenarioDraft() {
   const systemMap = upstream.system_map || null;
   const runSuffix = vertexRun.runId ? vertexRun.runId.replaceAll("-", "_") : "runless";
   if (!vertexRun.runId) {
-    throw new Error("Billie requires an active Golden Path run before creating a FinancialScenario.");
+    throw new Error("Ledger requires an active Quest run before creating a FinancialScenario.");
   }
   if (!projectRecord || !problemFrame || !systemMap) {
-    throw new Error("Billie requires ProjectRecord, ProblemFrame and SystemMap upstream artifacts before creating a FinancialScenario.");
+    throw new Error("Ledger requires ProjectRecord, ProblemFrame and SystemMap upstream artifacts before creating a FinancialScenario.");
   }
   const financialAssumptions = (systemMap.approved_assumptions || []).filter((item) => item.approved_for_financial_processing === true);
   if (!financialAssumptions.length) {
-    throw new Error("Billie requires at least one SystemMap assumption approved for financial processing. Open Assumption Approval before creating a FinancialScenario.");
+    throw new Error("Ledger requires at least one SystemMap assumption approved for financial processing. Open Gatekeeper before creating a FinancialScenario.");
   }
   const priceRef = pickFinancialRef(financialAssumptions, 0, ["fee", "price", "deposit", "revenue"]);
   const variableCostRef = pickFinancialRef(financialAssumptions, 1, ["cost", "washing", "handling"]);
@@ -310,17 +310,17 @@ function buildFinancialScenarioDraft() {
     status: "draft",
     provenance: {
       source_kind: "user_supplied",
-      source_label: "Billie pricing and 10-year projection wizard",
-      ip_owner: "Billie user",
+      source_label: "Ledger pricing and 10-year projection wizard",
+      ip_owner: "Ledger user",
       external_components_used: [],
-      notes: "Generated by Billie from founder-facing inputs. Values are calculated in the local FinOps prototype and require founder review."
+      notes: "Generated by Ledger from founder-facing inputs. Values are calculated in the local VERTEX financial prototype and require founder review."
     },
     human_approval: {
       required: true,
       state: "pending",
       approved_by_role: "founder",
       approved_at: now,
-      notes: "Pending founder review before this FinancialScenario can feed a DecisionRecord."
+      notes: "Pending founder review before this FinancialScenario can feed Stamp."
     },
     validation_errors: [],
     preceding_artifacts: {
@@ -330,7 +330,7 @@ function buildFinancialScenarioDraft() {
     },
     approved_assumption_references: refs,
     currency: state.currency,
-    scenario_name: `Billie ${state.businessType} ${state.pricePosition} pricing scenario`,
+    scenario_name: `Ledger ${state.businessType} ${state.pricePosition} pricing scenario`,
     time_horizon: "10 years",
     pricing_assumptions: [
       assumption("fin_price_suggested", "Suggested price", round2(model.suggestedPrice), `${state.currency} per unit/use`, priceRef),
@@ -369,7 +369,7 @@ function buildFinancialScenarioDraft() {
     },
     sustainability_indicators: [{
       indicator_id: "sus_financial_learning",
-      statement: "Billie turns pricing, cost and runway assumptions into explicit decision learning before scale-up.",
+      statement: "Ledger turns pricing, cost and runway assumptions into explicit decision learning before scale-up.",
       classification: "inference",
       confidence: 0.7
     }],
@@ -461,7 +461,7 @@ async function createFinancialScenarioPreview() {
     });
     const result = await response.json();
     if (result.valid) {
-      status.textContent = "Schema valid. Billie translated the model into a FinancialScenario draft ready for founder review.";
+      status.textContent = "Schema valid. Ledger translated the model into a FinancialScenario draft ready for founder review.";
       status.className = "copy status-ok";
       badge.textContent = "Schema valid";
       badge.className = "contract-badge ok";
@@ -531,7 +531,7 @@ async function saveFinancialScenarioDraft() {
       badge.className = "contract-badge bad";
       return;
     }
-    status.textContent = "Draft saved to the active Golden Path run. Billie can now feed DecisionRecord with a real FinancialScenario artifact.";
+    status.textContent = "Draft saved to the active Quest run. Ledger can now feed Stamp with a real FinancialScenario artifact.";
     status.className = "copy status-ok";
     badge.textContent = "Saved draft";
     badge.className = "contract-badge ok";

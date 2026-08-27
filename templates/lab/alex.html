@@ -10,7 +10,7 @@
 
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
-    <title>Alex - The Guardian | Vertex 4D</title>
+    <title>Riddle | VERTEX 4D</title>
 
     <link rel="icon" href="/favicon.ico">
 
@@ -175,16 +175,16 @@
 {% include "_icon_sprite.html" %}
 <div class="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col">
     <header class="v4-bar shrink-0">
-        <a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Srsly Labs</i></span></a>
-        <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-alex"/></svg> Alex &middot; ProblemFrame</span>
-        <nav><a class="app-nav-link v4-navlink" href="/dashboard/lab">4D Lab</a><a class="app-nav-link v4-navlink" data-run-link href="/dashboard/lab/synapmap">SynapMap</a></nav>
+        <a class="v4-brand" href="/dashboard/vertex/spark"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Quest</i></span></a>
+        <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-alex"/></svg> Riddle &middot; ProblemFrame</span>
+        <nav><a class="app-nav-link v4-navlink" href="/dashboard/lab">Srsly Labs Lab</a><a class="app-nav-link v4-navlink" data-run-link href="/dashboard/vertex/tangle">Tangle</a></nav>
     </header>
     <main class="flex-1 min-h-0 flex flex-col">
         <section class="v4-head shrink-0">
             <div class="focusable">
-                <p class="v4-eyebrow"><s></s>Etapa 1 de 6 &middot; Alex</p>
+                <p class="v4-eyebrow"><s></s>Etapa 1 de 6 &middot; Riddle</p>
                 <h1 class="v4-h1">Stress-test the problem.<br><em>Keep the useful discomfort.</em></h1>
-                <p class="v4-lede">Alex turns the founder's first frame into assumptions, effects and questions that can become a ProblemFrame artifact.</p>
+                <p class="v4-lede">Riddle turns the founder's first frame into assumptions, effects and questions that can become a ProblemFrame artifact. Alex remains the full Srsly Labs socratic agent.</p>
                 <div class="v4-next"><button class="btn primary" type="button" onclick="document.getElementById('config-modal').classList.remove('hidden')">Configure session</button><button class="btn ghost" type="button" id="finish-test-btn">Finish Test</button><span class="v4-eta">&asymp; 12 min &middot; entrevista socrática</span></div>
             </div>
             <aside class="v4-tally"><div class="v4-t"><b>01</b><span>ProblemFrame stage</span></div><div class="v4-t up"><b>42</b><span>Signals available</span></div><div class="v4-t"><b id="display-role">--</b><span>Stakeholder role</span></div></aside>
@@ -195,7 +195,7 @@
             <aside class="lg:col-span-4 min-w-0 flex flex-col gap-5 border-b lg:border-b-0 lg:border-r border-vapor-grey p-5 lg:overflow-y-auto">
                 <article class="v4-panel">
                     <p class="v4-plabel">Persona register</p>
-                    <p class="v4-ask">Who is Alex challenging as?</p>
+                    <p class="v4-ask">Who is Riddle challenging as?</p>
                     <div class="v4-item v4-ac"><span class="v4-sig"></span><p><b>Project</b><br><span id="display-project">--</span></p><span class="v4-chip">context</span></div>
                     <div class="v4-item v4-rk"><span class="v4-sig"></span><p><b>Role</b><br><span id="display-role-panel">--</span></p><span class="v4-chip">pressure</span></div>
                     <div class="v4-item v4-hy"><span class="v4-sig"></span><p><b>Country</b><br><span id="display-country">--</span></p><span class="v4-chip">constraint</span></div>
@@ -232,9 +232,9 @@
 
         <div class="bg-white w-full max-w-lg rounded-3xl p-8 shadow-2xl">
 
-            <h2 class="text-3xl font-bold text-near-black">Configure Alex</h2>
+            <h2 class="text-3xl font-bold text-near-black">Configure Riddle</h2>
 
-            <p class="mt-2 text-sm text-medium-grey">This configuration will ground Alex's adversarial responses.</p>
+            <p class="mt-2 text-sm text-medium-grey">This configuration will ground Riddle's adversarial responses.</p>
 
 
 
@@ -504,7 +504,7 @@
 
             function sendWelcomeMessage() {
 
-                const welcomeHTML = `<p>Welcome. I'm <strong>Alex</strong>, acting as a <span class="pill risk">Adversary</span> to stress-test your ideas.</p>
+                const welcomeHTML = `<p>Welcome. This is <strong>Riddle</strong>, acting as a <span class="pill risk">Adversary</span> to stress-test your ideas.</p>
 
                     <p>I'll challenge your assumptions about <strong>${simulationConfig.project}</strong> from the perspective of a ${simulationConfig.role} in ${simulationConfig.country}.</p>
 
@@ -530,7 +530,7 @@
 
                 addMessageToLog('alex', welcomeHTML);
 
-                speakText("Welcome. I'm Alex, acting as an adversary to stress-test your ideas. What's your pitch?");
+                speakText("Welcome. This is Riddle, acting as an adversary to stress-test your ideas. What's your pitch?");
 
             }
 
@@ -852,7 +852,7 @@ Do not include markdown formatting (like \`\`\`json) in your response, just the 
 
                 label.classList.add('mb-1', 'text-xs', 'uppercase', 'tracking-wider', 'text-medium-grey', 'font-bold');
 
-                label.textContent = sender === 'user' ? 'You' : `Alex (${simulationConfig.role})`;
+                label.textContent = sender === 'user' ? 'You' : `Riddle (${simulationConfig.role})`;
 
                 messageWrapper.appendChild(label);
 
@@ -908,11 +908,11 @@ Do not include markdown formatting (like \`\`\`json) in your response, just the 
 
                 indicator.innerHTML = `
 
-                    <div class="mb-1 text-xs uppercase tracking-wider text-medium-grey font-bold">Alex (${simulationConfig.role})</div>
+                    <div class="mb-1 text-xs uppercase tracking-wider text-medium-grey font-bold">Riddle (${simulationConfig.role})</div>
 
                     <div class="bg-white border border-vapor-grey rounded-2xl px-5 py-4">
 
-                        <p class="animate-pulse text-medium-grey">Alex is thinking...</p>
+                        <p class="animate-pulse text-medium-grey">Riddle is thinking...</p>
 
                     </div>
 
@@ -1004,7 +1004,7 @@ Do not include markdown formatting (like \`\`\`json) in your response, just the 
                     created_at: now,
                     created_by_role: 'alex',
                     status: 'draft',
-                    provenance: { source_kind: 'user_supplied', source_label: 'Alex Socratic challenge summary', ip_owner: 'Paola Hintze', external_components_used: [], notes: 'Mapped from Alex conversation summary into a ProblemFrame draft.' },
+                    provenance: { source_kind: 'user_supplied', source_label: 'Riddle challenge summary', ip_owner: 'Paola Hintze', external_components_used: [], notes: 'Mapped from Riddle conversation summary into a ProblemFrame draft.' },
                     human_approval: { required: true, state: 'pending', approved_by_role: 'founder', approved_at: now, notes: 'Pending founder/facilitator review.' },
                     validation_errors: [],
                     preceding_artifacts: { project_record_id: projectRecordId },
@@ -1014,7 +1014,7 @@ Do not include markdown formatting (like \`\`\`json) in your response, just the 
                     needs: [{ id: 'need_alex_1', statement: allQuestions[0] || 'The team needs a clearer problem frame before committing resources.', classification: 'hypothesis', confidence: 0.45, evidence_refs: [evidenceId] }],
                     assumptions: assumptionItems,
                     tensions: tensionItems,
-                    evidence_references: [{ evidence_id: evidenceId, label: 'Alex session summary', source_type: 'synthetic_interview_note', classification: 'hypothesis', contains_personal_data: false, evidence_context: 'synthetic_fixture' }],
+                    evidence_references: [{ evidence_id: evidenceId, label: 'Riddle session summary', source_type: 'synthetic_interview_note', classification: 'hypothesis', contains_personal_data: false, evidence_context: 'synthetic_fixture' }],
                     unknowns: unknownItems,
                     four_dimensions_analysis: {
                         emotional: { summary: 'Stakeholder response and discomfort require explicit review.', classification: 'hypothesis', confidence: 0.4, evidence_refs: [evidenceId] },
@@ -1031,7 +1031,7 @@ Do not include markdown formatting (like \`\`\`json) in your response, just the 
             async function saveProblemFrameArtifact() {
                 const runId = getVertexRunId();
                 if (!runId) {
-                    alert('Create a Golden Path run first from Start Golden Path.');
+                    alert('Create a Quest run first from Spark.');
                     return;
                 }
                 const projectRecord = await loadRunArtifact('project_record');
@@ -1118,7 +1118,7 @@ Do not include markdown formatting (like \`\`\`json) in your response, just the 
 
                     margin: 0.5,
 
-                    filename: `Alex_Session_Summary_${new Date().toISOString().slice(0, 10)}.pdf`,
+                    filename: `Riddle_Session_Summary_${new Date().toISOString().slice(0, 10)}.pdf`,
 
                     image: { type: 'jpeg', quality: 0.98 },
 

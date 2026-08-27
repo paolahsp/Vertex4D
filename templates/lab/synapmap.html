@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>SynapMap - The Visionary | Vertex 4D</title>
+    <title>Tangle | VERTEX 4D</title>
     <link rel="icon" href="/favicon.ico">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://d3js.org/d3.v7.min.js"></script>
@@ -77,16 +77,16 @@
 {% include "_icon_sprite.html" %}
 <div class="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col">
     <header class="v4-bar shrink-0">
-        <a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Srsly Labs</i></span></a>
-        <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg> SynapMap &middot; SystemMap</span>
-        <nav><a class="app-nav-link v4-navlink" data-run-link href="/dashboard/lab/alex">Back to Alex</a><a class="app-nav-link v4-navlink" data-run-link href="/dashboard/lab/assumption-approval">Approval</a></nav>
+        <a class="v4-brand" href="/dashboard/vertex/spark"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Quest</i></span></a>
+        <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg> Tangle &middot; SystemMap</span>
+        <nav><a class="app-nav-link v4-navlink" data-run-link href="/dashboard/vertex/riddle">Back to Riddle</a><a class="app-nav-link v4-navlink" data-run-link href="/dashboard/vertex/gatekeeper">Gatekeeper</a></nav>
     </header>
     <main class="flex-1 min-h-0 flex flex-col">
         <section class="v4-head shrink-0">
             <div class="focusable">
-                <p class="v4-eyebrow"><s></s>Etapa 2 de 6 &middot; SynapMap</p>
+                <p class="v4-eyebrow"><s></s>Etapa 2 de 6 &middot; Tangle</p>
                 <h1 class="v4-h1">Make the system visible.<br><em>Then name the dependencies.</em></h1>
-                <p class="v4-lede">SynapMap turns scattered context into stakeholders, relationships, bottlenecks and RACI signals for the approval gate.</p>
+                <p class="v4-lede">Tangle turns scattered context into stakeholders, relationships, bottlenecks and RACI signals for Gatekeeper. SynapMap remains the full Srsly Labs visual system tool.</p>
                 <div class="v4-next"><button class="btn primary" type="button" id="save-map-btn"><svg class="ic" aria-hidden="true"><use href="#i-save"/></svg> Save map</button><button class="btn ghost" type="button" id="delete-map-btn"><svg class="ic" aria-hidden="true"><use href="#i-trash"/></svg> Delete map</button><span class="v4-eta">&asymp; 10 min &middot; D3 map stays interactive</span></div>
             </div>
             <aside class="v4-tally"><div class="v4-t"><b>02</b><span>SystemMap stage</span></div><div class="v4-t up"><b>RACI</b><span>Matrix target</span></div><div class="v4-t"><b>35%</b><span>Confidence seed</span></div></aside>
@@ -98,7 +98,7 @@
                 <article class="v4-panel flex-1 min-h-0 flex flex-col p-0 overflow-hidden">
                     <div class="px-4 py-4 border-b border-vapor-grey"><p class="v4-plabel" style="margin:0">System prompt</p></div>
                     <div id="chat-container" class="flex-1 overflow-y-auto p-4">
-                        <div class="v4-item v4-hy"><span class="v4-sig"></span><p><b>SynapMap</b><br>Describe your project. I will generate stakeholders, dependencies, bottlenecks and a RACI matrix.</p><span class="v4-chip">ready</span></div>
+                        <div class="v4-item v4-hy"><span class="v4-sig"></span><p><b>Tangle</b><br>Describe your project. I will generate stakeholders, dependencies, bottlenecks and a RACI matrix.</p><span class="v4-chip">ready</span></div>
                     </div>
                     <div class="border-t border-vapor-grey p-3">
                         <div id="status-message" class="mb-2 text-center text-xs"></div>
@@ -124,7 +124,7 @@
                 </article>
                 <article class="v4-panel is-strong">
                     <p class="v4-plabel">System Analysis</p>
-                    <div id="insights-container" class="text-xs space-y-3"><div class="v4-empty">No analysis yet. Bottlenecks, risks, opportunities and conflicts will appear here after SynapMap generates a system.</div></div>
+                    <div id="insights-container" class="text-xs space-y-3"><div class="v4-empty">No analysis yet. Bottlenecks, risks, opportunities and conflicts will appear here after Tangle generates a system.</div></div>
                 </article>
             </aside>
         </section>
@@ -192,7 +192,7 @@
                 <svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg>
             </div>
             <div class="rounded-2xl rounded-tl-none bg-vapor-grey p-3">
-                <p class="font-bold text-near-black text-sm">SynapMap</p>
+                <p class="font-bold text-near-black text-sm">Tangle</p>
                 <p class="text-medium-grey text-xs">${content}</p>
             </div>
         `;
@@ -288,7 +288,7 @@ ${JSON.stringify(currentAnalysis)}
             const contentToSend = `[NEW INPUT]:\n${fullContent}\n${contextPrompt}`;
             attachedFileContent = "";
 
-            const systemPrompt = `You are SynapMap, an expert Systems Thinking AI.
+            const systemPrompt = `You are Tangle, a VERTEX systems-thinking module.
 
 TASK: ${taskInstruction}
 
@@ -616,7 +616,7 @@ RULES:
                 role: mapRole(node.category),
                 influence: 'medium',
                 interest: 'medium',
-                incentives: ['Needs explicit validation in the Golden Path run'],
+                incentives: ['Needs explicit validation in the Quest run'],
                 evidence_refs: [evidenceId],
                 is_identifiable_person: false
             }));
@@ -654,7 +654,7 @@ RULES:
                 created_at: now,
                 created_by_role: 'synapmap',
                 status: 'draft',
-                provenance: { source_kind: 'user_supplied', source_label: 'SynapMap generated system map', ip_owner: 'Paola Hintze', external_components_used: [], notes: 'Mapped from SynapMap D3/RACI analysis into a SystemMap draft.' },
+                provenance: { source_kind: 'user_supplied', source_label: 'Tangle generated system map', ip_owner: 'Paola Hintze', external_components_used: [], notes: 'Mapped from Tangle D3/RACI analysis into a SystemMap draft.' },
                 human_approval: { required: true, state: 'pending', approved_by_role: 'facilitator', approved_at: now, notes: 'Pending facilitator review.' },
                 validation_errors: [],
                 preceding_artifacts: { project_record_id: projectRecord?.artifact_id || 'missing_upstream_project_record', problem_frame_id: problemFrame?.artifact_id || 'missing_upstream_problem_frame' },
@@ -662,7 +662,7 @@ RULES:
                 relationships,
                 tensions,
                 dependencies,
-                evidence_references: [{ evidence_id: evidenceId, label: 'SynapMap session output', source_type: 'synthetic_observation', classification: 'hypothesis', contains_personal_data: false, evidence_context: 'synthetic_fixture' }],
+                evidence_references: [{ evidence_id: evidenceId, label: 'Tangle session output', source_type: 'synthetic_observation', classification: 'hypothesis', contains_personal_data: false, evidence_context: 'synthetic_fixture' }],
                 unknowns,
                 system_boundaries: { included: ['Current mapped stakeholder system'], excluded: ['Unmapped external market'], time_horizon: 'pilot decision window', geography: 'team-defined geography' },
                 approved_assumptions: approvedAssumptions,
@@ -722,7 +722,7 @@ RULES:
                             <svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg>
                         </div>
                         <div class="rounded-2xl rounded-tl-none bg-vapor-grey p-3">
-                            <p class="font-bold text-near-black text-sm">SynapMap</p>
+                            <p class="font-bold text-near-black text-sm">Tangle</p>
                             <p class="text-medium-grey text-xs">Describe your project. I will generate a system map with stakeholders, dependencies, bottlenecks, and a RACI matrix.</p>
                         </div>
                     </div>`;

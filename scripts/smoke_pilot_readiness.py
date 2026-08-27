@@ -50,8 +50,56 @@ def main() -> None:
         client = TestClient(app_main.app)
 
         app_main.app.dependency_overrides[app_main.get_current_user] = lambda: facilitator
+        facilitator_login = client.post(
+            "/login",
+            data={
+                "email": seed_demo_cohort.FACILITATOR_EMAIL,
+                "password": seed_demo_cohort.DEMO_PASSWORD,
+            },
+            follow_redirects=False,
+        )
+        assert facilitator_login.status_code == 303, facilitator_login.text
         assert client.get("/dashboard/facilitator").status_code == 200, "facilitator dashboard should still render"
         assert client.get(f"/dashboard/facilitator/cohorts/{seeded['cohort_id']}/outcome-report").status_code == 200, "report should still render"
+
+        demo_entry = client.get("/dashboard/facilitator/accelerator-demo", follow_redirects=False)
+        assert demo_entry.status_code == 303, demo_entry.text
+        assert seeded["cohort_id"] in demo_entry.headers.get("location", ""), demo_entry.headers
+        demo_page = assert_200(
+            client.get(f"/dashboard/facilitator/cohorts/{seeded['cohort_id']}/accelerator-demo"),
+            "accelerator demo mode",
+        )
+        assert_contains(demo_page, "Accelerator Demo Mode", "accelerator demo mode")
+        assert_contains(demo_page, "Intervention Radar", "accelerator demo mode")
+        assert_contains(demo_page, "run_demo_economics_changed", "accelerator demo mode")
+        assert_contains(demo_page, "run_demo_decision_changed", "accelerator demo mode")
+        assert_contains(demo_page, "Brief", "accelerator demo mode")
+        assert_contains(demo_page, "Outcome Report", "accelerator demo mode")
+
+        route_checks = [
+            ("/dashboard/vertex/spark", "Spark"),
+            ("/dashboard/vertex/riddle", "Riddle"),
+            ("/dashboard/vertex/tangle", "Tangle"),
+            ("/dashboard/vertex/gatekeeper", "Gatekeeper"),
+            ("/dashboard/vertex/ripple", "Ripple"),
+            ("/dashboard/vertex/ledger", "Ledger"),
+            ("/dashboard/vertex/stamp", "Stamp"),
+            ("/dashboard/vertex/brief?run_id=run_demo_complete", "Brief"),
+            ("/dashboard/vertex/brief/print?run_id=run_demo_complete", "Brief"),
+            ("/dashboard/vertex/quest", "Quest"),
+            ("/dashboard/lab/start-golden-path", "Spark"),
+            ("/dashboard/lab/alex", "Riddle"),
+            ("/dashboard/lab/synapmap", "Tangle"),
+            ("/dashboard/lab/assumption-approval", "Gatekeeper"),
+            ("/dashboard/lab/d-predict", "Ripple"),
+            ("/dashboard/lab/billie", "Ledger"),
+            ("/dashboard/lab/decision-record", "Stamp"),
+            ("/dashboard/lab/decision-memo?run_id=run_demo_complete", "Brief"),
+            ("/dashboard/lab/decision-memo/print?run_id=run_demo_complete", "Brief"),
+            ("/dashboard/lab/golden-path", "Quest"),
+        ]
+        for path, expected in route_checks:
+            assert_contains(assert_200(client.get(path), path), expected, path)
 
         memo_print = assert_200(
             client.get("/dashboard/lab/decision-memo/print?run_id=run_demo_complete"),
@@ -72,6 +120,16 @@ def main() -> None:
         assert_contains(report_print, "review needed", "cohort report print")
 
         app_main.app.dependency_overrides[app_main.get_current_user] = lambda: founder
+        client.cookies.clear()
+        founder_login = client.post(
+            "/login",
+            data={
+                "email": "maya.ellis@northstar-demo.example",
+                "password": seed_demo_cohort.DEMO_PASSWORD,
+            },
+            follow_redirects=False,
+        )
+        assert founder_login.status_code == 303, founder_login.text
         founder_memo = assert_200(
             client.get("/dashboard/lab/decision-memo/print?run_id=run_demo_complete"),
             "founder decision memo print",
@@ -79,6 +137,8 @@ def main() -> None:
         assert_contains(founder_memo, "run_demo_complete", "founder decision memo print")
         founder_report = client.get(f"/dashboard/facilitator/cohorts/{seeded['cohort_id']}/outcome-report/print")
         assert founder_report.status_code == 403, founder_report.text
+        founder_demo = client.get(f"/dashboard/facilitator/cohorts/{seeded['cohort_id']}/accelerator-demo")
+        assert founder_demo.status_code == 403, founder_demo.text
 
         for doc in DOCS:
             path = REPO_DIR / doc

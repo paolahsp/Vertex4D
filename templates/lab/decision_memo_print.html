@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Print Decision Memo | VERTEX 4D</title>
+    <title>Print Brief | VERTEX 4D</title>
     <style>
         :root { color: #18181b; background: #fff; font-family: Arial, Helvetica, sans-serif; }
         body { background: #fff; color: #18181b; margin: 0; }
@@ -40,7 +40,7 @@
 <main class="page">
     <header class="topbar">
         <div>
-            <div class="brand">VERTEX 4D Decision Memo</div>
+            <div class="brand">VERTEX 4D Brief</div>
             <div class="small">Generated {{ generated_at }}</div>
         </div>
         <div class="actions no-print">
@@ -125,7 +125,7 @@
                 {% for item in memo.evidence_supporting_decision %}
                 <tr><td>{{ item.evidence_id }}</td><td>{{ item.summary }}</td><td>{{ item.source_artifact_id or 'missing' }}</td></tr>
                 {% else %}
-                <tr><td colspan="3">Missing saved DecisionRecord evidence.</td></tr>
+                <tr><td colspan="3">Missing saved Stamp evidence.</td></tr>
                 {% endfor %}
             </tbody>
         </table>

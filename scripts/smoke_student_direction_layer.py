@@ -1,4 +1,4 @@
-"""Smoke test the student-facing direction layer across Golden Path modules."""
+"""Smoke test the student-facing direction layer across Quest modules."""
 from __future__ import annotations
 
 import os
@@ -9,13 +9,20 @@ from pathlib import Path
 REPO_DIR = Path(__file__).resolve().parents[1]
 
 ROUTES = [
-    ("/dashboard/lab/start-golden-path", "Locked Baseline + ProjectRecord", "Create a Decision Case"),
+    ("/dashboard/vertex/spark", "Locked Baseline + ProjectRecord", "Create a Spark case"),
+    ("/dashboard/vertex/riddle", "ProblemFrame", "Save a ProblemFrame"),
+    ("/dashboard/vertex/tangle", "SystemMap", "Save a SystemMap"),
+    ("/dashboard/vertex/gatekeeper", "Approved assumption register", "Approve only assumptions"),
+    ("/dashboard/vertex/ripple", "PredictiveHypothesis + QBI lite reading", "Create a PredictiveHypothesis"),
+    ("/dashboard/vertex/ledger", "FinancialScenario", "Create a FinancialScenario"),
+    ("/dashboard/vertex/stamp", "Stamp / DecisionRecord", "Create and save a Stamp"),
+    ("/dashboard/lab/start-golden-path", "Locked Baseline + ProjectRecord", "Create a Spark case"),
     ("/dashboard/lab/alex", "ProblemFrame", "Save a ProblemFrame"),
     ("/dashboard/lab/synapmap", "SystemMap", "Save a SystemMap"),
     ("/dashboard/lab/assumption-approval", "Approved assumption register", "Approve only assumptions"),
     ("/dashboard/lab/d-predict", "PredictiveHypothesis + QBI lite reading", "Create a PredictiveHypothesis"),
     ("/dashboard/lab/billie", "FinancialScenario", "Create a FinancialScenario"),
-    ("/dashboard/lab/decision-record", "DecisionRecord", "Create and save a DecisionRecord"),
+    ("/dashboard/lab/decision-record", "Stamp / DecisionRecord", "Create and save a Stamp"),
 ]
 
 

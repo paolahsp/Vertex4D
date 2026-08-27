@@ -123,6 +123,20 @@ RUBRIC_FIELDS = [
     "decision_action",
 ]
 
+ACCELERATOR_DEMO_COHORT_NAME = "Demo Cohort - Decision Quality Pilot"
+ACCELERATOR_DEMO_STAR_RUNS = [
+    {
+        "run_id": "run_demo_economics_changed",
+        "label": "Economics changed",
+        "why": "Shows baseline price intuition changing after Ledger exposes the economic constraint.",
+    },
+    {
+        "run_id": "run_demo_decision_changed",
+        "label": "Decision changed",
+        "why": "Shows a team moving from build momentum to a reviewed discovery commitment.",
+    },
+]
+
 
 def get_user_role(user: dict) -> str:
     role = str((user or {}).get("role") or "founder").strip().lower()
@@ -257,7 +271,7 @@ def get_visible_run_or_404(run_id: str, user: dict) -> dict:
     else:
         run = database.get_run(run_id, get_team_id(user))
     if not run:
-        raise HTTPException(status_code=404, detail="Decision Case not found")
+        raise HTTPException(status_code=404, detail="Spark case not found")
     return run
 
 
@@ -462,14 +476,14 @@ def intervention_pattern_labels(baseline_locked: bool, complete: bool, comments:
     comment_text = " ".join(str(comment.get("comment_text") or "") for comment in comments).lower()
     if any(word in comment_text for word in ["payer", "approver", "consent", "authorization", "authorise", "authorize"]):
         labels.append("payer / approver confusion")
-    if any(word in comment_text for word in ["evidence", "proof", "validated", "unsupported"]):
+    if any(word in comment_text for word in ["evidence", "documented", "available", "unsupported"]):
         labels.append("unsupported evidence")
     if any(word in comment_text for word in ["price", "pricing", "margin", "economics", "cost"]):
         labels.append("economics contradict plan")
     if not baseline_locked:
         labels.append("baseline missing")
     if not complete:
-        labels.append("DecisionRecord missing")
+        labels.append("Stamp missing")
     if score_count == 0:
         labels.append("rubric missing")
     if price_changed is True:
@@ -598,7 +612,7 @@ def qbi_summary_from_predictive(predictive: dict | None) -> list[dict]:
 def decision_memo_change_summary(baseline: dict, decision: dict | None, finance: dict | None, system_map: dict | None) -> dict:
     selected = ((decision or {}).get("selected_decision") or {})
     initial_decision = baseline.get("current_decision") or "not captured"
-    final_statement = selected.get("statement") or "DecisionRecord not saved yet"
+    final_statement = selected.get("statement") or "Stamp not saved yet"
     initial_price = baseline.get("intuition_price")
     final_price = first_pricing_value(finance)
     currency = baseline.get("intuition_price_currency") or (finance or {}).get("currency") or ""
@@ -620,7 +634,7 @@ def decision_memo_change_summary(baseline: dict, decision: dict | None, finance:
         "reviewed_price": f"{currency} {final_price}" if final_price is not None else "missing",
         "baseline_stakeholders": ", ".join(str(item) for item in initial_stakeholders[:4]) if initial_stakeholders else "missing",
         "reviewed_stakeholders": ", ".join(mapped_stakeholders[:4]) if mapped_stakeholders else "missing",
-        "why_changed": reasons or ["DecisionRecord not complete"],
+        "why_changed": reasons or ["Stamp not complete"],
     }
 
 
@@ -639,7 +653,7 @@ def compose_decision_memo(run_id: str, user: dict) -> dict:
 
     final_decision = (decision or {}).get("selected_decision") or {}
     baseline_decision = baseline.get("current_decision") or "not captured"
-    final_decision_text = final_decision.get("statement") or "DecisionRecord not saved yet"
+    final_decision_text = final_decision.get("statement") or "Stamp not saved yet"
     decision_changed = bool(final_decision.get("decision_type") and baseline_decision != "not captured" and final_decision.get("decision_type") != baseline_decision)
     evidence = (decision or {}).get("evidence_summary") or []
     risks = (decision or {}).get("risks") or []
@@ -812,7 +826,7 @@ def compose_cohort_outcome_report(cohort_id: str) -> dict:
             "missing": [
                 label for label, missing in [
                     ("locked baseline", not baseline_locked),
-                    ("DecisionRecord", not complete),
+                    ("Stamp", not complete),
                     ("pilot feedback", not feedback),
                     ("rubric scores", score_summary["by_run"].get(run_id, {}).get("score_count", 0) == 0),
                 ] if missing
@@ -832,7 +846,7 @@ def compose_cohort_outcome_report(cohort_id: str) -> dict:
         "top_interventions": [{"label": label, "count": count} for label, count in sorted(intervention_patterns.items(), key=lambda item: item[1], reverse=True)[:5]],
         "before_after_case": before_after_case,
         "cases": cases,
-        "empty_state": "No Decision Cases belong to this cohort yet." if not runs else "",
+        "empty_state": "No Spark cases belong to this cohort yet." if not runs else "",
         "note": "Missing data is marked as missing. This report does not fabricate outcomes or predict startup success.",
     }
 
@@ -881,7 +895,7 @@ def compose_cohort_management(cohort_id: str, user: dict) -> dict:
             {"label": label, "detail": detail}
             for label, detail, active in [
                 ("baseline not locked", "The before state is missing or legacy; cohort change cannot be compared cleanly.", not case.get("baseline_locked_at")),
-                ("DecisionRecord missing", "The case has not been closed into a final decision artifact.", decision is None),
+                ("Stamp missing", "The case has not been closed into a final decision artifact.", decision is None),
                 ("baseline score missing", "No baseline rubric score has been saved for this case.", not baseline_scores),
                 ("post score missing", "No post rubric score has been saved for this case.", not post_scores),
             ] if active
@@ -923,6 +937,62 @@ def compose_cohort_management(cohort_id: str, user: dict) -> dict:
             "decision_interventions": sum(1 for case in managed_cases if case["has_decision_intervention"]),
         },
     }
+
+
+def demo_cohort_for_user(user: dict) -> dict | None:
+    role = get_user_role(user)
+    include_all = role in {"facilitator", "admin"}
+    cohorts = database.list_cohorts_for_user(get_team_id(user), include_all=include_all)
+    return next((cohort for cohort in cohorts if cohort.get("cohort_name") == ACCELERATOR_DEMO_COHORT_NAME), None)
+
+
+def compose_accelerator_demo(cohort_id: str, user: dict) -> dict:
+    management = compose_cohort_management(cohort_id, user)
+    report = compose_cohort_outcome_report(cohort_id)
+    managed_by_run = {case["run_id"]: case for case in management["cases"]}
+    report_by_run = {case["run_id"]: case for case in report["cases"]}
+    star_cases = []
+    for star in ACCELERATOR_DEMO_STAR_RUNS:
+        case = managed_by_run.get(star["run_id"])
+        outcome = report_by_run.get(star["run_id"], {})
+        if not case:
+            continue
+        star_cases.append({
+            **star,
+            "case": case,
+            "outcome": outcome,
+            "memo_url": f"/dashboard/vertex/brief?run_id={star['run_id']}",
+        })
+    intervention_cases = [
+        case for case in management["cases"]
+        if case.get("needs_intervention")
+    ]
+    return {
+        "cohort": management["cohort"],
+        "totals": management["totals"],
+        "report": report,
+        "star_cases": star_cases,
+        "intervention_cases": intervention_cases,
+        "cohort_room_url": f"/dashboard/facilitator/cohorts/{cohort_id}",
+        "intervention_radar_url": f"/dashboard/facilitator/cohorts/{cohort_id}#intervention-radar",
+        "outcome_report_url": f"/dashboard/facilitator/cohorts/{cohort_id}/outcome-report",
+        "missing": False,
+    }
+
+
+def accelerator_demo_missing(user: dict) -> dict:
+    return {
+        "cohort": None,
+        "totals": {},
+        "report": None,
+        "star_cases": [],
+        "intervention_cases": [],
+        "cohort_room_url": "/dashboard/facilitator",
+        "intervention_radar_url": "/dashboard/facilitator",
+        "outcome_report_url": "/dashboard/facilitator",
+        "missing": True,
+        "seed_command": "python scripts\\seed_demo_cohort.py",
+    }
 def build_vertex_golden_case_view_model():
     artifacts = load_vertex_golden_case()
     project = artifacts["project_record"]
@@ -945,7 +1015,7 @@ def build_vertex_golden_case_view_model():
         {
             "key": "problem_frame",
             "label": "ProblemFrame",
-            "agent": "Alex",
+            "agent": "Riddle",
             "artifact_id": problem["artifact_id"],
             "status": problem["status"],
             "headline": problem["reframed_problem"]["statement"],
@@ -954,7 +1024,7 @@ def build_vertex_golden_case_view_model():
         {
             "key": "system_map",
             "label": "SystemMap",
-            "agent": "SynapMap",
+            "agent": "Tangle",
             "artifact_id": system_map["artifact_id"],
             "status": system_map["status"],
             "headline": f"{len(system_map['stakeholders'])} stakeholders mapped",
@@ -963,7 +1033,7 @@ def build_vertex_golden_case_view_model():
         {
             "key": "predictive_hypothesis",
             "label": "PredictiveHypothesis",
-            "agent": "D-Predict",
+            "agent": "Ripple",
             "artifact_id": prediction["artifact_id"],
             "status": prediction["status"],
             "headline": prediction["scenario_question"],
@@ -972,7 +1042,7 @@ def build_vertex_golden_case_view_model():
         {
             "key": "financial_scenario",
             "label": "FinancialScenario",
-            "agent": "FinOps",
+            "agent": "Ledger",
             "artifact_id": finance["artifact_id"],
             "status": finance["status"],
             "headline": finance["scenario_name"],
@@ -981,7 +1051,7 @@ def build_vertex_golden_case_view_model():
         {
             "key": "decision_record",
             "label": "DecisionRecord",
-            "agent": "Facilitator",
+            "agent": "Stamp",
             "artifact_id": decision["artifact_id"],
             "status": decision["status"],
             "headline": decision["selected_decision"]["statement"],
@@ -1129,6 +1199,89 @@ async def lab_home(request: Request, user: dict = Depends(get_current_user)):
         return RedirectResponse(url="/login", status_code=303)
     return templates.TemplateResponse(request, "lab/base.html", {"user": user})
 
+@app.get("/dashboard/vertex", response_class=HTMLResponse)
+async def vertex_home(request: Request):
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    return RedirectResponse(url="/dashboard/vertex/spark", status_code=303)
+
+@app.get("/dashboard/vertex/spark", response_class=HTMLResponse)
+async def vertex_spark(request: Request):
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login")
+    return templates.TemplateResponse(request, "lab/start_golden_path.html", {"user": user})
+
+@app.get("/dashboard/vertex/riddle", response_class=HTMLResponse)
+async def vertex_riddle(request: Request):
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login")
+    return templates.TemplateResponse(request, "lab/alex.html", {"user": user})
+
+@app.get("/dashboard/vertex/tangle", response_class=HTMLResponse)
+async def vertex_tangle(request: Request):
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login")
+    return templates.TemplateResponse(request, "lab/synapmap.html", {"user": user})
+
+@app.get("/dashboard/vertex/gatekeeper", response_class=HTMLResponse)
+async def vertex_gatekeeper(request: Request):
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login")
+    return templates.TemplateResponse(request, "lab/assumption_approval.html", {"user": user})
+
+@app.get("/dashboard/vertex/ripple", response_class=HTMLResponse)
+async def vertex_ripple(request: Request):
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login")
+    return templates.TemplateResponse(request, "lab/d_predict.html", {"user": user})
+
+@app.get("/dashboard/vertex/ledger", response_class=HTMLResponse)
+async def vertex_ledger(request: Request):
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login")
+    return templates.TemplateResponse(request, "lab/billie.html", {"user": user})
+
+@app.get("/dashboard/vertex/stamp", response_class=HTMLResponse)
+async def vertex_stamp(request: Request):
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login")
+    return templates.TemplateResponse(request, "lab/decision_record.html", {"user": user})
+
+@app.get("/dashboard/vertex/brief", response_class=HTMLResponse)
+async def vertex_brief(request: Request, run_id: str = "", user: dict = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    memo = compose_decision_memo(run_id, user) if run_id else None
+    return templates.TemplateResponse(request, "lab/decision_memo.html", {"user": user, "memo": memo, "run_id": run_id})
+
+@app.get("/dashboard/vertex/brief/print", response_class=HTMLResponse)
+async def vertex_brief_print(request: Request, run_id: str = "", user: dict = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    if not run_id:
+        raise HTTPException(status_code=422, detail="run_id is required")
+    memo = compose_decision_memo(run_id, user)
+    return templates.TemplateResponse(
+        request,
+        "lab/decision_memo_print.html",
+        {"user": user, "memo": memo, "run_id": run_id, "generated_at": utc_now_iso()},
+    )
+
+@app.get("/dashboard/vertex/quest", response_class=HTMLResponse)
+async def vertex_quest(request: Request):
+    user = get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login")
+    return templates.TemplateResponse(request, "lab/golden_path.html", {"user": user})
+
 @app.get("/how-vertex-thinks", response_class=HTMLResponse)
 async def how_vertex_thinks_public(request: Request):
     return templates.TemplateResponse(
@@ -1154,9 +1307,9 @@ async def how_vertex_thinks(request: Request):
         {
             "user": user,
             "back_href": "/dashboard/lab",
-            "back_label": "Back to 4D Lab",
-            "access_href": "/dashboard/lab/golden-path",
-            "access_label": "Open Golden Path",
+            "back_label": "Back to Srsly Labs Lab",
+            "access_href": "/dashboard/vertex/quest",
+            "access_label": "Open Quest",
         },
     )
 @app.get("/start-golden-path", response_class=HTMLResponse)
@@ -1364,13 +1517,13 @@ async def assign_vertex_case_to_cohort(cohort_id: str, payload: dict = Body(...)
         raise HTTPException(status_code=422, detail="run_id is required")
     existing_run = database.get_run_any(run_id)
     if not existing_run:
-        raise HTTPException(status_code=404, detail="Decision Case not found")
+        raise HTTPException(status_code=404, detail="Spark case not found")
     existing_cohort = str(existing_run.get("cohort_id") or "").strip()
     if existing_cohort and existing_cohort != cohort_id:
-        raise HTTPException(status_code=409, detail="Decision Case already belongs to another cohort")
+        raise HTTPException(status_code=409, detail="Spark case already belongs to another cohort")
     run = database.assign_run_to_cohort(run_id, cohort_id)
     if not run:
-        raise HTTPException(status_code=404, detail="Decision Case not found")
+        raise HTTPException(status_code=404, detail="Spark case not found")
     database.record_event(int(run["team_id"]), "cohort_case_assigned", {"cohort_id": cohort_id, "assigned_by": user.get("member_email")}, run_id)
     return {"saved": True, "run": run, "cohort": database.get_cohort(cohort_id)}
 
@@ -1647,7 +1800,7 @@ PILOT_FEEDBACK_CHOICES = {"yes", "no", "maybe"}
 
 @app.post("/api/vertex/runs/{run_id}/pilot-feedback")
 async def save_vertex_pilot_feedback(run_id: str, payload: dict = Body(...), user: dict = Depends(get_current_user)):
-    """Capture pilot validation metrics 4 and 5 once a run has a DecisionRecord.
+    """Capture pilot validation metrics 4 and 5 once a run has a Stamp artifact.
 
     The respondent role is recorded because "would you pay" is a founder's
     answer, not the facilitator's, even though the facilitator signs the record.
@@ -1657,7 +1810,7 @@ async def save_vertex_pilot_feedback(run_id: str, payload: dict = Body(...), use
     get_current_run_or_404(run_id, user)
 
     if artifacts.load_artifact(run_id, "decision_record") is None:
-        raise HTTPException(status_code=409, detail="Pilot feedback opens once the run has a saved DecisionRecord.")
+        raise HTTPException(status_code=409, detail="Pilot feedback opens once the run has a saved Stamp.")
 
     def choice(field: str) -> str:
         value = str(payload.get(field) or "").strip().lower()
@@ -1726,7 +1879,7 @@ async def validate_billie_financial_scenario(
         raise HTTPException(status_code=401, detail="Not authenticated")
     raise HTTPException(
         status_code=410,
-        detail="Legacy Billie draft validation is disabled. Create a Golden Path run and use /api/vertex/runs/{run_id}/artifacts/financial_scenario/validate.",
+        detail="Legacy Billie draft validation is disabled. Create a Quest run and use /api/vertex/runs/{run_id}/artifacts/financial_scenario/validate.",
     )
 
 @app.post("/api/billie/financial-scenario/save")
@@ -1738,7 +1891,7 @@ async def save_billie_financial_scenario(
         raise HTTPException(status_code=401, detail="Not authenticated")
     raise HTTPException(
         status_code=410,
-        detail="Legacy Billie draft saving is disabled. Create a Golden Path run and use /api/vertex/runs/{run_id}/artifacts/financial_scenario/save.",
+        detail="Legacy Billie draft saving is disabled. Create a Quest run and use /api/vertex/runs/{run_id}/artifacts/financial_scenario/save.",
     )
 
 @app.get("/api/billie/financial-scenarios")
@@ -1781,6 +1934,32 @@ async def facilitator_cohort_management_page(cohort_id: str, request: Request, u
         return RedirectResponse(url="/login", status_code=303)
     management = compose_cohort_management(cohort_id, user)
     return templates.TemplateResponse(request, "cohort_management.html", {"user": user, "management": management})
+
+
+@app.get("/dashboard/facilitator/accelerator-demo", response_class=HTMLResponse)
+async def accelerator_demo_entry_page(request: Request, user: dict = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    if get_user_role(user) not in {"facilitator", "admin"}:
+        raise HTTPException(status_code=403, detail="Facilitator or admin role required")
+    cohort = demo_cohort_for_user(user)
+    if cohort:
+        return RedirectResponse(url=f"/dashboard/facilitator/cohorts/{cohort['cohort_id']}/accelerator-demo", status_code=303)
+    return templates.TemplateResponse(
+        request,
+        "accelerator_demo.html",
+        {"user": user, "demo": accelerator_demo_missing(user)},
+    )
+
+
+@app.get("/dashboard/facilitator/cohorts/{cohort_id}/accelerator-demo", response_class=HTMLResponse)
+async def accelerator_demo_page(cohort_id: str, request: Request, user: dict = Depends(get_current_user)):
+    if not user:
+        return RedirectResponse(url="/login", status_code=303)
+    if get_user_role(user) not in {"facilitator", "admin"}:
+        raise HTTPException(status_code=403, detail="Facilitator or admin role required")
+    demo = compose_accelerator_demo(cohort_id, user)
+    return templates.TemplateResponse(request, "accelerator_demo.html", {"user": user, "demo": demo})
 
 
 @app.get("/dashboard/facilitator/cohorts/{cohort_id}/outcome-report", response_class=HTMLResponse)

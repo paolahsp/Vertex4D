@@ -44,8 +44,8 @@
         .cm-signal.is-decision { border-color: color-mix(in srgb, var(--coral) 42%, var(--edge)); }
         .cm-signal.is-workflow { border-color: color-mix(in srgb, var(--lav) 42%, var(--edge)); }
         .cm-radar-note { color: var(--fg2); font-size: 13px; line-height: 1.55; margin: -2px 0 2px; max-width: 860px; }
-        .cm-score-table { border-collapse: collapse; width: 100%; }
-        .cm-score-table th, .cm-score-table td { border-bottom: 1px solid var(--edge); color: var(--fg2); font-size: 12.5px; padding: 8px; text-align: left; }
+        .cm-score-table { border-collapse: collapse; table-layout: fixed; width: 100%; }
+        .cm-score-table th, .cm-score-table td { border-bottom: 1px solid var(--edge); color: var(--fg2); font-size: 12.5px; overflow-wrap: anywhere; padding: 8px; text-align: left; }
         .cm-score-table th { color: var(--risk-text); font: 700 10.5px/1.2 var(--font-mono); }
         .cm-status { color: var(--fg2); font-size: 13px; min-height: 18px; }
         @media (max-width: 1050px) { .cm-grid, .cm-case-head { grid-template-columns: 1fr; } }
@@ -68,7 +68,7 @@
         </div>
         <aside class="v4-tally">
             <div class="v4-t"><b>{{ management.totals.members }}</b><span>Teams</span></div>
-            <div class="v4-t up"><b>{{ management.totals.cases }}</b><span>Decision Cases</span></div>
+            <div class="v4-t up"><b>{{ management.totals.cases }}</b><span>Spark cases</span></div>
             <div class="v4-t"><b>{{ management.totals.open_comments }}</b><span>Open comments</span></div>
             <div class="v4-t up"><b>{{ management.totals.decision_interventions }}</b><span>Decision interventions</span></div>
             <div class="v4-t"><b>{{ management.totals.needs_intervention }}</b><span>Workflow attention</span></div>
@@ -77,10 +77,10 @@
     <section class="cm-grid">
         <article class="cm-panel">
             <p class="v4-plabel">Add existing case</p>
-            <p class="cm-muted">Attach a current Decision Case to this cohort. The underlying <code>run_id</code> stays unchanged.</p>
+            <p class="cm-muted">Attach a current Spark case to this cohort. The underlying <code>run_id</code> stays unchanged.</p>
             <form class="cm-form js-json-form" data-endpoint="/api/vertex/cohorts/{{ management.cohort.cohort_id }}/cases">
                 <div class="cm-field">
-                    <label for="run-id">Unassigned Decision Case</label>
+                    <label for="run-id">Unassigned Spark case</label>
                     <select id="run-id" name="run_id" required>
                         <option value="">Choose a case</option>
                         {% for run in management.available_runs %}
@@ -92,7 +92,7 @@
                 <p class="cm-status"></p>
             </form>
             {% if not management.available_runs %}
-            <div class="v4-empty" style="margin-top:12px">No unassigned Decision Cases are available.</div>
+            <div class="v4-empty" style="margin-top:12px">No unassigned Spark cases are available.</div>
             {% endif %}
         </article>
         <article class="cm-panel">
@@ -113,7 +113,7 @@
             </form>
         </article>
     </section>
-    <section class="cm-panel">
+    <section class="cm-panel" id="intervention-radar">
         <p class="v4-plabel">Intervention Radar</p>
         <p class="cm-radar-note">Decision interventions are business-reasoning risks that need facilitator judgment. Workflow attention keeps the cohort honest, but it is not the differentiating signal.</p>
         <div class="cm-stack">
@@ -161,8 +161,8 @@
                     {% if case.has_decision_intervention %}<span class="cm-chip decision">decision intervention</span>{% elif case.needs_intervention %}<span class="cm-chip workflow">workflow attention</span>{% else %}<span class="cm-chip ok">clear</span>{% endif %}
                 </div>
                 <div>
-                    <a class="cm-chip" href="/dashboard/lab/decision-memo?run_id={{ case.run_id }}">Decision Memo</a>
-                    <a class="cm-chip" href="/dashboard/lab/decision-record?run_id={{ case.run_id }}">DecisionRecord</a>
+                    <a class="cm-chip" href="/dashboard/vertex/brief?run_id={{ case.run_id }}">Brief</a>
+                    <a class="cm-chip" href="/dashboard/vertex/stamp?run_id={{ case.run_id }}">Stamp</a>
                 </div>
             </div>
             <section class="cm-grid">
@@ -192,7 +192,7 @@
                     {% endif %}
                     <form class="cm-form js-json-form" data-endpoint="/api/vertex/runs/{{ case.run_id }}/comments">
                         <div class="cm-row">
-                            <div class="cm-field"><label>Attach to</label><select name="artifact_type"><option value="">General</option><option value="project_record">ProjectRecord</option><option value="problem_frame">ProblemFrame</option><option value="system_map">SystemMap</option><option value="predictive_hypothesis">PredictiveHypothesis</option><option value="financial_scenario">FinancialScenario</option><option value="decision_record">DecisionRecord</option></select></div>
+                            <div class="cm-field"><label>Attach to</label><select name="artifact_type"><option value="">General</option><option value="project_record">ProjectRecord</option><option value="problem_frame">ProblemFrame</option><option value="system_map">SystemMap</option><option value="predictive_hypothesis">PredictiveHypothesis</option><option value="financial_scenario">FinancialScenario</option><option value="decision_record">Stamp / DecisionRecord</option></select></div>
                             <div class="cm-field"><label>&nbsp;</label><button class="cm-btn secondary" type="submit">Add comment</button></div>
                         </div>
                         <div class="cm-field"><label>Comment</label><textarea name="comment_text" required></textarea></div>
@@ -236,7 +236,7 @@
             </section>
         </article>
         {% else %}
-        <section class="v4-empty">No Decision Cases are attached to this cohort yet. Add an existing case above.</section>
+        <section class="v4-empty">No Spark cases are attached to this cohort yet. Add an existing case above.</section>
         {% endfor %}
     </section>
 </main>
