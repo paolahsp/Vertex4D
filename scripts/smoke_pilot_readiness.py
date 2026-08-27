@@ -146,6 +146,12 @@ def main() -> None:
         assert_contains(ledger_vertex, "Ledger", "vertex ledger")
         assert_contains(ledger_vertex, "FinancialScenario", "vertex ledger")
 
+        orbit_lab = assert_200(client.get("/dashboard/orbit"), "lab orbit")
+        for marker in ["The Orbit", "Evidence Orbit", "Signal", "Confidence", "Shared Evidence", "local draft", "orbit_evidence_current"]:
+            assert_contains(orbit_lab, marker, "lab orbit")
+        for forbidden in ["automatic matching", "real-time monitoring", "external signal feed"]:
+            assert_not_contains(orbit_lab, forbidden, "lab orbit")
+
         memo_print = assert_200(
             client.get("/dashboard/lab/decision-memo/print?run_id=run_demo_complete"),
             "decision memo print",

@@ -24,6 +24,7 @@ ROUTES = [
 LAB_TOOL_ROUTES = [
     ("/dashboard/lab", "Srsly Labs Lab", "VERTEX 4D Quest is separate"),
     ("/dashboard/lab/d-predict", "D-Predict / MiroFish", "Scenario Stress Test"),
+    ("/dashboard/orbit", "The Orbit", "Evidence Orbit"),
     ("/dashboard/lab/finops", "FinOps Central", "coming soon"),
 ]
 
@@ -117,6 +118,12 @@ def main() -> None:
             assert_contains(dpredict_lab, marker, "lab d-predict")
         for forbidden in ["PredictiveHypothesis", "Student direction and deliverable", "Next action", "_path_bar", "_direction_strip"]:
             assert_not_contains(dpredict_lab, forbidden, "lab d-predict")
+
+        orbit_lab = assert_200(client.get("/dashboard/orbit"), "lab orbit")
+        for marker in ["The Orbit", "Srsly Labs Lab", "Evidence Orbit", "Signal", "Confidence", "Shared Evidence", "local draft", "orbit_evidence_current"]:
+            assert_contains(orbit_lab, marker, "lab orbit")
+        for forbidden in ["automatic matching", "real-time monitoring", "external signal feed", "Student direction and deliverable", "Gatekeeper"]:
+            assert_not_contains(orbit_lab, forbidden, "lab orbit")
 
         ripple_vertex = assert_200(client.get("/dashboard/vertex/ripple"), "vertex ripple")
         for marker in ["Ripple", "PredictiveHypothesis", "QBI lite", "Student direction and deliverable"]:

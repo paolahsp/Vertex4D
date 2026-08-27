@@ -4,12 +4,9 @@
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>The Orbit | Vertex 4D</title>
+    <title>The Orbit | Srsly Labs Lab</title>
     <link rel="icon" href="/favicon.ico">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <style type="text/tailwindcss">
-        
-    </style>
     <script>
         tailwind.config = {
             darkMode: "class",
@@ -18,10 +15,7 @@
                     colors: {
                         "hyper-coral": "#E74530",
                         "coral-text": "#C13521",
-
                         "olive-text": "#5F6320",
-
-                        "cyber-lavender": "#E74530",
                         "electric-mint": "#A4A760",
                     },
                     fontFamily: {
@@ -33,246 +27,217 @@
         }
     </script>
     <style>
-        .project-circle {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .orbit-canvas {
+            background-image:
+                linear-gradient(rgba(60, 50, 34, 0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(60, 50, 34, 0.08) 1px, transparent 1px);
+            background-size: 28px 28px;
         }
 
-        .project-circle:hover {
-            transform: scale(1.1);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        .orbit-ring {
+            position: absolute;
+            inset: 13%;
+            border: 1px dashed rgba(95, 99, 32, 0.45);
+            border-radius: 999px;
+        }
+
+        .orbit-ring.inner {
+            inset: 29%;
+            border-color: rgba(193, 53, 33, 0.32);
+        }
+
+        .orbit-node {
+            position: absolute;
+            min-width: 118px;
+            max-width: 150px;
+            border: 1px solid rgba(68, 64, 60, 0.18);
+            background: rgba(255, 255, 255, 0.93);
+            box-shadow: 0 16px 45px rgba(28, 25, 23, 0.12);
+        }
+
+        .orbit-node.signal-high {
+            border-color: rgba(95, 99, 32, 0.65);
+        }
+
+        .orbit-node.signal-risk {
+            border-color: rgba(193, 53, 33, 0.7);
         }
     </style>
     <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
     <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
+    <script src="/static/js/orbit.js?v={{ asset_v }}" defer></script>
 </head>
 
-<body class="font-display bg-gradient-to-br from-gray-50 to-gray-100 text-gray-900">
+<body class="srsly-classic app-shell glass-workbench font-display text-stone-900">
 {% include "_icon_sprite.html" %}
-    <!-- Top Bar -->
-    <header class="border-b border-gray-200 bg-white px-6 py-4 shadow-sm">
-        <div class="mx-auto flex max-w-7xl items-center justify-between">
-            <div class="flex items-center gap-4">
-                <a href="/dashboard" class="text-sm text-gray-600 hover:text-gray-900">Back to Dashboard</a>
-                <span class="text-gray-300">|</span>
-                <h1 class="text-lg font-semibold text-gray-900">The Orbit</h1>
-            </div>
-            <div class="flex items-center gap-6">
-                <div class="flex items-center gap-2">
-                    <span class="font-mono text-xs font-bold text-coral-text">42</span>
-                    <span class="text-sm text-gray-500">Signals</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span class="text-sm font-medium text-gray-700">Confidence</span>
-                    <div class="flex items-center gap-2">
-                        <div class="h-2 w-24 overflow-hidden rounded-full bg-gray-200">
-                            <div class="h-2 rounded-full bg-cyber-lavender" style="width: 35%;"></div>
-                        </div>
-                        <span class="font-mono text-sm font-bold text-coral-text">35%</span>
+    <div class="min-h-screen">
+        <header class="app-header sticky top-0 z-50 border-b px-4 py-3 sm:px-6 lg:px-10">
+            <div class="mx-auto flex max-w-7xl items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <a href="/dashboard/lab" class="app-nav-link inline-flex items-center gap-2">
+                        <svg class="ic" aria-hidden="true"><use href="#i-back"/></svg>
+                        Srsly Labs Lab
+                    </a>
+                    <span class="hidden h-5 border-l border-stone-300 sm:block"></span>
+                    <div>
+                        <p class="app-kicker">Lab tool / local v1</p>
+                        <h1 class="font-heading text-xl font-bold">The Orbit</h1>
                     </div>
                 </div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Main Content -->
-    <main class="mx-auto max-w-7xl px-6 py-8">
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            <!-- Left: Collaborative Canvas -->
-            <div>
-                <div class="mb-4">
-                    <h1 class="font-heading text-4xl font-bold text-gray-900">The Orbit</h1>
-                    <p class="text-gray-600">Your collaborative canvas to connect with other projects.</p>
-                </div>
-
-                <!-- Canvas -->
-                <div class="h-[600px] rounded-3xl bg-white p-8 shadow-lg">
-                    <div class="relative grid h-full grid-cols-2 grid-rows-3 gap-6">
-                        <!-- Your Project -->
-                        <div
-                            class="project-circle flex cursor-pointer items-center justify-center rounded-full border-4 border-gray-400 bg-gray-300">
-                            <div class="text-center">
-                                <div class="text-sm font-semibold text-gray-700">Your Project Name</div>
-                                <button
-                                    class="mt-2 rounded-full bg-coral-text px-4 py-1 text-xs font-bold text-white">Ready
-                                    to Collab</button>
-                            </div>
-                        </div>
-
-                        <!-- Innovate Inc. -->
-                        <div
-                            class="project-circle flex cursor-pointer items-center justify-center rounded-full border-4 border-electric-mint bg-gray-900 text-white">
-                            <div class="text-center">
-                                <div class="text-lg font-bold">Innovate Inc.</div>
-                            </div>
-                        </div>
-
-                        <!-- FutureForward -->
-                        <div
-                            class="project-circle flex cursor-pointer items-center justify-center rounded-full border-4 border-yellow-400 bg-gray-900 text-white">
-                            <div class="text-center">
-                                <div class="text-lg font-bold">FutureForward</div>
-                            </div>
-                        </div>
-
-                        <!-- NextGen AI -->
-                        <div
-                            class="project-circle flex cursor-pointer items-center justify-center rounded-full border-4 border-cyber-lavender bg-gray-900 text-white">
-                            <div class="text-center">
-                                <div class="text-lg font-bold">NextGen AI</div>
-                            </div>
-                        </div>
-
-                        <!-- Synergy Hub -->
-                        <div
-                            class="project-circle flex cursor-pointer items-center justify-center rounded-full border-4 border-blue-400 bg-gray-300">
-                            <div class="text-center">
-                                <div class="text-lg font-bold text-gray-700">Synergy Hub</div>
-                            </div>
-                        </div>
-
-                        <!-- Quantum Leap -->
-                        <div
-                            class="project-circle flex cursor-pointer items-center justify-center rounded-full border-4 border-electric-mint bg-gray-900 text-white">
-                            <div class="text-center">
-                                <div class="text-lg font-bold">Quantum Leap</div>
-                            </div>
-                        </div>
+                <div class="hidden items-center gap-3 md:flex">
+                    <div class="rounded-md border border-stone-300 bg-white/80 px-3 py-2">
+                        <p class="font-mono text-xs text-coral-text" id="orbit-header-signals">0 signals</p>
                     </div>
-                </div>
-
-                <!-- Info Cards -->
-                <div class="mt-6 grid grid-cols-3 gap-4">
-                    <div class="rounded-2xl bg-cyber-lavender/10 p-4 text-center">
-                        <div class="mb-1 text-2xl font-bold text-coral-text">156</div>
-                        <div class="text-xs text-gray-600">Active Projects</div>
-                    </div>
-                    <div class="rounded-2xl bg-electric-mint/10 p-4 text-center">
-                        <div class="mb-1 text-2xl font-bold text-olive-text">42</div>
-                        <div class="text-xs text-gray-600">Warp Rooms</div>
-                    </div>
-                    <div class="rounded-2xl bg-hyper-coral/10 p-4 text-center">
-                        <div class="mb-1 text-2xl font-bold text-coral-text">89</div>
-                        <div class="text-xs text-gray-600">SOS Requests</div>
+                    <div class="rounded-md border border-stone-300 bg-white/80 px-3 py-2">
+                        <p class="font-mono text-xs text-olive-text" id="orbit-header-confidence">0% confidence</p>
                     </div>
                 </div>
             </div>
+        </header>
 
-            <!-- Right: The Buzz Feed -->
-            <div>
-                <h2 class="font-heading mb-4 text-3xl font-bold text-gray-900">The Buzz</h2>
-                <div class="space-y-4 overflow-y-auto" style="max-height: 680px;">
-                    <!-- Post 1: SOS Request -->
-                    <div class="rounded-2xl border-2 border-yellow-300 bg-yellow-50 p-5 shadow-md">
-                        <div class="mb-3 flex items-center gap-3">
-                            <div class="size-12 rounded-full bg-yellow-400"></div>
-                            <div>
-                                <div class="font-bold text-gray-900">Ana Rodriguez</div>
-                                <div class="text-xs text-gray-600">Fintech • Seed Stage • Mexico City</div>
+        <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-10">
+            <section class="grid gap-6 lg:grid-cols-[0.9fr_1.45fr_0.9fr]">
+                <aside class="glass-panel p-5">
+                    <p class="app-kicker">Evidence Orbit</p>
+                    <h2 class="mt-2 font-heading text-2xl font-bold">Manual signal canvas</h2>
+                    <p class="mt-3 text-sm text-stone-600">
+                        Capture observed signal notes, sources, confidence and risk. This local draft stays in this browser until you clear it.
+                    </p>
+                    <div class="mt-5 rounded-md border border-stone-300 bg-white/75 p-3 text-xs text-stone-600">
+                        Manual only. No live feeds, no inferred partner matches, no external monitoring.
+                    </div>
+
+                    <form id="orbit-signal-form" class="mt-6 space-y-4">
+                        <label class="block">
+                            <span class="text-xs font-bold uppercase tracking-wide text-stone-500">Signal title</span>
+                            <input id="orbit-signal-title" class="mt-1 w-full rounded-md border-stone-300 text-sm" maxlength="90" required value="Pilot buyer asked for cohort comparison">
+                        </label>
+                        <label class="block">
+                            <span class="text-xs font-bold uppercase tracking-wide text-stone-500">Source</span>
+                            <input id="orbit-signal-source" class="mt-1 w-full rounded-md border-stone-300 text-sm" maxlength="80" required value="Facilitator call notes">
+                        </label>
+                        <label class="block">
+                            <span class="text-xs font-bold uppercase tracking-wide text-stone-500">Evidence note</span>
+                            <textarea id="orbit-signal-note" class="mt-1 min-h-24 w-full rounded-md border-stone-300 text-sm" maxlength="360" required>Two accelerator leads compared founders by decision quality, not just pitch polish.</textarea>
+                        </label>
+                        <div class="grid gap-3 sm:grid-cols-2">
+                            <label class="block">
+                                <span class="text-xs font-bold uppercase tracking-wide text-stone-500">Confidence level</span>
+                                <select id="orbit-signal-confidence" class="mt-1 w-full rounded-md border-stone-300 text-sm">
+                                    <option value="35">Low</option>
+                                    <option value="60" selected>Medium</option>
+                                    <option value="82">High</option>
+                                </select>
+                            </label>
+                            <label class="block">
+                                <span class="text-xs font-bold uppercase tracking-wide text-stone-500">Risk level</span>
+                                <select id="orbit-signal-risk" class="mt-1 w-full rounded-md border-stone-300 text-sm">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div class="grid gap-3 sm:grid-cols-2">
+                            <label class="block">
+                                <span class="text-xs font-bold uppercase tracking-wide text-stone-500">Related project/tool</span>
+                                <input id="orbit-signal-project" class="mt-1 w-full rounded-md border-stone-300 text-sm" maxlength="70" value="VERTEX Quest">
+                            </label>
+                            <label class="block">
+                                <span class="text-xs font-bold uppercase tracking-wide text-stone-500">Tag/type</span>
+                                <select id="orbit-signal-tag" class="mt-1 w-full rounded-md border-stone-300 text-sm">
+                                    <option>Buyer signal</option>
+                                    <option>Evidence gap</option>
+                                    <option>Program need</option>
+                                    <option>Product pattern</option>
+                                    <option>Risk signal</option>
+                                </select>
+                            </label>
+                        </div>
+                        <button class="classic-button w-full justify-center" type="submit">Add Signal</button>
+                    </form>
+                </aside>
+
+                <section class="glass-panel overflow-hidden p-0">
+                    <div class="flex flex-col gap-3 border-b border-stone-300 p-5 sm:flex-row sm:items-center sm:justify-between">
+                        <div>
+                            <p class="app-kicker">Project circles / shared evidence map</p>
+                            <h2 class="font-heading text-2xl font-bold">Evidence Orbit</h2>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center text-xs sm:min-w-72">
+                            <div class="rounded-md border border-stone-300 bg-white/80 p-2">
+                                <p class="font-mono font-bold text-coral-text" id="orbit-signal-count">0</p>
+                                <p class="text-stone-500">Signal</p>
+                            </div>
+                            <div class="rounded-md border border-stone-300 bg-white/80 p-2">
+                                <p class="font-mono font-bold text-olive-text" id="orbit-coverage">0%</p>
+                                <p class="text-stone-500">Coverage</p>
+                            </div>
+                            <div class="rounded-md border border-stone-300 bg-white/80 p-2">
+                                <p class="font-mono font-bold text-coral-text" id="orbit-risk-flags">0</p>
+                                <p class="text-stone-500">Risk flags</p>
                             </div>
                         </div>
-                        <p class="mb-3 text-gray-900">¡Ayuda! Necesito beta testers para mi app de perritos.</p>
-                        <button
-                            class="rounded-full bg-coral-text px-5 py-2 font-bold text-white transition-all hover:bg-hyper-coral/90">I'm
-                            in!</button>
                     </div>
+                    <div class="orbit-canvas relative min-h-[560px] p-5" id="orbit-canvas" aria-label="The Orbit evidence canvas">
+                        <div class="orbit-ring"></div>
+                        <div class="orbit-ring inner"></div>
+                        <div class="absolute left-1/2 top-1/2 z-10 w-44 -translate-x-1/2 -translate-y-1/2 rounded-md border border-stone-300 bg-stone-950 p-4 text-center text-white shadow-xl">
+                            <p class="app-kicker text-stone-300">Current context</p>
+                            <p class="mt-1 font-heading text-lg font-bold">Srsly Labs Lab</p>
+                            <p class="mt-2 text-xs text-stone-300">Signals orbit around projects, tools and evidence gaps.</p>
+                        </div>
+                        <div id="orbit-node-layer" class="absolute inset-0"></div>
+                    </div>
+                </section>
 
-                    <!-- Post 2: High Five -->
-                    <div class="rounded-2xl border-2 border-electric-mint bg-electric-mint/10 p-5 shadow-md">
-                        <div class="mb-3 flex items-center gap-3">
-                            <div class="size-12 rounded-full bg-electric-mint"></div>
+                <aside class="space-y-5">
+                    <section class="glass-panel p-5">
+                        <p class="app-kicker">Confidence score</p>
+                        <div class="mt-3 flex items-end gap-3">
+                            <p class="font-heading text-5xl font-bold text-coral-text" id="orbit-confidence-score">0%</p>
+                            <p class="pb-2 text-sm text-stone-500">local score</p>
+                        </div>
+                        <div class="mt-4 h-3 overflow-hidden rounded-full bg-stone-200">
+                            <div class="h-full rounded-full bg-coral-text transition-all" id="orbit-confidence-bar" style="width: 0%"></div>
+                        </div>
+                        <p class="mt-3 text-xs text-stone-600">
+                            Based on manual signal count, source coverage, confidence levels and risk flags. It is a local reading, not a claim of certainty.
+                        </p>
+                    </section>
+
+                    <section class="glass-panel p-5">
+                        <div class="flex items-center justify-between gap-3">
                             <div>
-                                <div class="font-bold text-gray-900">David Chen</div>
-                                <div class="text-xs text-gray-600">SaaS B2B • Series A • San Francisco</div>
+                                <p class="app-kicker">Shared Evidence</p>
+                                <h2 class="font-heading text-xl font-bold">Evidence list</h2>
                             </div>
+                            <button id="orbit-save-btn" class="classic-button secondary px-3 py-2 text-xs" type="button">Save local draft</button>
                         </div>
-                        <p class="mb-3 text-gray-900">¡Conseguimos nuestro primer cliente B2B!</p>
-                        <div class="flex items-center gap-2 text-sm">
-                            <span>High Five</span>
-                            <span class="text-2xl">🙌</span>
-                        </div>
-                    </div>
+                        <div class="mt-4 space-y-3" id="orbit-evidence-list"></div>
+                    </section>
 
-                    <!-- Post 3: Looking for Co-team lead -->
-                    <div class="rounded-2xl border-2 border-gray-200 bg-white p-5 shadow-md">
-                        <div class="mb-3 flex items-center gap-3">
-                            <div class="size-12 rounded-full bg-gray-400"></div>
+                    <section class="glass-panel p-5">
+                        <p class="app-kicker">Needs support</p>
+                        <h2 class="font-heading text-xl font-bold">Weak signals</h2>
+                        <div class="mt-4 space-y-3" id="orbit-weak-list"></div>
+                    </section>
+
+                    <section class="glass-panel p-5">
+                        <div class="flex items-center justify-between gap-3">
                             <div>
-                                <div class="font-bold text-gray-900">Maria Garcia</div>
-                                <div class="text-xs text-gray-600">HealthTech • Pre-Seed • Barcelona</div>
+                                <p class="app-kicker">local draft</p>
+                                <h2 class="font-heading text-xl font-bold">JSON snapshot</h2>
+                                <p class="mt-1 font-mono text-[11px] text-stone-500">orbit_evidence_current</p>
                             </div>
+                            <button id="orbit-reset-btn" class="rounded-md border border-stone-300 bg-white px-3 py-2 text-xs font-bold text-stone-700" type="button">Reset demo</button>
                         </div>
-                        <p class="mb-3 text-gray-900">Looking for a co-team lead with marketing experience!</p>
-                        <button
-                            class="rounded-full bg-coral-text px-5 py-2 font-bold text-white transition-all hover:bg-hyper-coral/90">I'm
-                            in!</button>
-                    </div>
-
-                    <!-- Post 4: Blog Feature -->
-                    <div class="rounded-2xl border-2 border-electric-mint bg-electric-mint/10 p-5 shadow-md">
-                        <div class="mb-3 flex items-center gap-3">
-                            <div class="size-12 rounded-full bg-cyber-lavender"></div>
-                            <div>
-                                <div class="font-bold text-gray-900">Kenji Tanaka</div>
-                                <div class="text-xs text-gray-600">AI/ML • Seed • Tokyo</div>
-                            </div>
-                        </div>
-                        <p class="mb-3 text-gray-900">Our app was just featured on a major tech blog!</p>
-                        <div class="flex items-center gap-2 text-sm">
-                            <span>High Five</span>
-                            <span class="text-2xl">🙌</span>
-                        </div>
-                    </div>
-
-                    <!-- Post 5: Warp Room Invitation -->
-                    <div class="rounded-2xl border-2 border-cyber-lavender bg-cyber-lavender/10 p-5 shadow-md">
-                        <div class="mb-3 flex items-center gap-3">
-                            <div class="size-12 rounded-full bg-cyber-lavender"></div>
-                            <div>
-                                <div class="font-bold text-gray-900">Warp Room Invite</div>
-                                <div class="text-xs text-gray-600">Powered by SynapMap</div>
-                            </div>
-                        </div>
-                        <p class="mb-3 text-gray-900">🚀 <strong>Quantum Leap</strong> & <strong>NextGen AI</strong> are
-                            exploring synergies. Join the Warp Room!</p>
-                        <button
-                            class="rounded-full border-2 border-cyber-lavender bg-white px-5 py-2 font-bold text-coral-text transition-all hover:bg-coral-text hover:text-white">Join
-                            Warp Room</button>
-                    </div>
-
-                    <!-- Post 6: Resource Share -->
-                    <div class="rounded-2xl border-2 border-gray-200 bg-white p-5 shadow-md">
-                        <div class="mb-3 flex items-center gap-3">
-                            <div class="size-12 rounded-full bg-gray-500"></div>
-                            <div>
-                                <div class="font-bold text-gray-900">Alex Johnson</div>
-                                <div class="text-xs text-gray-600">EdTech • Series A • London</div>
-                            </div>
-                        </div>
-                        <p class="mb-3 text-gray-900">Sharing our pitch deck template - hope it helps early-stage
-                            teams!</p>
-                        <button
-                            class="rounded-full border-2 border-gray-300 bg-white px-5 py-2 font-bold text-gray-700 transition-all hover:bg-gray-100">View
-                            Resource</button>
-                    </div>
-                </div>
-
-                <!-- Create Post -->
-                <div class="mt-6 rounded-2xl border-2 border-dashed border-gray-300 bg-white p-4">
-                    <textarea
-                        class="w-full resize-none rounded-lg border border-gray-300 p-3 text-sm focus:border-cyber-lavender focus:outline-none focus:ring-2 focus:ring-cyber-lavender/20"
-                        placeholder="Share an update, ask for help, or celebrate a win..." rows="3"></textarea>
-                    <div class="mt-3 flex gap-2">
-                        <button
-                            class="flex-1 rounded-lg bg-coral-text px-4 py-2 font-semibold text-white transition-all hover:bg-hyper-coral/90">Post
-                            SOS</button>
-                        <button
-                            class="flex-1 rounded-lg border-2 border-electric-mint bg-white px-4 py-2 font-semibold text-olive-text transition-all hover:bg-electric-mint hover:text-white">Share
-                            Win</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+                        <pre id="orbit-draft-output" class="mt-4 max-h-52 overflow-auto rounded-md bg-stone-950 p-3 text-xs text-stone-100"></pre>
+                    </section>
+                </aside>
+            </section>
+        </main>
+    </div>
 </body>
 
 </html>
