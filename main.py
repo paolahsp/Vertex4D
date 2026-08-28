@@ -1305,7 +1305,7 @@ async def vertex_riddle(request: Request):
     user = get_current_user(request)
     if not user:
         return RedirectResponse(url="/login")
-    return templates.TemplateResponse(request, "lab/alex.html", {"user": user})
+    return templates.TemplateResponse(request, "lab/riddle.html", {"user": user})
 
 @app.get("/dashboard/vertex/tangle", response_class=HTMLResponse)
 async def vertex_tangle(request: Request):

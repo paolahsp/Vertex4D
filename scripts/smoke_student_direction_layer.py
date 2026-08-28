@@ -99,6 +99,10 @@ def main() -> None:
             for marker in markers:
                 assert_contains(text, marker, route)
 
+        alex_lab = assert_200(client.get("/dashboard/lab/alex"), "lab alex")
+        for forbidden in ["Riddle | VERTEX 4D", "Configure Riddle", "Next action", "Student direction and deliverable", "_path_bar", "_direction_strip"]:
+            assert_not_contains(alex_lab, forbidden, "lab alex")
+
         synapmap_lab = assert_200(client.get("/dashboard/lab/synapmap"), "lab synapmap")
         for forbidden in ["Tangle", "Gatekeeper", "Student direction and deliverable", "Next action", "_path_bar", "_direction_strip"]:
             assert_not_contains(synapmap_lab, forbidden, "lab synapmap")

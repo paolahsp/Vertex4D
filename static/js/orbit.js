@@ -124,7 +124,7 @@
       return;
     }
 
-    const positions = [
+    const desktopPositions = [
       [8, 12],
       [62, 9],
       [77, 36],
@@ -134,6 +134,17 @@
       [39, 4],
       [82, 58],
     ];
+    const mobilePositions = [
+      [3, 8],
+      [58, 7],
+      [61, 34],
+      [56, 67],
+      [4, 70],
+      [4, 39],
+      [31, 2],
+      [61, 53],
+    ];
+    const positions = window.matchMedia("(max-width: 640px)").matches ? mobilePositions : desktopPositions;
 
     signals.slice(0, 8).forEach((signal, index) => {
       const [left, top] = positions[index % positions.length];

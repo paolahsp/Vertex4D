@@ -1788,7 +1788,8 @@ body.srsly-classic .lab-hub-visual {
     body.srsly-classic .classic-support-grid,
     body.srsly-classic .classic-lab-layout,
     body.srsly-classic .classic-lab-tools {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: minmax(0, 1fr) !important;
+        min-width: 0;
     }
     body.srsly-classic .classic-roadmap-stage {
         align-items: stretch;
@@ -1797,6 +1798,27 @@ body.srsly-classic .lab-hub-visual {
     }
     body.srsly-classic .classic-roadmap-stage > a:nth-of-type(2) {
         transform: none;
+    }
+}
+
+@media (max-width: 640px) {
+    body.srsly-classic .classic-lab-main {
+        padding: 1rem;
+    }
+    body.srsly-classic .classic-lab-intro,
+    body.srsly-classic .lab-hub-card {
+        min-width: 0;
+        max-width: 100%;
+    }
+    body.srsly-classic .glass-rail {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    body.srsly-classic .glass-rail > div {
+        border-right: 0;
+        border-bottom: 1px solid var(--classic-line);
+    }
+    body.srsly-classic .glass-rail > div:last-child {
+        border-bottom: 0;
     }
 }
 

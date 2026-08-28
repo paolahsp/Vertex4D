@@ -112,6 +112,8 @@ def main() -> None:
         assert_contains(alex_lab, "/api/alex/chat", "lab alex")
         assert_contains(alex_lab, "download-pdf-btn", "lab alex")
         assert_contains(alex_lab, "Socratic chat", "lab alex")
+        for forbidden in ["Riddle | VERTEX 4D", "Configure Riddle", "Next action", "Student direction and deliverable"]:
+            assert_not_contains(alex_lab, forbidden, "lab alex")
 
         synapmap_lab = assert_200(client.get("/dashboard/lab/synapmap"), "lab synapmap")
         assert_contains(synapmap_lab, "d3.forceSimulation", "lab synapmap")
