@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html class="light" lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 
 <head>
     <meta charset="utf-8" />
@@ -7,11 +7,8 @@
     <title>Client Login | Vertex 4D</title>
     <link rel="icon" href="/favicon.ico">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
     <style type="text/tailwindcss">
-        @import url('https://api.fontshare.com/v2/css?f[]=clash-display@700&display=swap');
+        
         
         .noise-texture {
             position: relative;
@@ -45,18 +42,20 @@
                         "background-dark": "#181810",
                     },
                     fontFamily: {
-                        "display": ["Work Sans", "sans-serif"],
-                        "heading": ["Libre Baskerville", "Georgia", "serif"],
+                        "display": ["Inter", "sans-serif"],
+                        "heading": ["Bricolage Grotesque", "sans-serif"],
                     },
                 },
             },
         }
     </script>
-    <link rel="stylesheet" href="/static/css/vertex4d.css">
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
 </head>
 
 <body
     class="auth-shell font-display bg-gray-50 text-gray-900 noise-texture min-h-screen flex items-center justify-center relative overflow-hidden">
+{% include "_icon_sprite.html" %}
 
     <div class="relative z-10 w-full max-w-md px-4">
         <div class="text-center mb-8">

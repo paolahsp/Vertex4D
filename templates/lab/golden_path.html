@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>VERTEX 4D Quest | Srsly Labs</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
+    <style>
+        :root { --panel: var(--glass); --panel-strong: var(--glass2); --ink: var(--fg); --muted: var(--fg2); --line: var(--edge); --blue: var(--act); --coral: var(--risk-text); --olive: var(--evidence-text); }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink);
+        }
+
+        .gp-shell {
+            min-height: 100vh;
+        }
+
+        .gp-header {
+            align-items: center;
+            background: color-mix(in srgb, var(--bg) 84%, transparent);
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            gap: 24px;
+            justify-content: space-between;
+            padding: 18px clamp(22px,2.8vw,30px);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(18px);
+        }
+
+        .gp-back {
+            align-items: center;
+            border: 1px solid var(--line);
+            color: var(--blue);
+            display: inline-flex;
+            font-size: 13px;
+            font-weight: 700;
+            gap: 8px;
+            padding: 10px 12px;
+            text-decoration: none;
+            text-transform: none;
+        }
+
+        .gp-brand {
+            align-items: center;
+            display: flex;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .gp-brand-mark {
+            align-items: center;
+            border: 1px solid var(--blue);
+            color: var(--blue);
+            display: inline-flex;
+            flex: 0 0 auto;
+            font-family: var(--font-mono), monospace;
+            font-size: 12px;
+            font-weight: 700;
+            height: 32px;
+            justify-content: center;
+            width: 32px;
+        }
+
+        .gp-brand-title {
+            font-family: var(--font-display), serif;
+            font-size: clamp(19px, 2.2vw, 28px);
+            font-weight: 700;
+            line-height: 1;
+            margin: 0;
+        }
+
+        .gp-brand-subtitle,
+        .gp-kicker {
+            color: var(--coral);
+            font-family: var(--font-mono), monospace;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0;
+            margin: 0;
+            text-transform: none;
+        }
+
+        .gp-main {
+            margin: 0 auto;
+            max-width: 1440px;
+            padding: clamp(22px,2.8vw,30px);
+        }
+
+        .gp-hero {
+            display: grid;
+            gap: 24px;
+            grid-template-columns: minmax(0, 1.18fr) minmax(300px, 0.82fr);
+            margin-bottom: 24px;
+        }
+
+        .gp-panel,
+        .gp-card,
+        .gp-stage,
+        .gp-banner {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            box-shadow: 0 18px 44px rgba(24, 24, 16, 0.09), inset 0 1px 0 var(--glass2);
+            backdrop-filter: blur(18px) saturate(1.05);
+        }
+
+        .gp-panel {
+            padding: clamp(22px,2.8vw,30px);
+        }
+
+        .gp-title {
+            font-family: var(--font-display), serif;
+            font-size: clamp(30px,4.2vw,46px);
+            line-height: 0.95;
+            margin: 12px 0 18px;
+            max-width: 920px;
+        }
+
+        .gp-copy {
+            color: var(--muted);
+            font-size: clamp(15px, 1.8vw, 18px);
+            line-height: 1.55;
+            margin: 0;
+            max-width: 760px;
+        }
+
+        .gp-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 26px;
+        }
+
+        .gp-badge {
+            border: 1px solid var(--line);
+            color: var(--ink);
+            display: inline-flex;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 9px 10px;
+            text-transform: none;
+        }
+
+        .gp-metrics {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .gp-metric {
+            background: var(--panel-strong);
+            border: 1px solid var(--line);
+            min-height: 112px;
+            padding: 18px;
+        }
+
+        .gp-metric strong {
+            display: block;
+            font-family: var(--font-display), serif;
+            font-size: 38px;
+            line-height: 1;
+        }
+
+        .gp-metric span {
+            color: var(--muted);
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 10px;
+            text-transform: none;
+        }
+
+        .gp-banner {
+            align-items: center;
+            border-left: 4px solid var(--coral);
+            display: flex;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding: 16px 18px;
+        }
+
+        .gp-banner strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .gp-banner p {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.45;
+            margin: 0;
+        }
+
+        .gp-layout {
+            display: grid;
+            gap: 24px;
+            grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.4fr);
+        }
+
+        .gp-timeline {
+            display: grid;
+            gap: 12px;
+        }
+
+        .gp-stage {
+            border-left: 5px solid var(--blue);
+            cursor: pointer;
+            padding: 16px;
+            text-align: left;
+            transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+            width: 100%;
+        }
+
+        .gp-stage:nth-child(2),
+        .gp-stage:nth-child(5) { border-left-color: var(--coral); }
+        .gp-stage:nth-child(3),
+        .gp-stage:nth-child(6) { border-left-color: var(--olive); }
+
+        .gp-stage:hover,
+        .gp-stage.is-active {
+            background: var(--panel-strong);
+            transform: translateY(-1px);
+        }
+
+        .gp-stage-top {
+            align-items: center;
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+        }
+
+        .gp-stage-label {
+            color: var(--blue);
+            font-family: var(--font-mono), monospace;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: none;
+        }
+
+        .gp-status {
+            background: rgba(164, 167, 96, 0.2);
+            border: 1px solid rgba(164, 167, 96, 0.55);
+            color: var(--ink);
+            font-size: 11px;
+            font-weight: 700;
+            padding: 5px 7px;
+            text-transform: none;
+        }
+
+        .gp-stage h2,
+        .gp-card h2,
+        .gp-card h3 {
+            font-family: var(--font-display), serif;
+            margin: 0;
+        }
+
+        .gp-stage h2 {
+            font-size: 22px;
+            line-height: 1.1;
+            margin-top: 10px;
+        }
+
+        .gp-artifact {
+            color: var(--muted);
+            font-family: var(--font-mono), monospace;
+            font-size: 11px;
+            margin: 10px 0 0;
+            overflow-wrap: anywhere;
+        }
+
+        .gp-detail {
+            display: grid;
+            gap: 16px;
+        }
+
+        .gp-card {
+            padding: 22px;
+        }
+
+        .gp-card h2 {
+            font-size: clamp(19px,2.2vw,24px);
+            line-height: 1.05;
+            margin: 8px 0 12px;
+        }
+
+        .gp-card p {
+            color: var(--muted);
+            line-height: 1.55;
+        }
+
+        .gp-grid-3 {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .gp-mini {
+            background: rgba(243, 223, 191, 0.4);
+            border: 1px solid var(--line);
+            min-height: 120px;
+            padding: 15px;
+        }
+
+        .gp-mini strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 7px;
+            text-transform: none;
+        }
+
+        .gp-mini p {
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .gp-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .gp-list-item {
+            background: var(--glass2);
+            border: 1px solid var(--line);
+            padding: 13px;
+        }
+
+        .gp-list-item strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .gp-list-item p {
+            font-size: 13px;
+            margin: 0;
+        }
+
+        .gp-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .gp-button {
+            background: var(--blue);
+            border: 1px solid var(--blue);
+            color: var(--white);
+            display: inline-flex;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 11px 13px;
+            text-decoration: none;
+            text-transform: none;
+        }
+
+        .gp-button.secondary {
+            background: transparent;
+            color: var(--blue);
+        }
+
+        @media (max-width: 980px) {
+            .gp-hero,
+            .gp-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .gp-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .gp-main {
+                padding: 18px;
+            }
+
+            .gp-grid-3,
+            .gp-metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="srsly-module">
+{% include "_icon_sprite.html" %}
+    <div class="gp-shell">
+        <header class="gp-header v4-bar"><a class="v4-brand" href="/dashboard/vertex/spark"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Quest</i></span></a><span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-run"/></svg> Quest</span><a class="gp-back" href="/dashboard/lab">Srsly Labs Lab</a></header>
+
+        <main class="gp-main">
+            <section class="gp-hero">
+                <div class="gp-panel">
+                    <p class="gp-kicker">Contract-backed integration preview</p>
+                    <h1 class="gp-title">From Spark to Stamp.</h1>
+                    <p class="gp-copy" id="project-copy">Loading the approved Quest case...</p>
+                    <div class="gp-badges">
+                        <span class="gp-badge">Riddle framing</span>
+                        <span class="gp-badge">Tangle inputs</span>
+                        <span class="gp-badge">Ripple hypothesis</span>
+                        <span class="gp-badge">Ledger scenario</span>
+                        <span class="gp-badge">Stamp</span>
+                    </div>
+                </div>
+                <div class="gp-metrics" aria-label="Quest metrics">
+                    <div class="gp-metric"><strong id="metric-artifacts">0</strong><span>Artifacts loaded</span></div>
+                    <div class="gp-metric"><strong id="metric-stakeholders">0</strong><span>Stakeholders</span></div>
+                    <div class="gp-metric"><strong id="metric-assumptions">0</strong><span>Assumptions</span></div>
+                    <div class="gp-metric"><strong id="metric-criteria">0</strong><span>Success criteria</span></div>
+                </div>
+            </section>
+
+            <aside class="gp-banner">
+                <div>
+                    <strong id="integration-state">Fixture-backed contract UI.</strong>
+                    <p id="prediction-warning">The predictive stage is labelled as a bounded hypothesis, not factual evidence.</p>
+                </div>
+            </aside>
+
+            <section class="gp-layout">
+                <nav class="gp-timeline" id="stage-list" aria-label="Quest stages"></nav>
+                <div class="gp-detail">
+                    <article class="gp-card" id="stage-detail">
+                        <p class="gp-kicker">Selected artifact</p>
+                        <h2>Loading stage...</h2>
+                        <p>Please wait while the fixture chain loads.</p>
+                    </article>
+
+                    <div class="gp-grid-3">
+                        <article class="gp-mini">
+                            <strong>Decision</strong>
+                            <p id="decision-copy">Loading...</p>
+                        </article>
+                        <article class="gp-mini">
+                            <strong>Next experiment</strong>
+                            <p id="experiment-copy">Loading...</p>
+                        </article>
+                        <article class="gp-mini">
+                            <strong>Financial view</strong>
+                            <p id="financial-copy">Loading...</p>
+                        </article>
+                    </div>
+
+                    <article class="gp-card">
+                        <p class="gp-kicker">Adoption / resistance scenario</p>
+                        <h3>Stakeholder responses</h3>
+                        <div class="gp-list" id="responses-list"></div>
+                    </article>
+
+                    <article class="gp-card">
+                        <p class="gp-kicker">Decision guardrails</p>
+                        <h3>Success criteria, risks and unknowns</h3>
+                        <div class="gp-list" id="criteria-list"></div>
+                    </article>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const stageList = document.getElementById("stage-list");
+        const stageDetail = document.getElementById("stage-detail");
+        let stages = [];
+
+        function text(value) {
+            return value === undefined || value === null ? "" : String(value);
+        }
+
+        function renderStage(index) {
+            const stage = stages[index];
+            document.querySelectorAll(".gp-stage").forEach((item, itemIndex) => {
+                item.classList.toggle("is-active", itemIndex === index);
+            });
+            stageDetail.innerHTML = `
+                <p class="gp-kicker">${text(stage.agent)} / ${text(stage.status)}</p>
+                <h2>${text(stage.headline)}</h2>
+                <p>${text(stage.summary)}</p>
+                <p class="gp-artifact">${text(stage.label)} - ${text(stage.artifact_id)}</p>
+            `;
+        }
+
+        function addList(containerId, items, renderItem) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = items.map(renderItem).join("");
+        }
+
+        fetch("/api/vertex/golden-case")
+            .then((response) => {
+                if (!response.ok) throw new Error("Golden case API failed");
+                return response.json();
+            })
+            .then((data) => {
+                stages = data.stages;
+                document.getElementById("project-copy").textContent = `${data.project.name}: ${data.project.description}`;
+                document.getElementById("metric-artifacts").textContent = data.metrics.artifacts_loaded;
+                document.getElementById("metric-stakeholders").textContent = data.metrics.stakeholders;
+                document.getElementById("metric-assumptions").textContent = data.metrics.assumptions;
+                document.getElementById("metric-criteria").textContent = data.metrics.success_criteria;
+                document.getElementById("integration-state").textContent = data.integration_state;
+                document.getElementById("prediction-warning").textContent = data.warning;
+                document.getElementById("decision-copy").textContent = data.decision.statement;
+                document.getElementById("experiment-copy").textContent = data.next_experiment.statement;
+                document.getElementById("financial-copy").textContent = `Revenue ${data.financial.revenue.value} ${data.financial.revenue.unit}; cost ${data.financial.cost.value} ${data.financial.cost.unit}; cash requirement ${data.financial.cash_requirement.value} ${data.financial.cash_requirement.unit}.`;
+
+                stageList.innerHTML = stages.map((stage, index) => `
+                    <button class="gp-stage" type="button" data-stage-index="${index}">
+                        <span class="gp-stage-top">
+                            <span class="gp-stage-label">${String(index + 1).padStart(2, "0")} - ${text(stage.agent)}</span>
+                            <span class="gp-status">${text(stage.status)}</span>
+                        </span>
+                        <h2>${text(stage.label)}</h2>
+                        <p class="gp-artifact">${text(stage.artifact_id)}</p>
+                    </button>
+                `).join("");
+                document.querySelectorAll(".gp-stage").forEach((button) => {
+                    button.addEventListener("click", () => renderStage(Number(button.dataset.stageIndex)));
+                });
+
+                addList("responses-list", data.stakeholder_responses, (item) => `
+                    <div class="gp-list-item">
+                        <strong>${text(item.stakeholder_id)} - adopt ${Math.round(item.adoption_likelihood * 100)}% / resist ${Math.round(item.resistance_likelihood * 100)}%</strong>
+                        <p>${text(item.simulated_response)}</p>
+                    </div>
+                `);
+
+                const guardrails = [
+                    ...data.success_criteria.map((item) => ({title: item.criterion_id, body: `${item.metric} ${item.operator} ${item.target_value} ${item.unit}`})),
+                    ...data.risks.map((item) => ({title: item.id, body: item.statement})),
+                    ...data.unknowns.map((item) => ({title: item.id, body: item.statement})),
+                ];
+                addList("criteria-list", guardrails, (item) => `
+                    <div class="gp-list-item">
+                        <strong>${text(item.title)}</strong>
+                        <p>${text(item.body)}</p>
+                    </div>
+                `);
+
+                renderStage(0);
+            })
+            .catch((error) => {
+                stageDetail.innerHTML = `
+                    <p class="gp-kicker">Load error</p>
+                    <h2>The golden case could not be loaded.</h2>
+                    <p>${error.message}</p>
+                `;
+            });
+    </script>
+</body>
+
+</html>

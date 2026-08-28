@@ -1,0 +1,824 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "artifact_id",
+    "project_id",
+    "created_at",
+    "created_by_role",
+    "status",
+    "provenance",
+    "human_approval",
+    "validation_errors",
+    "preceding_artifacts",
+    "classification",
+    "warning",
+    "scenario_question",
+    "bounded_scenario_type",
+    "approved_input_references",
+    "assumptions_used",
+    "simulated_stakeholder_responses",
+    "adoption_signals",
+    "resistance_signals",
+    "possible_cascades",
+    "qbi_reading",
+    "uncertainty",
+    "limitations",
+    "confidence",
+    "run_metadata",
+    "revision",
+    "updated_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "artifact_type": {
+      "type": "string",
+      "const": "predictive_hypothesis"
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "project_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "created_by_role": {
+      "type": "string",
+      "enum": [
+        "founder",
+        "facilitator",
+        "admin",
+        "system",
+        "alex",
+        "synapmap",
+        "d_predict",
+        "finops"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending_review",
+        "approved",
+        "rejected",
+        "superseded"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "source_label",
+        "ip_owner",
+        "external_components_used",
+        "notes"
+      ],
+      "properties": {
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "synthetic_fixture",
+            "user_supplied",
+            "imported",
+            "system_generated"
+          ]
+        },
+        "source_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ip_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "external_components_used": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "human_approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "state",
+        "approved_by_role",
+        "approved_at",
+        "notes"
+      ],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "approved_by_role": {
+          "type": "string",
+          "enum": [
+            "founder",
+            "facilitator",
+            "admin"
+          ]
+        },
+        "approved_at": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "validation_errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "preceding_artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_record_id",
+        "problem_frame_id",
+        "system_map_id"
+      ],
+      "properties": {
+        "project_record_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "problem_frame_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "system_map_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        }
+      }
+    },
+    "classification": {
+      "type": "string",
+      "const": "predictive_hypothesis"
+    },
+    "warning": {
+      "type": "string",
+      "const": "This output is a bounded simulation hypothesis. It is not direct evidence, a factual prediction or a conclusion about identifiable people."
+    },
+    "scenario_question": {
+      "type": "string",
+      "minLength": 1
+    },
+    "bounded_scenario_type": {
+      "type": "string",
+      "enum": [
+        "stakeholder_adoption_resistance"
+      ]
+    },
+    "approved_input_references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "system_map_id",
+        "stakeholder_ids",
+        "relationship_ids",
+        "assumption_ids",
+        "evidence_ids"
+      ],
+      "properties": {
+        "system_map_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "stakeholder_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "relationship_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "assumption_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "evidence_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "assumptions_used": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assumption_id",
+          "statement",
+          "source_artifact_id"
+        ],
+        "properties": {
+          "assumption_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "source_artifact_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "simulated_stakeholder_responses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stakeholder_id",
+          "simulated_response",
+          "adoption_likelihood",
+          "resistance_likelihood",
+          "classification",
+          "undecided_likelihood"
+        ],
+        "properties": {
+          "stakeholder_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "simulated_response": {
+            "type": "string",
+            "minLength": 1
+          },
+          "adoption_likelihood": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "resistance_likelihood": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "undecided_likelihood": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "adoption_signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "signal_id",
+          "statement",
+          "stakeholder_ids",
+          "classification",
+          "confidence"
+        ],
+        "properties": {
+          "signal_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "stakeholder_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "resistance_signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "signal_id",
+          "statement",
+          "stakeholder_ids",
+          "classification",
+          "confidence"
+        ],
+        "properties": {
+          "signal_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "stakeholder_ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "possible_cascades": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "cascade_id",
+          "statement",
+          "trigger_refs",
+          "classification",
+          "confidence"
+        ],
+        "properties": {
+          "cascade_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "trigger_refs": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "uniqueItems": true
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "qbi_reading": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "qbi_version",
+        "model_boundary",
+        "interpretation_states",
+        "actor_correlations",
+        "context_loss_vectors",
+        "commitment_pressure"
+      ],
+      "properties": {
+        "qbi_version": {
+          "type": "string",
+          "const": "qbi_lite_v0.1"
+        },
+        "model_boundary": {
+          "type": "string",
+          "const": "Product-facing QBI reading only; this artifact does not execute the full formal QBI model."
+        },
+        "interpretation_states": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "state_id",
+              "statement",
+              "stakeholder_ids",
+              "assumption_ids",
+              "classification"
+            ],
+            "properties": {
+              "state_id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]*$"
+              },
+              "statement": {
+                "type": "string",
+                "minLength": 1
+              },
+              "stakeholder_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "assumption_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "classification": {
+                "type": "string",
+                "const": "hypothesis"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "actor_correlations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "correlation_id",
+              "statement",
+              "stakeholder_ids",
+              "relationship_ids",
+              "classification"
+            ],
+            "properties": {
+              "correlation_id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]*$"
+              },
+              "statement": {
+                "type": "string",
+                "minLength": 1
+              },
+              "stakeholder_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "relationship_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "classification": {
+                "type": "string",
+                "const": "hypothesis"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "context_loss_vectors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "vector_id",
+              "statement",
+              "source_refs",
+              "severity",
+              "classification"
+            ],
+            "properties": {
+              "vector_id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9_-]*$"
+              },
+              "statement": {
+                "type": "string",
+                "minLength": 1
+              },
+              "source_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              },
+              "severity": {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high"
+                ]
+              },
+              "classification": {
+                "type": "string",
+                "const": "hypothesis"
+              }
+            }
+          },
+          "minItems": 1
+        },
+        "commitment_pressure": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "statement",
+            "collapse_risk",
+            "decision_trigger_refs",
+            "classification"
+          ],
+          "properties": {
+            "statement": {
+              "type": "string",
+              "minLength": 1
+            },
+            "collapse_risk": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "decision_trigger_refs": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "classification": {
+              "type": "string",
+              "const": "hypothesis"
+            }
+          }
+        }
+      }
+    },
+    "uncertainty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "drivers",
+        "unknowns_preserved"
+      ],
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "drivers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "unknowns_preserved": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "run_metadata": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "run_id",
+        "engine_name",
+        "engine_version",
+        "is_fixture",
+        "external_api_calls_made",
+        "scenario_count",
+        "time_horizon"
+      ],
+      "properties": {
+        "run_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "engine_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "engine_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "is_fixture": {
+          "type": "boolean"
+        },
+        "external_api_calls_made": {
+          "type": "boolean",
+          "const": false
+        },
+        "scenario_count": {
+          "type": "integer"
+        },
+        "time_horizon": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updated_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vertex4d.local/contracts/v1/predictive-hypothesis.schema.json",
+  "title": "VERTEX 4D predictive_hypothesis v1",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "approved"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "human_approval": {
+            "properties": {
+              "state": {
+                "const": "approved"
+              },
+              "approved_by_role": {
+                "type": "string"
+              },
+              "approved_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html class="light" lang="en" data-theme="light" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>D-Predict / MiroFish | Srsly Labs Lab</title>
+    <link rel="icon" href="/favicon.ico">
+    <link href="https://fonts.googleapis.com" rel="preconnect">
+    <link crossorigin href="https://fonts.gstatic.com" rel="preconnect">
+    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300..800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#5b13ec",
+                        "background-light": "#f6f6f8",
+                        "coral-text": "#FF6B6B",
+                        "olive-text": "#00A86B",
+                        "cyber-lavender": "#B2A4FF",
+                        "electric-mint": "#66FFB2",
+                    },
+                    fontFamily: {
+                        "display": ["Spline Sans", "sans-serif"],
+                        "heading": ["Spline Sans", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
+    <style>
+        .dp-lab-shell { background: radial-gradient(circle at 12% 12%, rgba(91, 19, 236, 0.10), transparent 30%), radial-gradient(circle at 88% 18%, rgba(0, 168, 107, 0.11), transparent 34%), #f6f6f8; }
+        .dp-field label { display: block; margin-bottom: 0.42rem; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #57534e; }
+        .dp-field input,
+        .dp-field textarea,
+        .dp-field select { width: 100%; border: 1px solid rgba(41, 37, 36, 0.16); background: rgba(255, 255, 255, 0.76); padding: 0.78rem 0.9rem; font-size: 0.92rem; line-height: 1.45; color: #1c1917; }
+        .dp-field textarea { min-height: 92px; resize: vertical; }
+        .dp-slider { display: grid; gap: 0.55rem; }
+        .dp-slider input { width: 100%; accent-color: #5b13ec; }
+        .dp-map { position: relative; min-height: 430px; overflow: hidden; border: 1px solid rgba(41, 37, 36, 0.14); background-color: rgba(255, 255, 255, 0.62); background-image: radial-gradient(rgba(41, 37, 36, 0.14) 1px, transparent 1px); background-size: 22px 22px; }
+        .dp-map svg { width: 100%; height: 430px; display: block; }
+        .dp-map-node { transition: transform 180ms ease, opacity 180ms ease; }
+        .dp-map-node circle { filter: drop-shadow(0 10px 20px rgba(28, 25, 23, 0.16)); }
+        .dp-map-label { font-size: 12px; font-weight: 800; fill: #1c1917; paint-order: stroke; stroke: rgba(255, 255, 255, 0.82); stroke-width: 4px; stroke-linejoin: round; }
+        .dp-metric-grid { display: grid; gap: 0.8rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .dp-metric { border: 1px solid rgba(41, 37, 36, 0.14); background: rgba(255, 255, 255, 0.72); padding: 1rem; }
+        .dp-metric strong { display: block; font-size: clamp(1.5rem, 4vw, 2.45rem); line-height: 1; }
+        .dp-metric span { display: block; margin-top: 0.4rem; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #57534e; }
+        .dp-output-card { border: 1px solid rgba(41, 37, 36, 0.14); background: rgba(255, 255, 255, 0.72); padding: 1rem; }
+        .dp-output-card h3 { margin: 0 0 0.55rem; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #5b13ec; }
+        .dp-output-card p { margin: 0; color: #44403c; font-size: 0.92rem; line-height: 1.55; }
+        .dp-list { display: grid; gap: 0.55rem; }
+        .dp-list li { border: 1px solid rgba(41, 37, 36, 0.12); background: rgba(255, 255, 255, 0.64); padding: 0.72rem 0.8rem; color: #44403c; font-size: 0.9rem; line-height: 1.45; }
+        .dp-pill-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+        .dp-pill { border: 1px solid rgba(41, 37, 36, 0.14); background: rgba(255, 255, 255, 0.72); padding: 0.42rem 0.65rem; font-size: 0.76rem; font-weight: 800; color: #44403c; }
+        .dp-status.is-error { color: #B42318; }
+        .dp-status.is-ok { color: #027A48; }
+        @media (max-width: 900px) { .dp-metric-grid { grid-template-columns: 1fr; } .dp-map, .dp-map svg { min-height: 360px; height: 360px; } }
+    </style>
+</head>
+
+<body class="srsly-classic app-shell glass-workbench dp-lab-shell font-display text-stone-900">
+{% include "_icon_sprite.html" %}
+    <div class="min-h-screen">
+        <header class="app-header sticky top-0 z-50 border-b px-4 py-3 sm:px-6 lg:px-10">
+            <div class="mx-auto flex max-w-7xl items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <a href="/dashboard/lab" class="app-nav-link inline-flex items-center gap-2">
+                        <svg class="ic" aria-hidden="true"><use href="#i-back"/></svg>
+                        Srsly Labs Lab
+                    </a>
+                    <span class="hidden h-5 border-l border-stone-300 sm:block"></span>
+                    <div class="brand-lockup">
+                        <span class="brand-mark">SL</span>
+                        <span class="brand-wordmark">Srsly Labs</span>
+                        <span class="vertex-product-label">Lab</span>
+                    </div>
+                </div>
+                <nav class="hidden items-center gap-3 text-sm md:flex" aria-label="Lab navigation">
+                    <a class="app-nav-link" href="/dashboard/lab/synapmap">SynapMap</a>
+                    <a class="app-nav-link" href="/dashboard/lab/billie">Billie</a>
+                    <a class="app-nav-link" href="/dashboard/vertex/ripple">VERTEX Ripple</a>
+                </nav>
+            </div>
+        </header>
+
+        <main class="classic-lab-main px-4 py-8 sm:px-6 lg:px-10">
+            <section class="mx-auto grid max-w-7xl gap-6 xl:grid-cols-[0.82fr_1.18fr_0.82fr]">
+                <aside class="glass-panel p-5 sm:p-6">
+                    <p class="app-kicker">D-Predict / MiroFish</p>
+                    <h1 class="mt-3 font-heading text-4xl leading-tight sm:text-5xl">Scenario Stress Test</h1>
+                    <p class="mt-4 text-sm leading-6 text-stone-600">
+                        A local Lab workbench for rehearsing how competing interpretations may move through a stakeholder system. It is impressive as a scenario lab and humble in its claims.
+                    </p>
+                    <div class="mt-5 dp-pill-row">
+                        <span class="dp-pill">quantum-like behavioral simulation</span>
+                        <span class="dp-pill">in-silico rehearsal</span>
+                        <span class="dp-pill">deterministic under seed</span>
+                        <span class="dp-pill">localStorage only</span>
+                    </div>
+                    <div class="mt-6 border border-coral-text/30 bg-white/70 p-4 text-sm leading-6 text-stone-700">
+                        This is not a factual prediction, market forecast or conclusion about identifiable people. Use it to make uncertainty visible before deciding what evidence to gather next.
+                    </div>
+                    <div class="mt-4 border border-stone-200 bg-white/70 p-4 text-sm leading-6 text-stone-600">
+                        Ripple remains the VERTEX Quest module for bounded decision artifacts. D-Predict/MiroFish is the Lab space for scenario exploration.
+                    </div>
+                </aside>
+
+                <section class="grid gap-6">
+                    <article class="glass-panel p-5 sm:p-6">
+                        <div class="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                                <p class="app-kicker">Scenario setup</p>
+                                <h2 class="mt-2 font-heading text-2xl font-bold">What system are we rehearsing?</h2>
+                            </div>
+                            <span id="dp-status" class="dp-status text-sm font-bold">Ready for local run</span>
+                        </div>
+                        <form id="dp-form" class="mt-5 grid gap-4 md:grid-cols-2">
+                            <div class="dp-field">
+                                <label for="scenario-title">Scenario title</label>
+                                <input id="scenario-title" name="scenarioTitle" type="text" value="Accelerator buyer demo">
+                            </div>
+                            <div class="dp-field">
+                                <label for="time-horizon">Time horizon</label>
+                                <select id="time-horizon" name="timeHorizon">
+                                    <option value="next demo conversation">Next demo conversation</option>
+                                    <option value="first pilot month">First pilot month</option>
+                                    <option value="accelerator selection window">Accelerator selection window</option>
+                                    <option value="institutional procurement review">Institutional procurement review</option>
+                                </select>
+                            </div>
+                            <div class="dp-field md:col-span-2">
+                                <label for="scenario-question">Scenario question</label>
+                                <textarea id="scenario-question" name="scenarioQuestion">How might an accelerator team read VERTEX after seeing Quest and the Lab tools together?</textarea>
+                            </div>
+                            <div class="dp-field md:col-span-2">
+                                <label for="interpretations">Competing interpretations</label>
+                                <textarea id="interpretations" name="interpretations">credible decision system
+interesting but too early
+too complex for first cohort</textarea>
+                            </div>
+                            <div class="dp-field md:col-span-2">
+                                <label for="actors">Stakeholder groups</label>
+                                <textarea id="actors" name="actors">program director
+facilitator
+founder
+innovation sponsor
+operations lead</textarea>
+                            </div>
+                            <div class="dp-field md:col-span-2">
+                                <label for="evidence-notes">Evidence available</label>
+                                <textarea id="evidence-notes" name="evidenceNotes">Demo flow exists. Quest naming is separated from Lab tools. Billie Storyteller and SynapMap Lab are visible. D-Predict/MiroFish is now a Lab scenario workbench.</textarea>
+                            </div>
+                            <div class="dp-field md:col-span-2">
+                                <label for="frictions">Friction / uncertainty notes</label>
+                                <textarea id="frictions" name="frictions">Buyer may ask what evidence exists beyond demo artifacts.
+Full Atlas/OASIS engine is external and not integrated yet.
+Pilot readiness depends on facilitator workflow and claims discipline.</textarea>
+                            </div>
+                            <div class="dp-field">
+                                <label for="seed">Seed</label>
+                                <input id="seed" name="seed" type="number" value="42" min="1" max="999999">
+                            </div>
+                            <div class="dp-field">
+                                <label for="rounds">Simulation rounds</label>
+                                <input id="rounds" name="rounds" type="number" value="18" min="6" max="48">
+                            </div>
+                            <div class="dp-slider">
+                                <label for="measurement-pressure">Measurement pressure <span id="measurement-value">0.54</span></label>
+                                <input id="measurement-pressure" name="measurementPressure" type="range" min="0" max="100" value="54">
+                            </div>
+                            <div class="dp-slider">
+                                <label for="alignment-field">Alignment field <span id="alignment-value">0.46</span></label>
+                                <input id="alignment-field" name="alignmentField" type="range" min="0" max="100" value="46">
+                            </div>
+                            <div class="dp-slider">
+                                <label for="trust-density">Trust density <span id="trust-value">0.62</span></label>
+                                <input id="trust-density" name="trustDensity" type="range" min="0" max="100" value="62">
+                            </div>
+                            <div class="dp-slider">
+                                <label for="context-friction">Context friction <span id="friction-value">0.38</span></label>
+                                <input id="context-friction" name="contextFriction" type="range" min="0" max="100" value="38">
+                            </div>
+                        </form>
+                        <div class="mt-5 flex flex-wrap gap-3">
+                            <button id="run-scenario" class="classic-button" type="button">Run local stress test</button>
+                            <button id="save-scenario" class="classic-button secondary" type="button">Save local draft</button>
+                            <button id="clear-scenario" class="classic-button secondary" type="button">Reset</button>
+                        </div>
+                    </article>
+
+                    <article class="glass-panel p-5 sm:p-6">
+                        <div class="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                                <p class="app-kicker">In-silico scenario map</p>
+                                <h2 class="mt-2 font-heading text-2xl font-bold">How interpretations cluster</h2>
+                            </div>
+                            <span class="dp-pill">No external API</span>
+                        </div>
+                        <div class="dp-map mt-5" aria-label="D-Predict local scenario map">
+                            <svg id="scenario-map" role="img" aria-label="Scenario map"></svg>
+                        </div>
+                    </article>
+                </section>
+
+                <aside class="grid gap-6">
+                    <article class="glass-panel p-5 sm:p-6">
+                        <p class="app-kicker">QBI-like observables</p>
+                        <h2 class="mt-2 font-heading text-2xl font-bold">What became visible?</h2>
+                        <div class="dp-metric-grid mt-5">
+                            <div class="dp-metric"><strong id="metric-coherence">--</strong><span>coherence</span></div>
+                            <div class="dp-metric"><strong id="metric-superposition">--</strong><span>superposition</span></div>
+                            <div class="dp-metric"><strong id="metric-born-floor">--</strong><span>Born floor</span></div>
+                            <div class="dp-metric"><strong id="metric-collapse">--</strong><span>commitment pressure</span></div>
+                        </div>
+                    </article>
+
+                    <article class="glass-panel p-5 sm:p-6">
+                        <p class="app-kicker">Scenario distribution</p>
+                        <h2 class="mt-2 font-heading text-2xl font-bold">Readings, not forecasts</h2>
+                        <div id="distribution-list" class="mt-5 grid gap-3">
+                            <div class="dp-output-card"><h3>No run yet</h3><p>Run the local stress test to see weighted interpretations.</p></div>
+                        </div>
+                    </article>
+
+                    <article class="glass-panel p-5 sm:p-6">
+                        <p class="app-kicker">Claim discipline</p>
+                        <h2 class="mt-2 font-heading text-2xl font-bold">What can we say?</h2>
+                        <section class="mt-5">
+                            <h3 class="text-sm font-bold text-olive-text">Safe Claims</h3>
+                            <ul id="safe-claims" class="dp-list mt-3"><li>No run yet.</li></ul>
+                        </section>
+                        <section class="mt-6">
+                            <h3 class="text-sm font-bold text-coral-text">Do Not Say Yet</h3>
+                            <ul id="unsafe-claims" class="dp-list mt-3"><li>No run yet.</li></ul>
+                        </section>
+                        <section class="mt-6">
+                            <h3 class="text-sm font-bold text-primary">Next Evidence Needed</h3>
+                            <ul id="next-evidence" class="dp-list mt-3"><li>No run yet.</li></ul>
+                        </section>
+                    </article>
+                </aside>
+            </section>
+        </main>
+    </div>
+    <script src="/static/js/d_predict_mirofish.js?v={{ asset_v }}"></script>
+</body>
+
+</html>

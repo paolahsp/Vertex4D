@@ -1,0 +1,518 @@
+{
+  "captured_at": "2026-08-27T12:13:46.491498+00:00",
+  "base_url": "http://127.0.0.1:8002",
+  "cohort_id": "cohort_7a1a8ef9e1",
+  "student_login": "maya.ellis@northstar-demo.example",
+  "facilitator_login": "facilitator@northstar-demo.example",
+  "screens": [
+    {
+      "title": "Student workspace: Spark",
+      "description": "Student enters Quest and sees the baseline job before any downstream artifact.",
+      "url": "http://127.0.0.1:8002/dashboard/vertex/spark",
+      "viewport": "desktop 1440x1100",
+      "authenticated_as": "maya.ellis@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\01-student-spark-desktop.png",
+      "expected_checks": {
+        "Open Spark": true,
+        "Locked Baseline + ProjectRecord": true,
+        "Next action": true
+      },
+      "layout": {
+        "title": "Spark | VERTEX 4D",
+        "viewportWidth": 1440,
+        "viewportHeight": 1100,
+        "scrollWidth": 1440,
+        "scrollHeight": 2835,
+        "horizontalOverflowPx": 0,
+        "directionPresent": true,
+        "directionText": "Spark Locked Baseline + ProjectRecord Next action Create a Spark case and lock the starting snapshot. Why it matters VERTEX needs the first belief state before it can show what changed. What VERTEX should reveal What the team believes before evidence, systems and economics push back. Where this goes Riddle, facilitator cohort view, Brief, Outcome Report Hard gate: without baseline, before/after evidence breaks.",
+        "visibleHeadings": [
+          "Open Spark.\nLock the first snapshot.",
+          "Quest"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Student workspace: Riddle",
+      "description": "Student frames the problem and sees why the ProblemFrame matters downstream.",
+      "url": "http://127.0.0.1:8002/dashboard/vertex/riddle",
+      "viewport": "desktop 1440x1100",
+      "authenticated_as": "maya.ellis@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\02-student-riddle-desktop.png",
+      "expected_checks": {
+        "Riddle": true,
+        "ProblemFrame": true,
+        "Why it matters": true
+      },
+      "layout": {
+        "title": "Riddle | VERTEX 4D",
+        "viewportWidth": 1440,
+        "viewportHeight": 1100,
+        "scrollWidth": 1440,
+        "scrollHeight": 1100,
+        "horizontalOverflowPx": 0,
+        "directionPresent": true,
+        "directionText": "Riddle ProblemFrame Next action Save a ProblemFrame. Why it matters The rest of the chain should not reason from a vague or solution-shaped problem. What VERTEX should reveal Whether the team is solving a real problem or describing a preferred solution. Where this goes Tangle, Gatekeeper, Stamp, Brief Soft gate: weak framing can continue, but the risk remains visible.",
+        "visibleHeadings": [
+          "Stress-test the problem.\nKeep the useful discomfort.",
+          "Quest",
+          "Configure Riddle",
+          "Summary Report"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Student workspace: Tangle",
+      "description": "Student maps users, payers, approvers, blockers and dependencies.",
+      "url": "http://127.0.0.1:8002/dashboard/vertex/tangle",
+      "viewport": "desktop 1440x1100",
+      "authenticated_as": "maya.ellis@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\03-student-tangle-desktop.png",
+      "expected_checks": {
+        "Tangle": true,
+        "SystemMap": true,
+        "payer": true
+      },
+      "layout": {
+        "title": "Tangle | VERTEX 4D",
+        "viewportWidth": 1440,
+        "viewportHeight": 1100,
+        "scrollWidth": 1440,
+        "scrollHeight": 1100,
+        "horizontalOverflowPx": 0,
+        "directionPresent": true,
+        "directionText": "Tangle SystemMap Next action Save a SystemMap with payer, approver, blocker and dependencies. Why it matters Adoption depends on more than the user; the decision lives in a stakeholder system. What VERTEX should reveal Who can make the decision work, approve it, pay for it, or block it. Where this goes Gatekeeper, Ripple, Ledger, facilitator intervention radar Soft gate: missing authority paths become intervention si",
+        "visibleHeadings": [
+          "Make the system visible.\nThen name the dependencies.",
+          "Quest"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Student workspace: Gatekeeper",
+      "description": "Student/facilitator sees which assumptions can propagate into Ripple or Ledger.",
+      "url": "http://127.0.0.1:8002/dashboard/vertex/gatekeeper",
+      "viewport": "desktop 1440x1100",
+      "authenticated_as": "maya.ellis@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\04-student-gatekeeper-desktop.png",
+      "expected_checks": {
+        "Approved assumption register": true,
+        "Hard gate": true,
+        "downstream": true
+      },
+      "layout": {
+        "title": "Gatekeeper | VERTEX 4D",
+        "viewportWidth": 1440,
+        "viewportHeight": 1100,
+        "scrollWidth": 1440,
+        "scrollHeight": 1100,
+        "horizontalOverflowPx": 0,
+        "directionPresent": true,
+        "directionText": "Gatekeeper Approved assumption register Next action Approve only assumptions that are allowed to feed Ripple or Ledger. Why it matters Unreviewed assumptions must not travel downstream disguised as facts. What VERTEX should reveal Which beliefs are evidence-backed, which are assumptions, and what still needs evidence. Where this goes PredictiveHypothesis, FinancialScenario, Stamp traceability Hard gate for downstream",
+        "visibleHeadings": [
+          "Choose which assumptions\ncan carry weight.",
+          "Quest"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Student workspace: Ripple + QBI lite",
+      "description": "Student creates a bounded behavior hypothesis and sees QBI lite as a reading, not a prediction.",
+      "url": "http://127.0.0.1:8002/dashboard/vertex/ripple",
+      "viewport": "desktop 1440x1100",
+      "authenticated_as": "maya.ellis@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\05-student-ripple-desktop.png",
+      "expected_checks": {
+        "Ripple": true,
+        "PredictiveHypothesis": true,
+        "QBI lite": true
+      },
+      "layout": {
+        "title": "Ripple | VERTEX 4D",
+        "viewportWidth": 1440,
+        "viewportHeight": 1100,
+        "scrollWidth": 1440,
+        "scrollHeight": 1782,
+        "horizontalOverflowPx": 0,
+        "directionPresent": true,
+        "directionText": "Ripple PredictiveHypothesis + QBI lite reading Next action Create a PredictiveHypothesis and QBI lite reading. Why it matters The team needs to see adoption, resistance, undecided behavior and context-loss risk. What VERTEX should reveal Where stakeholder behavior may resist the plan, even when the idea looks attractive. Where this goes Stamp, Brief, facilitator decision intervention Bounded hypothesis: not evidence,",
+        "visibleHeadings": [
+          "Quest",
+          "Ya sabes qui\u00e9n est\u00e1 en el sistema.\nAhora, qui\u00e9n se resiste.",
+          "What may help or slow adoption",
+          "What could change next",
+          "How conflicting interpretations move through the system",
+          "Ready for contract validation"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Student workspace: Ledger",
+      "description": "Student tests economic assumptions and pricing coherence.",
+      "url": "http://127.0.0.1:8002/dashboard/vertex/ledger",
+      "viewport": "desktop 1440x1100",
+      "authenticated_as": "maya.ellis@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\06-student-ledger-desktop.png",
+      "expected_checks": {
+        "Ledger": true,
+        "FinancialScenario": true,
+        "price": true
+      },
+      "layout": {
+        "title": "Ledger | VERTEX 4D",
+        "viewportWidth": 1440,
+        "viewportHeight": 1100,
+        "scrollWidth": 1440,
+        "scrollHeight": 1852,
+        "horizontalOverflowPx": 0,
+        "directionPresent": true,
+        "directionText": "Ledger FinancialScenario Next action Create a FinancialScenario from explicit founder assumptions. Why it matters Before committing resources, check whether price, margin and cost structure can survive. What VERTEX should reveal Whether the current price intuition conflicts with variable cost, volume or runway. Where this goes Stamp, Brief, Outcome Report pricing movement Soft gate: weak numbers can continue, but rem",
+        "visibleHeadings": [
+          "Quest",
+          "Tu idea ya tiene sistema.\nAhora que hable el dinero.",
+          "What kind of business are we pricing?",
+          "Minimum viable, competitive, premium",
+          "Revenue line vs total cost",
+          "10-year runway curve",
+          "10-year model",
+          "Ready for review"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Student workspace: Stamp",
+      "description": "Student converts the reviewed chain into a bounded next commitment.",
+      "url": "http://127.0.0.1:8002/dashboard/vertex/stamp",
+      "viewport": "desktop 1440x1100",
+      "authenticated_as": "maya.ellis@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\07-student-stamp-desktop.png",
+      "expected_checks": {
+        "Stamp": true,
+        "final decision": true,
+        "provenance": true
+      },
+      "layout": {
+        "title": "Stamp | VERTEX 4D",
+        "viewportWidth": 1440,
+        "viewportHeight": 1100,
+        "scrollWidth": 1440,
+        "scrollHeight": 1569,
+        "horizontalOverflowPx": 0,
+        "directionPresent": true,
+        "directionText": "Stamp Stamp / DecisionRecord Next action Create and save a Stamp artifact. Why it matters The analysis must collapse into a bounded next commitment without hiding uncertainty. What VERTEX should reveal What changed from the baseline belief and what still remains uncertain. Where this goes Brief, facilitator review, Cohort Outcome Report Commit gate: hypotheses stay labelled; the final decision records provenance.",
+        "visibleHeadings": [
+          "Quest",
+          "La cadena est\u00e1 completa.\nAhora firma la decisi\u00f3n.",
+          "Sin draft todav\u00eda",
+          "What the record will link",
+          "Commitment and rationale",
+          "What must stay visible",
+          "How the team will know",
+          "Two last questions, from you."
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Facilitator dashboard",
+      "description": "Facilitator sees cohort-level work, readiness and entry points.",
+      "url": "http://127.0.0.1:8002/dashboard/facilitator",
+      "viewport": "desktop 1440x1100",
+      "authenticated_as": "facilitator@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\08-facilitator-dashboard-desktop.png",
+      "expected_checks": {
+        "Facilitator": true,
+        "cohort": true,
+        "Decision": true
+      },
+      "layout": {
+        "title": "Facilitator Dashboard | VERTEX 4D",
+        "viewportWidth": 1440,
+        "viewportHeight": 1100,
+        "scrollWidth": 1440,
+        "scrollHeight": 2141,
+        "horizontalOverflowPx": 0,
+        "directionPresent": false,
+        "directionText": "",
+        "visibleHeadings": [
+          "Run the cohort.\nTrack the decisions.",
+          "Buyer-facing presentation flow"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Accelerator Demo Mode",
+      "description": "Buyer-facing presentation flow for the seeded accelerator demo cohort.",
+      "url": "http://127.0.0.1:8002/dashboard/facilitator/cohorts/cohort_7a1a8ef9e1/accelerator-demo",
+      "viewport": "desktop 1440x1100",
+      "authenticated_as": "facilitator@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\08b-accelerator-demo-mode-desktop.png",
+      "expected_checks": {
+        "Accelerator Demo Mode": true,
+        "run_demo_economics_changed": true,
+        "run_demo_decision_changed": true,
+        "Outcome Report": true
+      },
+      "layout": {
+        "title": "Accelerator Demo Mode | VERTEX 4D",
+        "viewportWidth": 1440,
+        "viewportHeight": 1100,
+        "scrollWidth": 1440,
+        "scrollHeight": 1538,
+        "horizontalOverflowPx": 0,
+        "directionPresent": false,
+        "directionText": "",
+        "visibleHeadings": [
+          "Demo Cohort - Decision Quality Pilot\nAccelerator Demo Mode",
+          "Who needs attention first?",
+          "What this demo should show",
+          "RepairLoop circular parts exchange",
+          "GreenLease retrofit financing"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Cohort case room",
+      "description": "Facilitator reviews intervention queue, cases, comments and rubric gaps.",
+      "url": "http://127.0.0.1:8002/dashboard/facilitator/cohorts/cohort_7a1a8ef9e1",
+      "viewport": "desktop 1440x1100",
+      "authenticated_as": "facilitator@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\09-cohort-case-room-desktop.png",
+      "expected_checks": {
+        "Intervention": true,
+        "Demo Cohort": true,
+        "rubric": true
+      },
+      "layout": {
+        "title": "Cohort Management | VERTEX 4D",
+        "viewportWidth": 1440,
+        "viewportHeight": 1100,
+        "scrollWidth": 1440,
+        "scrollHeight": 5359,
+        "horizontalOverflowPx": 0,
+        "directionPresent": false,
+        "directionText": "",
+        "visibleHeadings": [
+          "Demo Cohort - Decision Quality Pilot\nCase room",
+          "SkillBridge apprenticeship matching",
+          "ClinicFlow intake assistant",
+          "RepairLoop circular parts exchange",
+          "GreenLease retrofit financing",
+          "CivicCart procurement pilot"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Cohort Outcome Report",
+      "description": "Buyer-facing report summarizes before/after movement and missing data.",
+      "url": "http://127.0.0.1:8002/dashboard/facilitator/cohorts/cohort_7a1a8ef9e1/outcome-report",
+      "viewport": "desktop 1440x1100",
+      "authenticated_as": "facilitator@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\10-outcome-report-desktop.png",
+      "expected_checks": {
+        "Outcome Report": true,
+        "Stamp": true,
+        "intervention": true
+      },
+      "layout": {
+        "title": "Cohort Outcome Report | VERTEX 4D",
+        "viewportWidth": 1440,
+        "viewportHeight": 1100,
+        "scrollWidth": 1440,
+        "scrollHeight": 1954,
+        "horizontalOverflowPx": 0,
+        "directionPresent": false,
+        "directionText": "",
+        "visibleHeadings": [
+          "Demo Cohort - Decision Quality Pilot\nOutcome Report",
+          "RepairLoop circular parts exchange"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Student workspace: Brief",
+      "description": "Student/buyer sees the case-level Brief that connects baseline, evidence and final decision.",
+      "url": "http://127.0.0.1:8002/dashboard/vertex/brief?run_id=run_demo_economics_changed",
+      "viewport": "desktop 1440x1100",
+      "authenticated_as": "facilitator@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\11-student-brief-desktop.png",
+      "expected_checks": {
+        "Brief": true,
+        "run_demo_economics_changed": true,
+        "price": true
+      },
+      "layout": {
+        "title": "Brief | VERTEX 4D",
+        "viewportWidth": 1440,
+        "viewportHeight": 1100,
+        "scrollWidth": 1440,
+        "scrollHeight": 1733,
+        "horizontalOverflowPx": 0,
+        "directionPresent": false,
+        "directionText": "",
+        "visibleHeadings": [
+          "RepairLoop circular parts exchange\nBrief",
+          "Baseline belief became a reviewed next commitment."
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Mobile student: Spark",
+      "description": "Checks the first student step at buyer/mobile width.",
+      "url": "http://127.0.0.1:8002/dashboard/vertex/spark",
+      "viewport": "mobile 390x900",
+      "authenticated_as": "maya.ellis@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\12-student-spark-mobile.png",
+      "expected_checks": {
+        "Spark": true,
+        "Next action": true
+      },
+      "layout": {
+        "title": "Spark | VERTEX 4D",
+        "viewportWidth": 390,
+        "viewportHeight": 900,
+        "scrollWidth": 390,
+        "scrollHeight": 4803,
+        "horizontalOverflowPx": 0,
+        "directionPresent": true,
+        "directionText": "Spark Locked Baseline + ProjectRecord Next action Create a Spark case and lock the starting snapshot. Why it matters VERTEX needs the first belief state before it can show what changed. What VERTEX should reveal What the team believes before evidence, systems and economics push back. Where this goes Riddle, facilitator cohort view, Brief, Outcome Report Hard gate: without baseline, before/after evidence breaks.",
+        "visibleHeadings": [
+          "Open Spark.\nLock the first snapshot.",
+          "Quest"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Mobile student: Ripple + QBI lite",
+      "description": "Checks whether the densest behavior module stays readable on mobile.",
+      "url": "http://127.0.0.1:8002/dashboard/vertex/ripple",
+      "viewport": "mobile 390x900",
+      "authenticated_as": "maya.ellis@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\13-student-ripple-mobile.png",
+      "expected_checks": {
+        "QBI lite": true,
+        "PredictiveHypothesis": true
+      },
+      "layout": {
+        "title": "Ripple | VERTEX 4D",
+        "viewportWidth": 390,
+        "viewportHeight": 900,
+        "scrollWidth": 390,
+        "scrollHeight": 3181,
+        "horizontalOverflowPx": 0,
+        "directionPresent": true,
+        "directionText": "Ripple PredictiveHypothesis + QBI lite reading Next action Create a PredictiveHypothesis and QBI lite reading. Why it matters The team needs to see adoption, resistance, undecided behavior and context-loss risk. What VERTEX should reveal Where stakeholder behavior may resist the plan, even when the idea looks attractive. Where this goes Stamp, Brief, facilitator decision intervention Bounded hypothesis: not evidence,",
+        "visibleHeadings": [
+          "Quest",
+          "Ya sabes qui\u00e9n est\u00e1 en el sistema.\nAhora, qui\u00e9n se resiste.",
+          "What may help or slow adoption",
+          "What could change next",
+          "How conflicting interpretations move through the system",
+          "Ready for contract validation"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Mobile facilitator: Accelerator Demo Mode",
+      "description": "Checks buyer-facing demo mode on mobile.",
+      "url": "http://127.0.0.1:8002/dashboard/facilitator/cohorts/cohort_7a1a8ef9e1/accelerator-demo",
+      "viewport": "mobile 390x900",
+      "authenticated_as": "facilitator@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\13b-accelerator-demo-mode-mobile.png",
+      "expected_checks": {
+        "Accelerator Demo Mode": true,
+        "run_demo_economics_changed": true,
+        "Outcome Report": true
+      },
+      "layout": {
+        "title": "Accelerator Demo Mode | VERTEX 4D",
+        "viewportWidth": 390,
+        "viewportHeight": 900,
+        "scrollWidth": 390,
+        "scrollHeight": 3156,
+        "horizontalOverflowPx": 0,
+        "directionPresent": false,
+        "directionText": "",
+        "visibleHeadings": [
+          "Demo Cohort - Decision Quality Pilot\nAccelerator Demo Mode",
+          "Who needs attention first?",
+          "What this demo should show",
+          "RepairLoop circular parts exchange",
+          "GreenLease retrofit financing"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Mobile facilitator: Cohort case room",
+      "description": "Checks facilitator scanability on mobile.",
+      "url": "http://127.0.0.1:8002/dashboard/facilitator/cohorts/cohort_7a1a8ef9e1",
+      "viewport": "mobile 390x900",
+      "authenticated_as": "facilitator@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\14-cohort-case-room-mobile.png",
+      "expected_checks": {
+        "Intervention": true,
+        "rubric": true
+      },
+      "layout": {
+        "title": "Cohort Management | VERTEX 4D",
+        "viewportWidth": 390,
+        "viewportHeight": 900,
+        "scrollWidth": 390,
+        "scrollHeight": 10448,
+        "horizontalOverflowPx": 0,
+        "directionPresent": false,
+        "directionText": "",
+        "visibleHeadings": [
+          "Demo Cohort - Decision Quality Pilot\nCase room",
+          "SkillBridge apprenticeship matching",
+          "ClinicFlow intake assistant",
+          "RepairLoop circular parts exchange",
+          "GreenLease retrofit financing",
+          "CivicCart procurement pilot"
+        ],
+        "clippedTextCandidates": []
+      }
+    },
+    {
+      "title": "Mobile buyer: Outcome Report",
+      "description": "Checks buyer report readability on mobile.",
+      "url": "http://127.0.0.1:8002/dashboard/facilitator/cohorts/cohort_7a1a8ef9e1/outcome-report",
+      "viewport": "mobile 390x900",
+      "authenticated_as": "facilitator@northstar-demo.example",
+      "screenshot": "docs\\accelerator_visual_qa_assets\\15-outcome-report-mobile.png",
+      "expected_checks": {
+        "Outcome Report": true,
+        "Stamp": true
+      },
+      "layout": {
+        "title": "Cohort Outcome Report | VERTEX 4D",
+        "viewportWidth": 390,
+        "viewportHeight": 900,
+        "scrollWidth": 390,
+        "scrollHeight": 2963,
+        "horizontalOverflowPx": 0,
+        "directionPresent": false,
+        "directionText": "",
+        "visibleHeadings": [
+          "Demo Cohort - Decision Quality Pilot\nOutcome Report",
+          "RepairLoop circular parts exchange"
+        ],
+        "clippedTextCandidates": []
+      }
+    }
+  ]
+}

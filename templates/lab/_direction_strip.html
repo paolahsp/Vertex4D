@@ -1,0 +1,93 @@
+{# Minimal student direction layer. Pass direction_key = case/alex/synapmap/approval/dpredict/billie/decision. #}
+{% set direction_key = direction_key | default('case') %}
+{% set direction_map = {
+  'case': {
+    'label': 'Spark',
+    'next': 'Create a Spark case and lock the starting snapshot.',
+    'why': 'VERTEX needs the first belief state before it can show what changed.',
+    'artifact': 'Locked Baseline + ProjectRecord',
+    'feeds': 'Riddle, facilitator cohort view, Brief, Outcome Report',
+    'reveal': 'What the team believes before evidence, systems and economics push back.',
+    'gate': 'Hard gate: without baseline, before/after evidence breaks.'
+  },
+  'alex': {
+    'label': 'Riddle',
+    'next': 'Save a ProblemFrame.',
+    'why': 'The rest of the chain should not reason from a vague or solution-shaped problem.',
+    'artifact': 'ProblemFrame',
+    'feeds': 'Tangle, Gatekeeper, Stamp, Brief',
+    'reveal': 'Whether the team is solving a real problem or describing a preferred solution.',
+    'gate': 'Soft gate: weak framing can continue, but the risk remains visible.'
+  },
+  'synapmap': {
+    'label': 'Tangle',
+    'next': 'Save a SystemMap with payer, approver, blocker and dependencies.',
+    'why': 'Adoption depends on more than the user; the decision lives in a stakeholder system.',
+    'artifact': 'SystemMap',
+    'feeds': 'Gatekeeper, Ripple, Ledger, facilitator intervention radar',
+    'reveal': 'Who can make the decision work, approve it, pay for it, or block it.',
+    'gate': 'Soft gate: missing authority paths become intervention signals.'
+  },
+  'approval': {
+    'label': 'Gatekeeper',
+    'next': 'Approve only assumptions that are allowed to feed Ripple or Ledger.',
+    'why': 'Unreviewed assumptions must not travel downstream disguised as facts.',
+    'artifact': 'Approved assumption register',
+    'feeds': 'PredictiveHypothesis, FinancialScenario, Stamp traceability',
+    'reveal': 'Which beliefs are evidence-backed, which are assumptions, and what still needs evidence.',
+    'gate': 'Hard gate for downstream processing; human approval controls propagation.'
+  },
+  'dpredict': {
+    'label': 'Ripple',
+    'next': 'Create a PredictiveHypothesis and QBI lite reading.',
+    'why': 'The team needs to see adoption, resistance, undecided behavior and context-loss risk.',
+    'artifact': 'PredictiveHypothesis + QBI lite reading',
+    'feeds': 'Stamp, Brief, facilitator decision intervention',
+    'reveal': 'Where stakeholder behavior may resist the plan, even when the idea looks attractive.',
+    'gate': 'Bounded hypothesis: not evidence, not startup prediction.'
+  },
+  'billie': {
+    'label': 'Ledger',
+    'next': 'Create a FinancialScenario from explicit founder assumptions.',
+    'why': 'Before committing resources, check whether price, margin and cost structure can survive.',
+    'artifact': 'FinancialScenario',
+    'feeds': 'Stamp, Brief, Outcome Report pricing movement',
+    'reveal': 'Whether the current price intuition conflicts with variable cost, volume or runway.',
+    'gate': 'Soft gate: weak numbers can continue, but remain assumptions.'
+  },
+  'decision': {
+    'label': 'Stamp',
+    'next': 'Create and save a Stamp artifact.',
+    'why': 'The analysis must collapse into a bounded next commitment without hiding uncertainty.',
+    'artifact': 'Stamp / DecisionRecord',
+    'feeds': 'Brief, facilitator review, Cohort Outcome Report',
+    'reveal': 'What changed from the baseline belief and what still remains uncertain.',
+    'gate': 'Commit gate: hypotheses stay labelled; the final decision records provenance.'
+  }
+} %}
+{% set d = direction_map.get(direction_key, direction_map['case']) %}
+<section class="v4-direction" aria-label="Student direction and deliverable">
+  <div class="v4-dir-head">
+    <span>{{ d.label }}</span>
+    <strong>{{ d.artifact }}</strong>
+  </div>
+  <div class="v4-dir-grid">
+    <article>
+      <b>Next action</b>
+      <p>{{ d.next }}</p>
+    </article>
+    <article>
+      <b>Why it matters</b>
+      <p>{{ d.why }}</p>
+    </article>
+    <article>
+      <b>What VERTEX should reveal</b>
+      <p>{{ d.reveal }}</p>
+    </article>
+    <article>
+      <b>Where this goes</b>
+      <p>{{ d.feeds }}</p>
+    </article>
+  </div>
+  <p class="v4-dir-gate">{{ d.gate }}</p>
+</section>

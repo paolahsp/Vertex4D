@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>How VERTEX Thinks | Srsly Labs</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
+    <style>
+        :root { --panel: var(--glass); --panel-strong: var(--glass2); --ink: var(--fg); --muted: var(--fg2); --line: var(--edge); --blue: var(--act); --coral: var(--risk-text); --olive: var(--evidence-text); }
+        body { margin: 0; min-height: 100vh; color: var(--ink); }
+        .think-header { align-items: center; background: color-mix(in srgb, var(--bg) 84%, transparent); border-bottom: 1px solid var(--line); display: flex; gap: 18px; justify-content: space-between; padding: 18px clamp(22px,2.8vw,30px); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(18px); }
+        .think-link { align-items: center; border: 1px solid var(--line); color: var(--blue); display: inline-flex; font-size: 12px; font-weight: 800; gap: 8px; margin-left: 8px; padding: 10px 12px; text-decoration: none; text-transform: none; }
+        .think-brand { align-items: center; display: flex; gap: 12px; min-width: 0; }
+        .think-mark { align-items: center; border: 1px solid var(--blue); color: var(--blue); display: inline-flex; flex: 0 0 auto; font-family: var(--font-mono), monospace; font-size: 12px; font-weight: 800; height: 32px; justify-content: center; width: 32px; }
+        .think-brand-title { font-family: var(--font-display); font-size: clamp(19px,2.2vw,28px); font-weight: 700; line-height: 1; margin: 0; }
+        .think-kicker, .think-brand-subtitle { color: var(--coral); font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: 0; margin: 0; text-transform: none; }
+        .think-main { margin: 0 auto; max-width: 1440px; padding: clamp(22px,2.8vw,30px); }
+        .think-hero { display: grid; gap: 24px; grid-template-columns: minmax(0,1.05fr) minmax(300px,0.95fr); margin-bottom: 24px; }
+        .think-panel, .think-card, .think-step, .think-note { background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 44px rgba(24,24,16,0.09), inset 0 1px 0 var(--glass2); backdrop-filter: blur(18px) saturate(1.05); }
+        .think-panel { padding: clamp(22px,2.8vw,30px); }
+        .think-title { font-family: var(--font-display); font-size: clamp(30px,4.2vw,46px); line-height: 0.96; margin: 12px 0 18px; max-width: 860px; }
+        .think-copy { color: var(--muted); font-size: clamp(15px,1.8vw,18px); line-height: 1.55; margin: 0; max-width: 760px; }
+        .think-path { display: grid; gap: 12px; }
+        .think-step { align-items: center; display: grid; gap: 14px; grid-template-columns: 42px minmax(0,1fr); padding: 16px; }
+        .think-step:nth-child(1), .think-step:nth-child(4) { border-left: 5px solid var(--blue); }
+        .think-step:nth-child(2), .think-step:nth-child(5) { border-left: 5px solid var(--coral); }
+        .think-step:nth-child(3) { border-left: 5px solid var(--olive); }
+        .think-number { align-items: center; background: var(--panel-strong); border: 1px solid var(--line); color: var(--blue); display: inline-flex; font-family: var(--font-mono); font-size: 12px; font-weight: 800; height: 42px; justify-content: center; width: 42px; }
+        .think-step h2 { font-family: var(--font-display); font-size: 24px; line-height: 1.05; margin: 0; }
+        .think-step p { color: var(--muted); font-size: 14px; line-height: 1.45; margin: 6px 0 0; }
+        .think-grid { display: grid; gap: 18px; grid-template-columns: repeat(3,minmax(0,1fr)); margin-bottom: 24px; }
+        .think-card { min-height: 250px; padding: 22px; }
+        .think-card h2 { font-family: var(--font-display); font-size: 28px; line-height: 1.08; margin: 14px 0 12px; }
+        .think-card p, .think-card li, .think-note p { color: var(--muted); font-size: 14px; line-height: 1.55; }
+        .think-card ul { margin: 12px 0 0; padding-left: 18px; }
+        .think-note { align-items: center; border-left: 5px solid var(--blue); display: grid; gap: 24px; grid-template-columns: minmax(0,1.2fr) minmax(260px,0.8fr); padding: clamp(19px,2.2vw,24px); }
+        .think-note h2 { font-family: var(--font-display); font-size: clamp(26px,3.4vw,38px); line-height: 1; margin: 8px 0 12px; }
+        .think-equation { background: var(--panel-strong); border: 1px solid var(--line); color: var(--ink); display: grid; font-family: var(--font-mono); font-size: clamp(15px,2vw,18px); font-weight: 800; gap: 10px; line-height: 1.45; padding: 20px; }
+        .think-equation span { color: var(--coral); }
+        @media (max-width: 980px) { .think-hero, .think-note { grid-template-columns: 1fr; } .think-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 640px) { .think-header { align-items: flex-start; flex-direction: column; } .think-link { margin: 4px 0 0; } }
+    </style>
+</head>
+<body class="srsly-module app-shell glass-workbench">
+{% include "_icon_sprite.html" %}
+    <header class="think-header v4-bar"><a class="v4-brand" href="/dashboard/vertex/spark"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Quest</i></span></a><span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-lab"/></svg> Cómo piensa VERTEX</span><nav><a class="think-link v4-navlink" href="{{ back_href }}">{{ back_label }}</a><a class="think-link v4-navlink" href="{{ access_href }}">{{ access_label }}</a></nav></header>
+    <main class="think-main">
+        <section class="think-hero">
+            <article class="think-panel"><p class="think-kicker">Theory into practice</p><h1 class="think-title">VERTEX helps founders read the whole system.</h1><p class="think-copy">The method combines Design Thinking, Systems Thinking, QBI, behavioral decision science and financial intelligence into Quest: open Spark, solve the Riddle, map the Tangle, pass Gatekeeper, read the Ripple, check Ledger and close with Stamp.</p></article>
+            <aside class="think-path" aria-label="VERTEX Quest"><div class="think-step"><span class="think-number">01</span><div><h2>Riddle</h2><p>Frames the real problem before the team jumps to a solution.</p></div></div><div class="think-step"><span class="think-number">02</span><div><h2>Tangle</h2><p>Maps stakeholders, evidence, relationships and contextual friction.</p></div></div><div class="think-step"><span class="think-number">03</span><div><h2>Ripple</h2><p>Labels adoption, resistance and uncertainty as bounded hypotheses.</p></div></div><div class="think-step"><span class="think-number">04</span><div><h2>Ledger</h2><p>Turns cost, price, margin and projection into readable survival signals.</p></div></div><div class="think-step"><span class="think-number">05</span><div><h2>Stamp</h2><p>Captures the decision, evidence, unknowns and success criteria.</p></div></div></aside>
+        </section>
+        <section class="think-grid" aria-label="Theory stack"><article class="think-card"><p class="think-kicker">Design Thinking</p><h2>Open the problem.</h2><p>VERTEX starts by keeping the question alive long enough to avoid premature solutioning.</p><ul><li>Empathy</li><li>Reframing</li><li>Assumption testing</li></ul></article><article class="think-card"><p class="think-kicker">Systems Thinking</p><h2>See what the idea touches.</h2><p>A decision changes actors, dependencies, incentives and constraints around the founder.</p><ul><li>Stakeholders</li><li>Relationships</li><li>Second-order effects</li></ul></article><article class="think-card"><p class="think-kicker">QBI</p><h2>Understand uncertainty before collapse.</h2><p>QBI is the deeper theory behind framings, behavioral correlation, contextual loss and commitment.</p><ul><li>Multiple readings can coexist</li><li>Actors influence each other</li><li>Context can destroy coherence</li></ul></article></section>
+        <section class="think-note"><div><p class="think-kicker">Lab and VERTEX</p><h2>The Lab creates evidence; VERTEX organizes the decision.</h2><p>Alex, SynapMap, Billie, D-Predict/MiroFish, The Orbit and FinOps Central remain the full Srsly Labs tools. Quest can consume their outputs as evidence without borrowing their names for reduced VERTEX modules.</p></div><div class="think-equation" aria-label="VERTEX operating sequence"><div>Spark</div><span>-&gt;</span><div>Tangle</div><span>-&gt;</span><div>Ripple</div><span>-&gt;</span><div>Ledger</div><span>-&gt;</span><div>Stamp</div></div></section>
+    </main>
+</body>
+</html>

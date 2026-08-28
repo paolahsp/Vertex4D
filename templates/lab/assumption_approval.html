@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Gatekeeper | VERTEX 4D</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
+    <style>
+        :root { --panel: var(--glass); --panel-strong: var(--glass2); --ink: var(--fg); --muted: var(--fg2); --line: var(--edge); --blue: var(--act); --coral: var(--risk-text); --olive: var(--evidence-text); }
+        body { color: var(--ink); margin: 0; min-height: 100vh; }
+        .aa-header { align-items: center; background: color-mix(in srgb, var(--bg) 84%, transparent); border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 18px; padding: 18px clamp(22px,2.8vw,30px); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(16px); }
+        .aa-brand { display: flex; align-items: center; gap: 12px; }
+        .aa-mark { align-items: center; border: 1px solid var(--blue); color: var(--blue); display: inline-flex; font-family: var(--font-mono); font-size: 12px; font-weight: 800; height: 32px; justify-content: center; width: 32px; }
+        .aa-title-small { font-family: var(--font-display); font-size: clamp(19px,2.2vw,28px); font-weight: 700; line-height: 1; margin: 0; }
+        .aa-kicker, .aa-subtitle { color: var(--coral); font-family: var(--font-mono); font-size: 11px; font-weight: 800; letter-spacing: 0; margin: 0; text-transform: none; }
+        .aa-link { border: 1px solid var(--line); color: var(--blue); display: inline-flex; font-size: 12px; font-weight: 800; margin-left: 8px; padding: 10px 12px; text-decoration: none; text-transform: none; }
+        .aa-main { margin: 0 auto; max-width: 1280px; padding: clamp(22px,2.8vw,30px); }
+        .aa-hero { display: grid; gap: 22px; grid-template-columns: minmax(0,1.2fr) minmax(260px,0.55fr); margin-bottom: 22px; }
+        .aa-panel, .aa-card, .aa-row { background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 44px rgba(24,24,16,0.08); }
+        .aa-panel { padding: clamp(19px,2.2vw,24px); }
+        .aa-title { font-family: var(--font-display); font-size: clamp(30px,4.2vw,46px); line-height: .98; margin: 12px 0 16px; }
+        .aa-copy { color: var(--muted); font-size: 15px; line-height: 1.55; margin: 0; max-width: 760px; }
+        .aa-card { padding: 18px; }
+        .aa-card strong { display: block; font-family: var(--font-display); font-size: 28px; line-height: 1; }
+        .aa-card span { color: var(--muted); display: block; font-size: 12px; font-weight: 800; margin-top: 8px; text-transform: none; }
+        .aa-controls { align-items: end; display: grid; gap: 12px; grid-template-columns: repeat(4,minmax(0,1fr)); margin-top: 20px; }
+        .aa-field { display: grid; gap: 6px; }
+        .aa-field label { color: var(--coral); font-family: var(--font-mono); font-size: 10px; font-weight: 800; text-transform: none; }
+        .aa-field input, .aa-field select { background: var(--glass2); border: 1px solid var(--line); color: var(--ink); font: inherit; min-height: 42px; padding: 0 10px; }
+        .aa-button { align-items: center; background: var(--blue); border: 1px solid var(--blue); color: #fff; cursor: pointer; display: inline-flex; font-size: 13px; font-weight: 800; justify-content: center; min-height: 42px; padding: 0 14px; text-transform: none; }
+        .aa-button.secondary { background: transparent; color: var(--blue); }
+        .aa-button:disabled { cursor: not-allowed; opacity: .55; }
+        .aa-table { display: grid; gap: 10px; }
+        .aa-row { display: grid; gap: 14px; grid-template-columns: minmax(0,1fr) 130px 130px; padding: 16px; }
+        .aa-row h2 { font-family: var(--font-display); font-size: clamp(20px,2.4vw,28px); line-height: 1.05; margin: 0 0 8px; }
+        .aa-meta { color: var(--muted); font-size: 12px; line-height: 1.45; }
+        .aa-check { align-items: center; border-left: 1px solid var(--line); display: flex; gap: 10px; justify-content: center; min-height: 64px; }.aa-approval-actions{align-items:center;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}.v4-item .aa-check{border-left:0;min-height:0}
+        .aa-check input { height: 20px; width: 20px; }
+        .aa-check span { color: var(--ink); font-size: 12px; font-weight: 800; text-transform: none; }
+        .aa-status { color: var(--muted); font-size: 14px; line-height: 1.55; margin-top: 14px; }
+        .aa-status.good { color: var(--olive); font-weight: 800; }
+        .aa-status.bad { color: var(--coral); font-weight: 800; }
+        @media (max-width: 900px) { .aa-hero, .aa-controls { grid-template-columns: 1fr; } .aa-row { grid-template-columns: 1fr; } .aa-check { border-left: 0; border-top: 1px solid var(--line); justify-content: flex-start; padding-top: 12px; } .aa-header { align-items: flex-start; flex-direction: column; } .aa-link { margin: 4px 6px 0 0; } }
+    </style>
+</head>
+<body class="srsly-module app-shell glass-workbench">
+{% include "_icon_sprite.html" %}
+    <header class="aa-header v4-bar">
+        <a class="v4-brand" href="/dashboard/vertex/spark"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Quest</i></span></a>
+        <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-approval"/></svg> Gatekeeper</span>
+        <nav><a class="aa-link v4-navlink" data-run-link href="/dashboard/vertex/tangle">Back to Tangle</a><a class="aa-link v4-navlink" data-run-link href="/dashboard/vertex/ripple">Open Ripple</a></nav>
+    </header>
+    <main class="aa-main v4-main">
+        <section class="v4-head">
+            <div class="focusable">
+                <p class="v4-eyebrow"><s></s>Etapa 3 de 6 &middot; Gatekeeper</p>
+                <h1 class="v4-h1">Choose which assumptions<br><em>can carry weight.</em></h1>
+                <p class="v4-lede">Mark only the assumptions you are willing to let Ripple or Ledger consume. This is a governance gate, not a cleanup screen.</p>
+                <div class="aa-controls v4-next">
+                    <div class="aa-field"><label for="approver-role-display">Approver role</label><input id="approver-role-display" value="{{ user.get('role', 'founder') }}" disabled></div>
+                    <div class="aa-field"><label for="approval-note">Approval note</label><input id="approval-note" value="Approved for bounded VERTEX processing."></div>
+                    <button class="aa-button" id="save-approvals" type="button" disabled>Save approvals</button>
+                    <a class="aa-button secondary" data-run-link href="/dashboard/vertex/ripple">Continue to Ripple</a>
+                </div>
+                <p class="aa-status" id="approval-status">Loading active run...</p>
+            </div>
+            <aside class="v4-tally"><div class="v4-t"><b id="approval-counts">0 / 0</b><span>Ledger / Ripple</span></div><div class="v4-t up"><b>Gate</b><span>Human approval</span></div><div class="v4-t"><b>03</b><span>Quest stage</span></div></aside>
+        </section>
+        {% with stage = 3 %}{% include "lab/_path_bar.html" %}{% endwith %}
+        {% with direction_key = 'approval' %}{% include "lab/_direction_strip.html" %}{% endwith %}
+        <section class="aa-table v4-panel" id="assumption-list" aria-label="Assumptions for approval"></section>
+    </main>
+<script>
+(function () {
+    const storageKey = "vertex_current_run_id";
+    const runId = new URLSearchParams(window.location.search).get("run_id") || localStorage.getItem(storageKey);
+    const status = document.getElementById("approval-status");
+    const list = document.getElementById("assumption-list");
+    const saveButton = document.getElementById("save-approvals");
+    const counts = document.getElementById("approval-counts");
+    let problemFrame = null;
+    let systemMap = null;
+
+    function updateLinks() {
+        document.querySelectorAll("[data-run-link]").forEach((link) => {
+            const url = new URL(link.getAttribute("href"), window.location.origin);
+            if (runId) url.searchParams.set("run_id", runId);
+            link.setAttribute("href", url.pathname + url.search);
+        });
+    }
+
+    async function loadArtifact(type) {
+        const response = await fetch(`/api/vertex/runs/${encodeURIComponent(runId)}/artifacts/${type}`);
+        if (!response.ok) throw new Error(`${type} is missing from this run`);
+        const result = await response.json();
+        return result.artifact || result;
+    }
+
+    function escapeHtml(value) {
+        return String(value || "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+    }
+
+    function syncCounts() {
+        const finance = list.querySelectorAll(".finance-toggle:checked").length;
+        const predictive = list.querySelectorAll(".predictive-toggle:checked").length;
+        counts.textContent = `${finance} / ${predictive}`;
+        saveButton.disabled = list.querySelectorAll(".assumption-row").length === 0;
+    }
+
+    function mergedAssumptions() {
+        const systemById = new Map((systemMap.approved_assumptions || []).map((item) => [item.assumption_id, item]));
+        return (problemFrame.assumptions || []).map((item) => ({
+            ...item,
+            ...(systemById.get(item.assumption_id) || {}),
+            statement: item.statement,
+        }));
+    }
+
+    function render() {
+        const assumptions = mergedAssumptions();
+        if (!assumptions.length) {
+            list.innerHTML = '<article class="v4-empty"><b>No assumptions found.</b><br>Return to Riddle and save a ProblemFrame before approving assumptions.</article>';
+            saveButton.disabled = true;
+            return;
+        }
+        list.innerHTML = assumptions.map((item) => {
+            const stateClass = (item.classification || "hypothesis") === "risk" ? "v4-rk" : (item.approval_state === "approved" ? "v4-ev" : "v4-hy");
+            return `
+            <article class="v4-item ${stateClass} assumption-row" data-id="${escapeHtml(item.assumption_id)}">
+                <span class="v4-sig"></span>
+                <p><b>${escapeHtml(item.statement)}</b><br>${escapeHtml(item.assumption_id)} - ${escapeHtml(item.classification || "hypothesis")} - confidence ${Number(item.confidence || 0).toFixed(2)}</p>
+                <div class="aa-approval-actions"><span class="v4-chip">${escapeHtml(item.approval_state || "pending")}</span><label class="aa-check"><input class="predictive-toggle" type="checkbox" ${item.approved_for_predictive_processing ? "checked" : ""}><span>Ripple</span></label><label class="aa-check"><input class="finance-toggle" type="checkbox" ${item.approved_for_financial_processing ? "checked" : ""}><span>Ledger</span></label></div>
+            </article>`;
+        }).join("");
+        list.querySelectorAll("input").forEach((input) => input.addEventListener("change", syncCounts));
+        syncCounts();
+        status.textContent = `${assumptions.length} assumptions loaded. Approval updates ProblemFrame and SystemMap together.`;
+        status.className = "aa-status";
+    }
+
+    function approvalSelections() {
+        const selections = new Map();
+        list.querySelectorAll(".assumption-row").forEach((row) => {
+            selections.set(row.dataset.id, {
+                predictive: row.querySelector(".predictive-toggle").checked,
+                financial: row.querySelector(".finance-toggle").checked,
+            });
+        });
+        return selections;
+    }
+
+    async function saveApprovals() {
+        const selections = approvalSelections();
+        const approvals = Array.from(selections.entries()).map(([assumptionId, selected]) => ({
+            assumption_id: assumptionId,
+            approved_for_predictive_processing: selected.predictive,
+            approved_for_financial_processing: selected.financial
+        }));
+        const financeCount = approvals.filter((item) => item.approved_for_financial_processing).length;
+        const predictiveCount = approvals.filter((item) => item.approved_for_predictive_processing).length;
+        if (!financeCount && !predictiveCount) {
+            status.textContent = "Approve at least one assumption for Ledger or Ripple.";
+            status.className = "aa-status bad";
+            return;
+        }
+        const note = document.getElementById("approval-note").value || "Approved for bounded VERTEX processing.";
+        saveButton.disabled = true;
+        status.textContent = "Saving approvals into the active contract chain...";
+        status.className = "aa-status";
+        try {
+            const response = await fetch(`/api/vertex/runs/${encodeURIComponent(runId)}/assumption-approvals`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ note, approvals })
+            });
+            const result = await response.json();
+            if (!response.ok || !result.saved) {
+                const errors = result.errors || {};
+                const firstProblem = Array.isArray(errors.problem_frame) && errors.problem_frame[0];
+                const firstSystem = Array.isArray(errors.system_map) && errors.system_map[0];
+                const message = (firstProblem && firstProblem.message) || (firstSystem && firstSystem.message) || result.detail || "Could not save approvals";
+                throw new Error(message);
+            }
+            [problemFrame, systemMap] = await Promise.all([loadArtifact("problem_frame"), loadArtifact("system_map")]);
+            render();
+            status.textContent = `Approvals saved by ${result.approved_by_role}. Ledger and Ripple now have explicit approved inputs to consume.`;
+            status.className = "aa-status good";
+        } catch (error) {
+            status.textContent = `Approval save failed: ${error.message}`;
+            status.className = "aa-status bad";
+        } finally {
+            saveButton.disabled = false;
+            syncCounts();
+        }
+    }
+
+    async function init() {
+        updateLinks();
+        if (!runId) {
+            status.textContent = "Create a Quest run first from Spark.";
+            status.className = "aa-status bad";
+            return;
+        }
+        localStorage.setItem(storageKey, runId);
+        try {
+            [problemFrame, systemMap] = await Promise.all([loadArtifact("problem_frame"), loadArtifact("system_map")]);
+            render();
+        } catch (error) {
+            status.textContent = `${error.message}. Complete Riddle and Tangle before approval.`;
+            status.className = "aa-status bad";
+        }
+    }
+
+    saveButton.addEventListener("click", saveApprovals);
+    init();
+}());
+</script>
+</body>
+</html>

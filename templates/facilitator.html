@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facilitator Dashboard | VERTEX 4D</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
+    <style>
+        body { color: var(--fg); margin: 0; min-height: 100vh; }
+        .fd-main { display: grid; gap: 20px; margin: 0 auto; max-width: 1440px; padding: clamp(22px,2.8vw,30px); }
+        .fd-grid { display: grid; gap: 16px; grid-template-columns: minmax(340px,.82fr) minmax(0,1.18fr); }
+        .fd-stats { display: grid; gap: 12px; grid-template-columns: repeat(4,minmax(0,1fr)); }
+        .fd-panel, .fd-stat, .fd-table-wrap { background: var(--glass); border: 1px solid var(--edge); border-radius: 16px; box-shadow: var(--shadow); backdrop-filter: blur(18px) saturate(1.05); }
+        .fd-panel { padding: 20px; }
+        .fd-demo { border-color: var(--edge2); display: grid; gap: 14px; grid-template-columns: minmax(0,1fr) auto; }
+        .fd-demo-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+        .fd-stat { padding: 16px; }
+        .fd-stat strong { display: block; font-family: var(--font-display); font-size: clamp(28px,3.4vw,42px); line-height: 1; }
+        .fd-stat span { color: var(--fg2); display: block; font-size: 11px; font-weight: 700; margin-top: 7px; }
+        .fd-copy { color: var(--fg2); font-size: 14px; line-height: 1.6; margin: 0; }
+        .fd-form { display: grid; gap: 10px; grid-template-columns: repeat(2,minmax(0,1fr)); margin-top: 16px; }
+        .fd-field { display: grid; gap: 6px; }
+        .fd-field.full { grid-column: 1 / -1; }
+        .fd-field label, th { color: var(--risk-text); font: 700 10.5px/1.2 var(--font-mono); }
+        .fd-field input, .fd-field select { background: var(--glass2); border: 1px solid var(--edge); border-radius: 11px; color: var(--fg); font: inherit; min-height: 42px; padding: 0 10px; }
+        .fd-btn, .fd-pill { align-items: center; border: 1px solid var(--edge); border-radius: 8px; display: inline-flex; font-weight: 700; text-decoration: none; }
+        .fd-btn { background: var(--actfill); color: #fff; cursor: pointer; font-size: 13px; justify-content: center; min-height: 42px; padding: 0 14px; }
+        .fd-btn.secondary { background: transparent; color: var(--act); }
+        .fd-pill { background: var(--glass2); color: var(--act); font-size: 11px; margin: 2px 4px 2px 0; padding: 5px 8px; white-space: nowrap; }
+        .fd-pill.ok { color: var(--evidence-text); }
+        .fd-pill.warn { color: var(--risk-text); }
+        .fd-list { display: grid; gap: 10px; margin-top: 16px; }
+        .fd-case { border-top: 1px solid var(--edge); display: grid; gap: 10px; grid-template-columns: 4px minmax(0,1fr) auto; padding: 12px 0; }
+        .fd-sig { background: var(--lav); border-radius: 3px; }
+        .fd-case h3 { font: 700 16px/1.2 var(--font-display); margin: 0 0 4px; }
+        .fd-case p { color: var(--fg2); font-size: 13px; line-height: 1.5; margin: 0; }
+        .fd-table-wrap { overflow-x: auto; }
+        table { border-collapse: collapse; min-width: 1180px; width: 100%; }
+        th, td { border-bottom: 1px solid var(--edge); padding: 13px; text-align: left; vertical-align: top; }
+        td { color: var(--fg2); font-size: 13.5px; line-height: 1.45; }
+        td strong { color: var(--fg); display: block; margin-bottom: 4px; }
+        .fd-status { color: var(--fg2); font-size: 13px; margin-top: 10px; min-height: 20px; }
+        @media (max-width: 1080px) { .fd-grid, .fd-stats { grid-template-columns: 1fr 1fr; } .fd-demo { grid-template-columns: 1fr; } .fd-demo-actions { justify-content: flex-start; } }
+        @media (max-width: 720px) { .fd-grid, .fd-stats, .fd-form { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body class="srsly-module app-shell glass-workbench">
+{% include "_icon_sprite.html" %}
+<header class="v4-bar">
+    <a class="v4-brand" href="/dashboard/lab"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Facilitator</i></span></a>
+    <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-cohort"/></svg> Cohort management</span>
+    <nav><a class="fd-pill" href="/dashboard/lab">Srsly Labs Lab</a><a class="fd-pill" href="/dashboard/vertex/spark">Spark case</a></nav>
+</header>
+<main class="fd-main">
+    <section class="v4-head">
+        <div>
+            <p class="v4-eyebrow"><s></s>Facilitator workbench</p>
+            <h1 class="v4-h1">Run the cohort.<br><em>Track the decisions.</em></h1>
+            <p class="v4-lede">Create cohorts, open active case rooms, score decision quality, and move straight to Briefs or Outcome Reports.</p>
+        </div>
+        <aside class="v4-tally">
+            <div class="v4-t"><b>{{ metrics.totals.runs }}</b><span>Spark cases</span></div>
+            <div class="v4-t up"><b>{{ metrics.totals.locked_baselines }}</b><span>Locked snapshots</span></div>
+            <div class="v4-t"><b>{{ metrics.totals.open_comments }}</b><span>Open comments</span></div>
+        </aside>
+    </section>
+    <section class="fd-panel fd-demo" aria-label="Accelerator demo mode">
+        <div>
+            <p class="v4-plabel">Accelerator Demo Mode</p>
+            <h2>Buyer-facing presentation flow</h2>
+            <p class="fd-copy">Open the demo cohort as a clean institutional walkthrough: Intervention Radar, two star cases, Briefs, and Outcome Report without administrative forms dominating the first read.</p>
+        </div>
+        <div class="fd-demo-actions">
+            <a class="fd-btn" href="/dashboard/facilitator/accelerator-demo">Open demo mode</a>
+            <a class="fd-btn secondary" href="/dashboard/facilitator">Facilitator dashboard</a>
+        </div>
+    </section>
+    <section class="fd-stats">
+        <div class="fd-stat"><strong>{{ metrics.totals.complete }}</strong><span>Stamps</span></div>
+        <div class="fd-stat"><strong>{{ metrics.totals.completion_rate }}%</strong><span>Completion rate</span></div>
+        <div class="fd-stat"><strong>{{ metrics.totals.stakeholder_delta }}</strong><span>Stakeholder delta</span></div>
+        <div class="fd-stat"><strong>{{ metrics.totals.ai_calls }}</strong><span>LLM calls</span></div>
+    </section>
+    <section class="fd-grid">
+        <article class="fd-panel">
+            <p class="v4-plabel">Create cohort</p>
+            <p class="fd-copy">For facilitator/admin only. This creates the institutional container; cases can be attached from the cohort page.</p>
+            <form class="fd-form" id="cohort-form">
+                <div class="fd-field full"><label for="cohort-name">Cohort name</label><input id="cohort-name" name="cohort_name" required></div>
+                <div class="fd-field full"><label for="institution-name">Institution name</label><input id="institution-name" name="institution_name" required></div>
+                <div class="fd-field"><label for="start-date">Start date</label><input id="start-date" name="start_date" type="date"></div>
+                <div class="fd-field"><label for="end-date">End date</label><input id="end-date" name="end_date" type="date"></div>
+                <div class="fd-field"><label for="cohort-status">Status</label><select id="cohort-status" name="status"><option value="planned">Planned</option><option value="active">Active</option><option value="completed">Completed</option><option value="archived">Archived</option></select></div>
+                <div class="fd-field"><label>&nbsp;</label><button class="fd-btn" type="submit">Create cohort</button></div>
+            </form>
+            <p class="fd-status" id="cohort-status-note"></p>
+        </article>
+        <article class="fd-panel">
+            <p class="v4-plabel">Cohorts</p>
+            <div class="fd-list">
+                {% for cohort in cohorts %}
+                <div class="fd-case">
+                    <span class="fd-sig"></span>
+                    <div>
+                        <h3>{{ cohort.cohort_name }}</h3>
+                        <p>{{ cohort.institution_name }} / {{ cohort.status }} / {{ cohort.member_count }} teams / {{ cohort.case_count }} cases</p>
+                    </div>
+                    <div>
+                        <a class="fd-pill" href="/dashboard/facilitator/cohorts/{{ cohort.cohort_id }}">Open</a>
+                        <a class="fd-pill" href="/dashboard/facilitator/cohorts/{{ cohort.cohort_id }}/outcome-report">Report</a>
+                    </div>
+                </div>
+                {% else %}
+                <div class="v4-empty">No cohorts yet. Create the first program cohort to start grouping Spark cases.</div>
+                {% endfor %}
+            </div>
+        </article>
+    </section>
+    <section class="fd-table-wrap" aria-label="Spark case metrics table">
+        <table>
+            <thead>
+                <tr><th>Case</th><th>Cohort</th><th>Stage</th><th>Problem delta</th><th>Stakeholder delta</th><th>Price delta</th><th>Decision</th><th>Feedback</th><th>Review</th><th>AI</th></tr>
+            </thead>
+            <tbody>
+                {% for run in metrics.runs %}
+                <tr>
+                    <td><strong>{{ run.title }}</strong>{{ run.team_name }} / {{ run.run_id }}<br><a class="fd-pill" href="/dashboard/vertex/brief?run_id={{ run.run_id }}">Brief</a></td>
+                    <td>{% if run.cohort_id %}<strong>{{ run.cohort_name or run.cohort_id }}</strong><a class="fd-pill" href="/dashboard/facilitator/cohorts/{{ run.cohort_id }}">Manage</a><a class="fd-pill" href="/dashboard/facilitator/cohorts/{{ run.cohort_id }}/outcome-report">Report</a>{% else %}<span class="fd-pill warn">solo</span>{% endif %}</td>
+                    <td><span class="fd-pill">{{ run.stage }}</span><span class="fd-pill {% if run.baseline_locked %}ok{% else %}warn{% endif %}">{% if run.baseline_locked %}snapshot locked{% else %}baseline missing{% endif %}</span><br>{{ run.artifacts_saved }} artifacts</td>
+                    <td><span class="fd-pill {% if run.problem_changed %}ok{% else %}warn{% endif %}">{% if run.problem_changed %}changed{% else %}pending{% endif %}</span><br>Before: {{ run.initial_problem or 'not captured' }}<br>After: {{ run.final_problem or 'not saved yet' }}</td>
+                    <td><strong>{{ run.initial_stakeholder_count }} -> {{ run.mapped_stakeholder_count }}</strong><span class="fd-pill {% if run.stakeholder_delta > 0 %}ok{% else %}warn{% endif %}">+{{ run.stakeholder_delta }}</span><br>{% if run.new_stakeholders %}{{ run.new_stakeholders | join(', ') }}{% else %}none yet{% endif %}</td>
+                    <td><strong>{{ run.intuition_price or 'n/a' }} {{ run.price_currency }} -> {{ run.billie_price or 'n/a' }} {{ run.price_currency }}</strong><span class="fd-pill {% if run.price_changed %}ok{% else %}warn{% endif %}">{% if run.price_changed %}changed{% else %}pending{% endif %}</span></td>
+                    <td>{{ run.decision or 'not closed yet' }}</td>
+                    <td>{% if run.feedback_captured %}<strong>Pay: {{ run.would_pay }} / Rec: {{ run.would_recommend }}</strong>Answered by {{ run.feedback_role }}{% else %}<span class="fd-pill warn">not answered</span>{% endif %}</td>
+                    <td><strong>{{ run.open_comments }} open comments</strong>Baseline score: {{ run.baseline_score or 'missing' }}<br>Post score: {{ run.post_score or 'missing' }}</td>
+                    <td><strong>{{ run.ai_calls }} calls</strong>{{ run.ai_tokens }} tokens</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="10">No Spark cases yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</main>
+<script>
+(function () {
+    const form = document.getElementById("cohort-form");
+    const note = document.getElementById("cohort-status-note");
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const payload = Object.fromEntries(new FormData(form).entries());
+        note.textContent = "Creating cohort...";
+        try {
+            const response = await fetch("/api/vertex/cohorts", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (!response.ok || !result.created) throw new Error(result.detail || "Cohort was not created");
+            window.location.href = `/dashboard/facilitator/cohorts/${encodeURIComponent(result.cohort.cohort_id)}`;
+        } catch (error) {
+            note.textContent = error.message;
+        }
+    });
+}());
+</script>
+</body>
+</html>

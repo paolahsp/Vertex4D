@@ -1,0 +1,400 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "artifact_id",
+    "project_id",
+    "created_at",
+    "created_by_role",
+    "status",
+    "provenance",
+    "human_approval",
+    "validation_errors",
+    "project_name",
+    "venture_description",
+    "challenge_statement",
+    "venture_stage",
+    "geography",
+    "impact_area",
+    "cohort_program_context",
+    "synthetic_data_declaration",
+    "current_artifact_references",
+    "revision",
+    "updated_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "1.0.0",
+        "1.1.0"
+      ]
+    },
+    "artifact_type": {
+      "type": "string",
+      "const": "project_record"
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "project_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "created_by_role": {
+      "type": "string",
+      "enum": [
+        "founder",
+        "facilitator",
+        "admin",
+        "system",
+        "alex",
+        "synapmap",
+        "d_predict",
+        "finops"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending_review",
+        "approved",
+        "rejected",
+        "superseded"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "source_label",
+        "ip_owner",
+        "external_components_used",
+        "notes"
+      ],
+      "properties": {
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "synthetic_fixture",
+            "user_supplied",
+            "imported",
+            "system_generated"
+          ]
+        },
+        "source_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ip_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "external_components_used": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "human_approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "state",
+        "approved_by_role",
+        "approved_at",
+        "notes"
+      ],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "approved_by_role": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "founder",
+            "facilitator",
+            "admin",
+            null
+          ]
+        },
+        "approved_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "validation_errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "project_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "venture_description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "challenge_statement": {
+      "type": "string",
+      "minLength": 1
+    },
+    "venture_stage": {
+      "type": "string",
+      "enum": [
+        "idea",
+        "discovery",
+        "prototype",
+        "pilot",
+        "launched"
+      ]
+    },
+    "geography": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary_city",
+        "country",
+        "operating_scope"
+      ],
+      "properties": {
+        "primary_city": {
+          "type": "string",
+          "minLength": 1
+        },
+        "country": {
+          "type": "string",
+          "minLength": 1
+        },
+        "operating_scope": {
+          "type": "string",
+          "enum": [
+            "local",
+            "regional",
+            "national",
+            "international"
+          ]
+        }
+      }
+    },
+    "impact_area": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "cohort_program_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "program_name",
+        "cohort_name",
+        "facilitator_role",
+        "notes"
+      ],
+      "properties": {
+        "program_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cohort_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "facilitator_role": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "synthetic_data_declaration": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "is_synthetic",
+        "contains_identifiable_people",
+        "approved_for_predictive_processing",
+        "statement"
+      ],
+      "properties": {
+        "is_synthetic": {
+          "type": "boolean"
+        },
+        "contains_identifiable_people": {
+          "type": "boolean"
+        },
+        "approved_for_predictive_processing": {
+          "type": "boolean"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1
+        },
+        "privacy_consent": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "consent_basis",
+            "consent_record_ref",
+            "granted_by_role",
+            "granted_at",
+            "allows_predictive_processing"
+          ],
+          "properties": {
+            "consent_basis": {
+              "type": "string",
+              "enum": [
+                "explicit_consent",
+                "institutional_dpa",
+                "anonymized_before_processing"
+              ]
+            },
+            "consent_record_ref": {
+              "type": "string",
+              "minLength": 1
+            },
+            "granted_by_role": {
+              "type": "string",
+              "enum": [
+                "founder",
+                "facilitator",
+                "admin"
+              ]
+            },
+            "granted_at": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "allows_predictive_processing": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "current_artifact_references": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "problem_frame_id",
+        "system_map_id",
+        "predictive_hypothesis_id",
+        "financial_scenario_id",
+        "decision_record_id"
+      ],
+      "properties": {
+        "problem_frame_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "system_map_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "predictive_hypothesis_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "financial_scenario_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "decision_record_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        }
+      }
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updated_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vertex4d.local/contracts/v1/project-record.schema.json",
+  "title": "VERTEX 4D project_record v1",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "approved"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "human_approval": {
+            "properties": {
+              "state": {
+                "const": "approved"
+              },
+              "approved_by_role": {
+                "type": "string"
+              },
+              "approved_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

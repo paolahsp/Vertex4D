@@ -13,3 +13,10 @@ env/
 .env
 .DS_Store
 Thumbs.db
+# Local runtime data
+.vertex_runtime/
+.demo_hardening_runtime/
+.demo_rehearsal_runtime/
+
+# Local editor/agent tooling
+.claude/

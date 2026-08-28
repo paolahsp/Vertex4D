@@ -1,615 +1,288 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html class="light" lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <title>Alex - The Guardian | Vertex 4D</title>
+    <title>Alex | Srsly Labs Lab</title>
     <link rel="icon" href="/favicon.ico">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Spline+Sans:wght@300..700&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-        rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         tailwind.config = {
             darkMode: "class",
             theme: {
                 extend: {
                     colors: {
-                        "primary": "#1946D1",
-                        "background-light": "#F4EBDC",
-                        "background-dark": "#181810",
-                        "vapor-grey": "#F3DFBF",
-                        "cyber-lavender": "#E74530",
-                        "hyper-coral": "#E74530",
-                        "electric-mint": "#A4A760",
-                        "near-black": "#181810",
-                        "medium-grey": "#776F68"
+                        "primary": "#5b13ec",
+                        "coral-text": "#C13521",
+                        "olive-text": "#5F6320",
                     },
                     fontFamily: {
-                        "display": ["Spline Sans", "sans-serif"]
-                    }
+                        "display": ["Inter", "sans-serif"],
+                        "heading": ["Bricolage Grotesque", "sans-serif"],
+                    },
                 },
             },
         }
     </script>
     <style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24
+        .alex-chat-log {
+            min-height: 420px;
+            max-height: 58vh;
         }
 
-        .bg-dots {
-            background-image: linear-gradient(rgba(25, 70, 209, 0.09) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(25, 70, 209, 0.09) 1px, transparent 1px);
-            background-size: 16px 16px;
+        .alex-message {
+            border: 1px solid rgba(68, 64, 60, 0.16);
+            border-radius: 8px;
+            padding: 14px;
         }
 
-        .pill {
-            display: inline-block;
-            padding: 0.25em 0.7em;
-            font-size: 0.7em;
-            font-weight: 700;
-            border-radius: 9999px;
-            margin-right: 0.5em;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            vertical-align: middle;
+        .alex-message.user {
+            background: rgba(91, 19, 236, 0.08);
         }
 
-        .pill.assumption {
-            background-color: #FEF3C7;
-            color: #92400E;
-        }
-
-        .pill.risk {
-            background-color: #FEE2E2;
-            color: #991B1B;
-        }
-
-        .pill.effect {
-            background-color: #CFFAFE;
-            color: #155E75;
-        }
-
-        .pill.equity {
-            background-color: #F3E8FF;
-            color: #6B21A8;
-        }
-
-        .pill.question {
-            background-color: #E0E7FF;
-            color: #3730A3;
+        .alex-message.assistant {
+            background: rgba(255, 255, 255, 0.82);
         }
     </style>
-    <link rel="stylesheet" href="/static/css/vertex4d.css">
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
 </head>
 
-<body class="font-display bg-background-light text-near-black">
-    <div class="flex h-screen overflow-hidden">
-        <!-- Left Sidebar -->
-        <div class="flex flex-col items-center gap-6 border-r border-vapor-grey bg-vapor-grey/50 p-3">
-            <a href="/dashboard" class="size-8 text-primary">
-                <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                    <path clip-rule="evenodd"
-                        d="M39.475 21.6262C40.358 21.4363 40.6863 21.5589 40.7581 21.5934C40.7876 21.655 40.8547 21.857 40.8082 22.3336C40.7408 23.0255 40.4502 24.0046 39.8572 25.2301C38.6799 27.6631 36.5085 30.6631 33.5858 33.5858C30.6631 36.5085 27.6632 38.6799 25.2301 39.8572C24.0046 40.4502 23.0255 40.7407 22.3336 40.8082C21.8571 40.8547 21.6551 40.7875 21.5934 40.7581C21.5589 40.6863 21.4363 40.358 21.6262 39.475C21.8562 38.4054 22.4689 36.9657 23.5038 35.2817C24.7575 33.2417 26.5497 30.9744 28.7621 28.762C30.9744 26.5497 33.2417 24.7574 35.2817 23.5037C36.9657 22.4689 38.4054 21.8562 39.475 21.6262ZM4.41189 29.2403L18.7597 43.5881C19.8813 44.7097 21.4027 44.9179 22.7217 44.7893C24.0585 44.659 25.5148 44.1631 26.9723 43.4579C29.9052 42.0387 33.2618 39.5667 36.4142 36.4142C39.5667 33.2618 42.0387 29.9052 43.4579 26.9723C44.1631 25.5148 44.659 24.0585 44.7893 22.7217C44.9179 21.4027 44.7097 19.8813 43.5881 18.7597L29.2403 4.41187C27.8527 3.02428 25.8765 3.02573 24.2861 3.36776C22.6081 3.72863 20.7334 4.58419 18.8396 5.74801C16.4978 7.18716 13.9881 9.18353 11.5858 11.5858C9.18354 13.988 7.18717 16.4978 5.74802 18.8396C4.58421 20.7334 3.72865 22.6081 3.36778 24.2861C3.02574 25.8765 3.02429 27.8527 4.41189 29.2403Z"
-                        fill="currentColor" fill-rule="evenodd"></path>
-                </svg>
-            </a>
-            <div class="flex flex-col items-center gap-2">
-                <a href="/dashboard/lab/synapmap"
-                    class="flex size-12 items-center justify-center rounded-2xl bg-cyber-lavender/20 text-cyber-lavender transition-all hover:bg-cyber-lavender/30">
-                    <span class="material-symbols-outlined text-3xl">hub</span>
-                </a>
-                <a href="/dashboard/lab/alex"
-                    class="flex size-12 items-center justify-center rounded-2xl bg-hyper-coral/20 text-hyper-coral ring-2 ring-hyper-coral transition-all hover:bg-hyper-coral/30">
-                    <span class="material-symbols-outlined text-3xl">shield</span>
-                </a>
-                <a href="/dashboard/lab/billie"
-                    class="flex size-12 items-center justify-center rounded-2xl bg-electric-mint/20 text-electric-mint transition-all hover:bg-electric-mint/30">
-                    <span class="material-symbols-outlined text-3xl">donut_small</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col overflow-hidden">
-            <header
-                class="flex items-center justify-between border-b border-vapor-grey bg-background-light/80 px-10 py-3 backdrop-blur-sm">
-                <div class="flex items-center gap-2 text-sm text-medium-grey">
-                    <a class="hover:text-near-black" href="/dashboard/lab">4D Lab</a>
-                    <span>/</span>
-                    <span class="font-medium text-near-black">Alex</span>
-                </div>
-                <div class="flex items-center gap-6">
-                    <div class="flex items-center gap-2">
-                        <span class="font-mono text-xs font-bold text-cyber-lavender">42</span>
-                        <span class="text-sm text-medium-grey">Signals</span>
+<body class="srsly-classic app-shell glass-workbench font-display text-stone-900">
+{% include "_icon_sprite.html" %}
+    <div class="min-h-screen">
+        <header class="app-header sticky top-0 z-50 border-b px-4 py-3 sm:px-6 lg:px-10">
+            <div class="mx-auto flex max-w-7xl items-center justify-between gap-4">
+                <div class="flex min-w-0 items-center gap-4">
+                    <a href="/dashboard/lab" class="app-nav-link inline-flex items-center gap-2">
+                        <svg class="ic" aria-hidden="true"><use href="#i-back"/></svg>
+                        Srsly Labs Lab
+                    </a>
+                    <span class="hidden h-5 border-l border-stone-300 sm:block"></span>
+                    <div class="min-w-0">
+                        <p class="app-kicker">Lab tool / Socratic prototype</p>
+                        <h1 class="truncate font-heading text-xl font-bold">Alex</h1>
                     </div>
                 </div>
-            </header>
-
-            <div class="flex-1 grid grid-cols-12 gap-0 overflow-hidden">
-                <!-- Left: Avatar + Context (4/12) -->
-                <div
-                    class="col-span-4 flex flex-col items-center gap-6 border-r border-vapor-grey bg-white p-6 overflow-y-auto">
-                    <!-- Alex Avatar -->
-                    <div class="relative w-full border border-hyper-coral/40 bg-white p-6">
-                        <p class="app-kicker">Adversarial interview</p>
-                        <div class="mt-8 flex aspect-square items-center justify-center border border-vapor-grey bg-background-light">
-                            <div class="text-center">
-                                <p class="font-heading text-6xl text-hyper-coral">A</p>
-                                <p class="mt-2 font-mono text-xs uppercase text-medium-grey">Assumption stress test</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="text-center">
-                        <h2 class="text-2xl font-bold text-near-black">Alex</h2>
-                        <p class="text-sm text-medium-grey">The Guardian</p>
-                    </div>
-
-                    <!-- Context Panel -->
-                    <div class="w-full space-y-4 rounded-2xl bg-vapor-grey p-4">
-                        <div>
-                            <p class="text-xs uppercase tracking-wider text-medium-grey font-bold">Project</p>
-                            <p id="display-project" class="font-semibold text-near-black">--</p>
-                        </div>
-                        <div>
-                            <p class="text-xs uppercase tracking-wider text-medium-grey font-bold">Role</p>
-                            <p id="display-role" class="font-semibold text-near-black">--</p>
-                        </div>
-                        <div>
-                            <p class="text-xs uppercase tracking-wider text-medium-grey font-bold">Country</p>
-                            <p id="display-country" class="font-semibold text-near-black">--</p>
-                        </div>
-                    </div>
-
-                    <button id="finish-test-btn"
-                        class="mt-auto w-full rounded-lg border border-vapor-grey bg-white px-4 py-3 text-sm font-semibold text-near-black transition-all hover:bg-vapor-grey">
-                        Finish Test
-                    </button>
-                </div>
-
-                <!-- Right: Chat Interface (8/12) -->
-                <div class="col-span-8 flex flex-col bg-dots relative h-full overflow-hidden">
-                    <!-- Chat Log -->
-                    <div id="chat-log" class="flex-1 space-y-6 overflow-y-auto p-8 scroll-smooth"></div>
-
-                    <!-- Input Panel -->
-                    <div class="border-t border-vapor-grey bg-white p-6">
-                        <div class="flex gap-3 max-w-4xl mx-auto">
-                            <textarea id="student-input" placeholder="Type your response here..."
-                                class="flex-1 resize-none rounded-xl border-vapor-grey bg-vapor-grey px-4 py-3 text-near-black placeholder-medium-grey focus:border-hyper-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-hyper-coral/20"
-                                rows="2"></textarea>
-                            <div class="flex gap-2">
-                                <button id="mic-button" disabled
-                                    class="flex size-12 items-center justify-center rounded-full bg-vapor-grey text-medium-grey transition-all hover:bg-hyper-coral hover:text-white disabled:opacity-50 disabled:hover:bg-vapor-grey disabled:hover:text-medium-grey">
-                                    <span class="material-symbols-outlined">mic</span>
-                                </button>
-                                <button id="send-button" disabled
-                                    class="flex size-12 items-center justify-center rounded-full bg-hyper-coral text-white shadow-lg shadow-hyper-coral/30 transition-all hover:scale-105 disabled:opacity-50 disabled:shadow-none disabled:hover:scale-100">
-                                    <span class="material-symbols-outlined">send</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="hidden items-center gap-3 text-sm md:flex">
+                    <a class="app-nav-link" href="/dashboard/lab/synapmap">SynapMap</a>
+                    <a class="app-nav-link" href="/dashboard/lab/billie">Billie</a>
                 </div>
             </div>
+        </header>
+
+        <main class="mx-auto grid max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[0.75fr_1.25fr] lg:px-10">
+            <section class="glass-panel p-5 sm:p-6">
+                <p class="app-kicker">Alex</p>
+                <h2 class="mt-2 font-heading text-3xl font-bold sm:text-4xl">Socratic pressure test for messy founder thinking.</h2>
+                <p class="mt-4 text-sm leading-7 text-stone-600">
+                    Alex is the original Srsly Labs interview tool for surfacing assumptions, blind spots and decision risk. This Lab version keeps the conversation and PDF audit separate from the guided VERTEX Quest path.
+                </p>
+
+                <form id="alex-config-form" class="mt-6 grid gap-4">
+                    <label class="block">
+                        <span class="text-xs font-bold uppercase tracking-wide text-stone-500">Project/system ID</span>
+                        <input id="project-id" class="mt-1 w-full rounded-md border-stone-300 text-sm" value="Project Phoenix">
+                    </label>
+                    <label class="block">
+                        <span class="text-xs font-bold uppercase tracking-wide text-stone-500">Stakeholder role</span>
+                        <input id="stakeholder-role" class="mt-1 w-full rounded-md border-stone-300 text-sm" value="Skeptical buyer">
+                    </label>
+                    <label class="block">
+                        <span class="text-xs font-bold uppercase tracking-wide text-stone-500">Proposed solution</span>
+                        <input id="proposed-solution" class="mt-1 w-full rounded-md border-stone-300 text-sm" value="AI-powered marketplace">
+                    </label>
+                    <label class="block">
+                        <span class="text-xs font-bold uppercase tracking-wide text-stone-500">Context or constraints</span>
+                        <textarea id="context-constraints" class="mt-1 min-h-24 w-full rounded-md border-stone-300 text-sm">B2B SaaS, early pilot, buyer and user may be different.</textarea>
+                    </label>
+                    <button class="classic-button justify-center" type="submit">Start Socratic chat</button>
+                </form>
+
+                <div class="mt-6 rounded-md border border-stone-300 bg-white/75 p-4">
+                    <p class="app-kicker">PDF audit</p>
+                    <p class="mt-2 text-sm text-stone-600">
+                        The download summarizes the live interview, risks, assumptions and useful follow-up questions.
+                    </p>
+                    <button id="download-pdf-btn" class="classic-button secondary mt-4 w-full justify-center" type="button">Download PDF audit</button>
+                </div>
+            </section>
+
+            <section class="glass-panel flex min-h-[680px] flex-col overflow-hidden p-0">
+                <div class="border-b border-stone-300 p-5">
+                    <p class="app-kicker">Socratic chat</p>
+                    <h2 class="font-heading text-2xl font-bold">Live interview</h2>
+                    <p class="mt-2 text-sm text-stone-600">Alex asks sharper questions; you decide what is useful.</p>
+                </div>
+
+                <div id="chat-log" class="alex-chat-log flex-1 space-y-3 overflow-y-auto bg-white/35 p-5">
+                    <article class="alex-message assistant">
+                        <p class="text-xs font-bold uppercase tracking-wide text-coral-text">Alex</p>
+                        <p class="mt-2 text-sm leading-6 text-stone-700">
+                            Start by naming the thing you believe is true. I will pressure-test the assumption, not the founder.
+                        </p>
+                    </article>
+                </div>
+
+                <form id="alex-chat-form" class="border-t border-stone-300 bg-white/75 p-4">
+                    <label class="sr-only" for="chat-input">Message Alex</label>
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                        <textarea id="chat-input" class="min-h-24 flex-1 rounded-md border-stone-300 text-sm" placeholder="Type the assumption, pitch or decision you want Alex to challenge..."></textarea>
+                        <button id="send-chat-btn" class="classic-button justify-center sm:w-40" type="submit">Send</button>
+                    </div>
+                    <p id="alex-status" class="mt-3 text-xs text-stone-500" aria-live="polite"></p>
+                </form>
+            </section>
         </main>
     </div>
 
-    <!-- Config Modal -->
-    <div id="config-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-        <div class="bg-white w-full max-w-lg rounded-3xl p-8 shadow-2xl">
-            <h2 class="text-3xl font-bold text-near-black">Configure Alex</h2>
-            <p class="mt-2 text-sm text-medium-grey">This configuration will ground Alex's adversarial responses.</p>
-
-            <div class="mt-6 space-y-4">
-                <div>
-                    <label class="text-xs uppercase tracking-wider text-medium-grey font-bold"
-                        for="project-input">Project/System ID</label>
-                    <input type="text" id="project-input"
-                        class="mt-1 w-full rounded-lg border-vapor-grey bg-vapor-grey px-4 py-2 text-near-black placeholder-medium-grey focus:border-hyper-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-hyper-coral/20"
-                        placeholder="e.g., Project Phoenix" />
-                </div>
-                <div>
-                    <label class="text-xs uppercase tracking-wider text-medium-grey font-bold"
-                        for="role-input">Stakeholder
-                        Role</label>
-                    <input type="text" id="role-input"
-                        class="mt-1 w-full rounded-lg border-vapor-grey bg-vapor-grey px-4 py-2 text-near-black placeholder-medium-grey focus:border-hyper-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-hyper-coral/20"
-                        placeholder="e.g., Skeptical VC" />
-                </div>
-                <div>
-                    <label class="text-xs uppercase tracking-wider text-medium-grey font-bold"
-                        for="solution-input">Proposed Solution</label>
-                    <input type="text" id="solution-input"
-                        class="mt-1 w-full rounded-lg border-vapor-grey bg-vapor-grey px-4 py-2 text-near-black placeholder-medium-grey focus:border-hyper-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-hyper-coral/20"
-                        placeholder="e.g., AI-powered marketplace" />
-                </div>
-                <div>
-                    <label class="text-xs uppercase tracking-wider text-medium-grey font-bold"
-                        for="country-input">Country/Geography</label>
-                    <input type="text" id="country-input"
-                        class="mt-1 w-full rounded-lg border-vapor-grey bg-vapor-grey px-4 py-2 text-near-black placeholder-medium-grey focus:border-hyper-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-hyper-coral/20"
-                        placeholder="e.g., USA" />
-                </div>
-                <div>
-                    <label class="text-xs uppercase tracking-wider text-medium-grey font-bold"
-                        for="constraints-input">Context/Constraints</label>
-                    <input type="text" id="constraints-input"
-                        class="mt-1 w-full rounded-lg border-vapor-grey bg-vapor-grey px-4 py-2 text-near-black placeholder-medium-grey focus:border-hyper-coral focus:bg-white focus:outline-none focus:ring-2 focus:ring-hyper-coral/20"
-                        placeholder="e.g., B2B SaaS, Series A stage" />
-                </div>
-            </div>
-
-            <button id="start-session-btn"
-                class="mt-8 w-full rounded-xl bg-hyper-coral px-6 py-4 text-lg font-bold text-white shadow-lg shadow-hyper-coral/30 transition-all hover:scale-[1.02] hover:shadow-hyper-coral/50">
-                Start Session
-            </button>
-        </div>
-    </div>
-
-    <!-- Summary Report Modal -->
-    <div id="summary-report" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 backdrop-blur-sm">
-        <div class="bg-white max-h-[85vh] w-full max-w-3xl overflow-y-auto rounded-3xl p-8 shadow-2xl">
-            <h2 class="text-3xl font-bold text-near-black">Summary Report</h2>
-            <div id="summary-content" class="mt-6"></div>
-            <div class="mt-8 flex justify-end gap-4">
-                <button id="download-pdf-btn"
-                    class="rounded-lg border border-vapor-grey bg-white px-6 py-3 font-semibold text-near-black transition-all hover:bg-vapor-grey">
-                    Download PDF
-                </button>
-                <button onclick="document.getElementById('summary-report').classList.add('hidden')"
-                    class="rounded-lg bg-hyper-coral px-6 py-3 font-semibold text-white shadow-lg shadow-hyper-coral/30 transition-all hover:scale-105">
-                    Close
-                </button>
-            </div>
-        </div>
-    </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // CONFIG
+        (function () {
             const API_ENDPOINT = "/api/alex/chat";
+            const STORAGE_KEY = "alex_lab_current";
+            const chatLog = document.getElementById("chat-log");
+            const chatForm = document.getElementById("alex-chat-form");
+            const configForm = document.getElementById("alex-config-form");
+            const chatInput = document.getElementById("chat-input");
+            const status = document.getElementById("alex-status");
+            const downloadPdfBtn = document.getElementById("download-pdf-btn");
+            const messages = [];
+            let config = readConfig();
 
-            // ELEMENTS
-            const configModal = document.getElementById('config-modal');
-            const startSessionBtn = document.getElementById('start-session-btn');
-            const projectInput = document.getElementById('project-input');
-            const roleInput = document.getElementById('role-input');
-            const solutionInput = document.getElementById('solution-input');
-            const countryInput = document.getElementById('country-input');
-            const constraintsInput = document.getElementById('constraints-input');
-            const displayProject = document.getElementById('display-project');
-            const displayRole = document.getElementById('display-role');
-            const displayCountry = document.getElementById('display-country');
-            const chatLog = document.getElementById('chat-log');
-            const studentInput = document.getElementById('student-input');
-            const micButton = document.getElementById('mic-button');
-            const sendButton = document.getElementById('send-button');
-            const finishTestBtn = document.getElementById('finish-test-btn');
-            const summaryReport = document.getElementById('summary-report');
-            const summaryContent = document.getElementById('summary-content');
-            const downloadPdfBtn = document.getElementById('download-pdf-btn');
+            function readConfig() {
+                return {
+                    project_id: document.getElementById("project-id").value.trim(),
+                    stakeholder_role: document.getElementById("stakeholder-role").value.trim(),
+                    proposed_solution: document.getElementById("proposed-solution").value.trim(),
+                    context_constraints: document.getElementById("context-constraints").value.trim(),
+                };
+            }
 
-            let simulationConfig = {};
-            let conversationHistory = [];
+            function escapeHtml(value) {
+                return String(value || "")
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
 
-            // EVENT LISTENERS
-            startSessionBtn.addEventListener('click', startSimulation);
-            micButton.addEventListener('click', startVoiceRecognition);
-            sendButton.addEventListener('click', handleStudentQuery);
-            finishTestBtn.addEventListener('click', generateSummaryReport);
-            downloadPdfBtn.addEventListener('click', downloadPDF);
+            function addMessage(sender, text) {
+                messages.push({ sender, text, at: new Date().toISOString() });
+                const article = document.createElement("article");
+                article.className = `alex-message ${sender === "user" ? "user" : "assistant"}`;
+                article.innerHTML = `
+                    <p class="text-xs font-bold uppercase tracking-wide ${sender === "user" ? "text-primary" : "text-coral-text"}">${sender === "user" ? "You" : "Alex"}</p>
+                    <p class="mt-2 whitespace-pre-wrap text-sm leading-6 text-stone-700">${escapeHtml(text)}</p>
+                `;
+                chatLog.appendChild(article);
+                chatLog.scrollTop = chatLog.scrollHeight;
+                persist();
+            }
 
-            studentInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleStudentQuery();
+            function persist() {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({ config, messages }, null, 2));
+            }
+
+            function buildPayload(userMessage) {
+                const systemPrompt = [
+                    "You are Alex, the original Srsly Labs Socratic interview agent.",
+                    "Pressure-test the founder's thinking with concise, useful questions.",
+                    "Do not act as VERTEX Quest, Riddle, Tangle, Gatekeeper or any guided module.",
+                    "Avoid claiming proof, validation, guarantees or confirmed outcomes.",
+                    "Return a direct conversational response with 2-4 sharp questions or observations."
+                ].join(" ");
+                return {
+                    model: "gpt-4o-mini",
+                    messages: [
+                        { role: "system", content: systemPrompt },
+                        {
+                            role: "user",
+                            content: JSON.stringify({
+                                config,
+                                conversation_so_far: messages.slice(-8),
+                                founder_message: userMessage,
+                            }),
+                        },
+                    ],
+                    temperature: 0.72,
+                    max_tokens: 500,
+                };
+            }
+
+            function parseAssistantText(result) {
+                return result?.choices?.[0]?.message?.content || "Alex could not return a response. Try again with a shorter note.";
+            }
+
+            configForm.addEventListener("submit", (event) => {
+                event.preventDefault();
+                config = readConfig();
+                persist();
+                status.textContent = "Alex context updated.";
+                chatInput.focus();
+            });
+
+            chatForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const text = chatInput.value.trim();
+                if (!text) return;
+                config = readConfig();
+                chatInput.value = "";
+                addMessage("user", text);
+                status.textContent = "Alex is thinking...";
+                try {
+                    const response = await fetch(API_ENDPOINT, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(buildPayload(text)),
+                    });
+                    if (!response.ok) {
+                        throw new Error(`Alex API returned ${response.status}`);
+                    }
+                    const result = await response.json();
+                    addMessage("assistant", parseAssistantText(result));
+                    status.textContent = "Response added.";
+                } catch (error) {
+                    addMessage("assistant", "I could not reach Alex right now. Keep the assumption visible and try again when the Lab API is available.");
+                    status.textContent = "Alex API unavailable.";
                 }
             });
 
-            function startSimulation() {
-                const project = projectInput.value.trim();
-                const role = roleInput.value.trim();
-                const country = countryInput.value.trim();
-
-                simulationConfig = {
-                    project: project || "Test Project",
-                    role: role || "Skeptical Investor",
-                    country: country || "USA",
-                    solution: solutionInput.value.trim(),
-                    constraints: constraintsInput.value.trim()
-                };
-
-                displayProject.textContent = simulationConfig.project;
-                displayRole.textContent = simulationConfig.role;
-                displayCountry.textContent = simulationConfig.country;
-
-                configModal.style.display = 'none';
-                micButton.disabled = false;
-                sendButton.disabled = false;
-
-                setTimeout(sendWelcomeMessage, 500);
-            }
-
-            function sendWelcomeMessage() {
-                const welcomeHTML = `<p>Welcome. I'm <strong>Alex</strong>, acting as a <span class="pill risk">Adversary</span> to stress-test your ideas.</p>
-                    <p>I'll challenge your assumptions about <strong>${simulationConfig.project}</strong> from the perspective of a ${simulationConfig.role} in ${simulationConfig.country}.</p>
-                    <p>Let's begin. What's your pitch?</p>`;
-
-                conversationHistory.push({
-                    sender: 'alex',
-                    html: welcomeHTML,
-                    assumptions: [],
-                    effects: [],
-                    questions: []
-                });
-
-                addMessageToLog('alex', welcomeHTML);
-                speakText("Welcome. I'm Alex, acting as an adversary to stress-test your ideas. What's your pitch?");
-            }
-
-            function handleStudentQuery() {
-                const studentMessage = studentInput.value.trim();
-                if (!studentMessage) return;
-
-                conversationHistory.push({
-                    sender: 'user',
-                    text: studentMessage
-                });
-                addMessageToLog('user', studentMessage);
-                studentInput.value = '';
-
-                showSpeakingIndicator();
-
-                const systemPrompt = `You are acting as a stakeholder (${simulationConfig.role}) in the project "${simulationConfig.project}" located in ${simulationConfig.country}.
-Context: ${simulationConfig.constraints}
-Proposed Solution: ${simulationConfig.solution}
-
-CORE PURPOSE:
-You are a Socratic companion designed to stress-test ideas. You do NOT provide solutions. You challenge thinking.
-
-ANALYSIS DIMENSIONS:
-1. Systemic Risks (Technical, Organizational, Financial)
-2. Regulatory & Policy Friction (GDPR, Local Laws, Institutional Rules)
-3. Second-Order Effects (Unintended consequences, long-term dynamics)
-4. Unvalidated Assumptions (What is the user assuming is true without evidence?)
-5. EQUITY & POWER DYNAMICS: Who gets excluded? Who loses power? Who is burdened? (CRITICAL)
-
-RESPONSE GUIDELINES:
-- Be empathetic but honest ("productive discomfort").
-- Use your specific role/country context.
-- Ask 1-2 probing Socratic questions.
-- SUPPORT YOUR CLAIMS: Use specific numbers, statistics, and cite real-world sources with HTML links where possible.
-
-IMPORTANT: You must respond in strict JSON format:
-{
-    "html": "HTML string containing your response. Use <p> tags for text. Wrap specific points in <span class='pill risk'>Risk</span>, <span class='pill assumption'>Assumption</span>, <span class='pill effect'>Effect</span>, or <span class='pill equity'>Equity</span> tags where appropriate. INCLUDE LINKS AND NUMBERS.",
-    "assumptions": ["Array of strings extracting the specific unvalidated assumptions identified"],
-    "effects": ["Array of strings extracting the specific second-order effects identified"],
-    "questions": ["Array of strings containing the key Socratic questions you asked"]
-}
-Do not include markdown formatting (like \`\`\`json) in your response, just the raw JSON string.`;
-
-                const messagesPayload = [
-                    { role: "system", content: systemPrompt },
-                    ...conversationHistory.map(msg => ({
-                        role: msg.sender === 'user' ? 'user' : 'assistant',
-                        content: msg.sender === 'user' ? msg.text : (msg.raw_json ? JSON.stringify(msg.raw_json) : msg.html.replace(/<[^>]*>/g, ''))
-                    })),
-                    { role: "user", content: studentMessage }
+            downloadPdfBtn.addEventListener("click", () => {
+                const jsPDF = window.jspdf && window.jspdf.jsPDF;
+                if (!jsPDF) {
+                    status.textContent = "PDF generator is not available in this browser.";
+                    return;
+                }
+                const doc = new jsPDF();
+                const lines = [
+                    "Alex Lab Socratic Audit",
+                    "",
+                    `Project: ${config.project_id || "-"}`,
+                    `Stakeholder role: ${config.stakeholder_role || "-"}`,
+                    `Proposed solution: ${config.proposed_solution || "-"}`,
+                    `Context: ${config.context_constraints || "-"}`,
+                    "",
+                    "Conversation:",
+                    ...messages.flatMap((message) => [`${message.sender.toUpperCase()}:`, message.text, ""]),
                 ];
-
-                fetch(API_ENDPOINT, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        model: "gpt-4o",
-                        messages: messagesPayload,
-                        temperature: 0.7
-                    })
-                })
-                    .then(response => {
-                        if (!response.ok) throw new Error(`API Error: ${response.status}`);
-                        return response.json();
-                    })
-                    .then(data => {
-                        hideSpeakingIndicator();
-                        const content = data.choices[0].message.content;
-                        const cleanContent = content.replace(/^```json\s*/, '').replace(/\s*```$/, '');
-
-                        try {
-                            const alexResponse = JSON.parse(cleanContent);
-                            conversationHistory.push({
-                                sender: 'alex',
-                                html: alexResponse.html,
-                                assumptions: alexResponse.assumptions || [],
-                                effects: alexResponse.effects || [],
-                                questions: alexResponse.questions || [],
-                                raw_json: alexResponse
-                            });
-
-                            addMessageToLog('alex', alexResponse.html);
-                            speakText(alexResponse.html.replace(/<[^>]*>/g, ''));
-                        } catch (e) {
-                            console.error("JSON Parse Error:", e);
-                            addMessageToLog('alex', `<p>Error parsing response. Raw output: ${cleanContent}</p>`);
+                let y = 16;
+                lines.forEach((line) => {
+                    const wrapped = doc.splitTextToSize(line, 180);
+                    wrapped.forEach((part) => {
+                        if (y > 280) {
+                            doc.addPage();
+                            y = 16;
                         }
-                    })
-                    .catch(error => {
-                        hideSpeakingIndicator();
-                        console.error("Fetch Error:", error);
-                        const fallback = {
-                            html: `<p>I'm having trouble connecting to my brain (API Error). Please check your API key configuration.</p>`,
-                            assumptions: [],
-                            effects: [],
-                            questions: []
-                        };
-                        addMessageToLog('alex', fallback.html);
-                        conversationHistory.push({ sender: 'alex', ...fallback });
+                        doc.text(part, 14, y);
+                        y += 7;
                     });
-            }
-
-            function startVoiceRecognition() {
-                if (!('webkitSpeechRecognition' in window)) {
-                    alert("Voice input is not supported in this browser. Please use Chrome or Edge.");
-                    return;
-                }
-
-                const recognition = new webkitSpeechRecognition();
-                recognition.continuous = false;
-                recognition.interimResults = false;
-                recognition.lang = 'en-US';
-
-                micButton.style.backgroundColor = '#E74530';
-                micButton.style.color = '#FFFFFF';
-
-                recognition.onstart = () => {
-                    studentInput.placeholder = "Listening...";
-                };
-
-                recognition.onresult = (event) => {
-                    const transcript = event.results[0][0].transcript;
-                    studentInput.value = transcript;
-                };
-
-                recognition.onerror = (event) => {
-                    console.error("Speech recognition error", event.error);
-                    studentInput.placeholder = "Error listening. Try again.";
-                };
-
-                recognition.onend = () => {
-                    micButton.style.backgroundColor = '';
-                    micButton.style.color = '';
-                    studentInput.placeholder = "Type your response here...";
-                };
-
-                recognition.start();
-            }
-
-            function speakText(text) {
-                if (!('speechSynthesis' in window)) return;
-                window.speechSynthesis.cancel();
-
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'en-US';
-                utterance.rate = 1.0;
-                utterance.pitch = 1.0;
-                window.speechSynthesis.speak(utterance);
-            }
-
-            function addMessageToLog(sender, content) {
-                const messageWrapper = document.createElement('div');
-                messageWrapper.classList.add('max-w-3xl');
-                if (sender === 'user') messageWrapper.classList.add('ml-auto');
-
-                const label = document.createElement('div');
-                label.classList.add('mb-1', 'text-xs', 'uppercase', 'tracking-wider', 'text-medium-grey', 'font-bold');
-                label.textContent = sender === 'user' ? 'You' : `Alex (${simulationConfig.role})`;
-                messageWrapper.appendChild(label);
-
-                const bubble = document.createElement('div');
-                bubble.classList.add('rounded-2xl', 'px-5', 'py-4', 'leading-relaxed');
-
-                if (sender === 'user') {
-                    bubble.classList.add('bg-primary', 'text-white');
-                    bubble.textContent = content;
-                } else {
-                    bubble.classList.add('bg-white', 'text-near-black', 'border', 'border-vapor-grey');
-                    bubble.innerHTML = content;
-                }
-
-                messageWrapper.appendChild(bubble);
-                chatLog.appendChild(messageWrapper);
-
-                // Improved scrolling logic
-                requestAnimationFrame(() => {
-                    chatLog.scrollTop = chatLog.scrollHeight;
                 });
-            }
-
-            function showSpeakingIndicator() {
-                const indicator = document.createElement('div');
-                indicator.id = 'speaking-indicator';
-                indicator.classList.add('max-w-3xl');
-                indicator.innerHTML = `
-                    <div class="mb-1 text-xs uppercase tracking-wider text-medium-grey font-bold">Alex (${simulationConfig.role})</div>
-                    <div class="bg-white border border-vapor-grey rounded-2xl px-5 py-4">
-                        <p class="animate-pulse text-medium-grey">Alex is thinking...</p>
-                    </div>
-                `;
-                chatLog.appendChild(indicator);
-
-                // Improved scrolling logic
-                requestAnimationFrame(() => {
-                    chatLog.scrollTop = chatLog.scrollHeight;
-                });
-            }
-
-            function hideSpeakingIndicator() {
-                const indicator = document.getElementById('speaking-indicator');
-                if (indicator) indicator.remove();
-            }
-
-            function generateSummaryReport() {
-                const alexMessages = conversationHistory.filter(msg => msg.sender === 'alex');
-                const allAssumptions = alexMessages.flatMap(msg => msg.assumptions || []);
-                const allEffects = alexMessages.flatMap(msg => msg.effects || []);
-                const allQuestions = alexMessages.flatMap(msg => msg.questions || []);
-
-                let reportHTML = '<h3 class="text-xl font-bold text-near-black mb-3">Unvalidated Assumptions</h3><ul class="space-y-2 mb-6">';
-                if (allAssumptions.length === 0) reportHTML += '<li class="text-medium-grey">No assumptions detected.</li>';
-                allAssumptions.forEach(a => reportHTML += `<li class="bg-vapor-grey rounded-lg p-3"><span class="pill assumption">Assumption</span> ${a}</li>`);
-                reportHTML += '</ul>';
-
-                reportHTML += '<h3 class="text-xl font-bold text-near-black mb-3">Second-Order Effects</h3><ul class="space-y-2 mb-6">';
-                if (allEffects.length === 0) reportHTML += '<li class="text-medium-grey">No effects detected.</li>';
-                allEffects.forEach(e => reportHTML += `<li class="bg-vapor-grey rounded-lg p-3"><span class="pill effect">Effect</span> ${e}</li>`);
-                reportHTML += '</ul>';
-
-                reportHTML += '<h3 class="text-xl font-bold text-near-black mb-3">Key Questions to Explore</h3><ul class="space-y-2">';
-                if (allQuestions.length === 0) reportHTML += '<li class="text-medium-grey">No questions recorded.</li>';
-                allQuestions.forEach(q => reportHTML += `<li class="bg-vapor-grey rounded-lg p-3"><span class="pill question">Question</span> ${q}</li>`);
-                reportHTML += '</ul>';
-
-                summaryContent.innerHTML = reportHTML;
-                summaryReport.classList.remove('hidden');
-                summaryReport.classList.add('flex');
-            }
-
-            function downloadPDF() {
-                const element = document.getElementById('summary-content');
-                if (!element) {
-                    alert("Error: Summary content not found.");
-                    return;
-                }
-
-                const opt = {
-                    margin: 0.5,
-                    filename: `Alex_Session_Summary_${new Date().toISOString().slice(0, 10)}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2 },
-                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-                };
-
-                if (typeof html2pdf === 'undefined') {
-                    alert("PDF library not loaded. Please check internet connection.");
-                    return;
-                }
-
-                html2pdf().set(opt).from(element).save().catch(err => {
-                    console.error("PDF Generation Error:", err);
-                    alert("Failed to generate PDF. See console for details.");
-                });
-            }
-        });
+                doc.save(`Alex_Lab_Audit_${new Date().toISOString().slice(0, 10)}.pdf`);
+            });
+        })();
     </script>
 </body>
 

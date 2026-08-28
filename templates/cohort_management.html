@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cohort Management | VERTEX 4D</title>
+    <link rel="icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
+    <style>
+        body { color: var(--fg); margin: 0; min-height: 100vh; }
+        .cm-main { display: grid; gap: 20px; margin: 0 auto; max-width: 1440px; min-width: 0; padding: clamp(22px,2.8vw,30px); width: 100%; }
+        .cm-main > *, .cm-grid > *, .cm-case-head > *, .cm-row > * { min-width: 0; }
+        .cm-grid { display: grid; gap: 16px; grid-template-columns: minmax(300px,.74fr) minmax(0,1.26fr); }
+        .cm-panel, .cm-case { background: var(--glass); border: 1px solid var(--edge); border-radius: 16px; box-shadow: var(--shadow); min-width: 0; padding: 20px; }
+        .cm-stack { display: grid; gap: 14px; }
+        .cm-form { display: grid; gap: 10px; margin-top: 12px; }
+        .cm-row { display: grid; gap: 10px; grid-template-columns: repeat(2,minmax(0,1fr)); }
+        .cm-field { display: grid; gap: 6px; }
+        .cm-field label { color: var(--risk-text); font: 700 10.5px/1.2 var(--font-mono); }
+        .cm-field input, .cm-field select, .cm-field textarea { background: var(--glass2); border: 1px solid var(--edge); border-radius: 11px; color: var(--fg); font: inherit; max-width: 100%; min-height: 40px; min-width: 0; padding: 0 10px; width: 100%; }
+        .cm-field textarea { line-height: 1.5; min-height: 78px; padding: 10px; resize: vertical; }
+        .cm-btn, .cm-chip { align-items: center; border: 1px solid var(--edge); border-radius: 8px; display: inline-flex; font-weight: 700; text-decoration: none; }
+        .cm-btn { background: var(--actfill); color: #fff; cursor: pointer; font-size: 13px; justify-content: center; min-height: 40px; padding: 0 14px; }
+        .cm-btn.secondary { background: transparent; color: var(--act); }
+        .cm-chip { background: var(--glass2); color: var(--act); font: 700 10.5px/1.2 var(--font-mono); margin: 2px 4px 2px 0; padding: 6px 8px; white-space: nowrap; }
+        .cm-chip.ok { color: var(--evidence-text); }
+        .cm-chip.warn { color: var(--risk-text); }
+        .cm-chip.decision { background: var(--risk-chip); border-color: color-mix(in srgb, var(--coral) 46%, transparent); color: var(--risk-text); }
+        .cm-chip.workflow { background: var(--hypothesis-chip); border-color: color-mix(in srgb, var(--lav) 46%, transparent); color: var(--hypothesis-text); }
+        .cm-muted { color: var(--fg2); font-size: 13.5px; line-height: 1.55; margin: 0; }
+        .cm-case { display: grid; gap: 16px; }
+        .cm-case-head { align-items: start; display: grid; gap: 12px; grid-template-columns: minmax(0,1fr) auto; }
+        .cm-case h2, .cm-panel h2 { font: 700 clamp(20px,2.4vw,28px)/1.08 var(--font-display); margin: 6px 0 10px; }
+        .cm-comments { display: grid; gap: 8px; }
+        .cm-comment { border-left: 4px solid var(--coral); color: var(--fg2); font-size: 13px; line-height: 1.5; padding-left: 10px; }
+        .cm-comment.is-resolved { border-left-color: var(--mint); }
+        .cm-intervention { border-left: 4px solid var(--lav); display: grid; gap: 10px; padding: 12px 0 12px 14px; }
+        .cm-intervention.is-decision { border-left-color: var(--coral); }
+        .cm-signal-grid { display: grid; gap: 8px; }
+        .cm-signal { background: var(--glass2); border: 1px solid var(--edge); border-radius: 12px; display: grid; gap: 5px; padding: 10px; }
+        .cm-signal strong { color: var(--fg); font: 700 13px/1.25 var(--font-display); }
+        .cm-signal p { color: var(--fg2); font-size: 12.5px; line-height: 1.45; margin: 0; }
+        .cm-signal.is-decision { border-color: color-mix(in srgb, var(--coral) 42%, var(--edge)); }
+        .cm-signal.is-workflow { border-color: color-mix(in srgb, var(--lav) 42%, var(--edge)); }
+        .cm-radar-note { color: var(--fg2); font-size: 13px; line-height: 1.55; margin: -2px 0 2px; max-width: 860px; }
+        .cm-score-table { border-collapse: collapse; table-layout: fixed; width: 100%; }
+        .cm-score-table th, .cm-score-table td { border-bottom: 1px solid var(--edge); color: var(--fg2); font-size: 12.5px; overflow-wrap: anywhere; padding: 8px; text-align: left; }
+        .cm-score-table th { color: var(--risk-text); font: 700 10.5px/1.2 var(--font-mono); }
+        .cm-status { color: var(--fg2); font-size: 13px; min-height: 18px; }
+        @media (max-width: 1050px) { .cm-grid, .cm-case-head { grid-template-columns: 1fr; } }
+        @media (max-width: 720px) { .cm-main { padding: 18px 14px 24px; } .cm-grid, .cm-row { grid-template-columns: minmax(0,1fr); } }
+    </style>
+</head>
+<body class="srsly-module app-shell glass-workbench">
+{% include "_icon_sprite.html" %}
+<header class="v4-bar">
+    <a class="v4-brand" href="/dashboard/facilitator"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-cohort"/></svg></span><span><b>VERTEX 4D</b><i>Facilitator</i></span></a>
+    <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-run"/></svg> {{ management.cohort.cohort_name }}</span>
+    <nav><a class="cm-chip" href="/dashboard/facilitator">Dashboard</a><a class="cm-chip" href="/dashboard/facilitator/cohorts/{{ management.cohort.cohort_id }}/outcome-report">Outcome report</a></nav>
+</header>
+<main class="cm-main">
+    <section class="v4-head">
+        <div>
+            <p class="v4-eyebrow"><s></s>{{ management.cohort.institution_name }} &middot; {{ management.cohort.status }}</p>
+            <h1 class="v4-h1">{{ management.cohort.cohort_name }}<br><em>Case room</em></h1>
+            <p class="v4-lede">{{ management.cohort.start_date or 'No start date' }} to {{ management.cohort.end_date or 'No end date' }}. Manage only the evidence-bearing work units for this cohort.</p>
+        </div>
+        <aside class="v4-tally">
+            <div class="v4-t"><b>{{ management.totals.members }}</b><span>Teams</span></div>
+            <div class="v4-t up"><b>{{ management.totals.cases }}</b><span>Spark cases</span></div>
+            <div class="v4-t"><b>{{ management.totals.open_comments }}</b><span>Open comments</span></div>
+            <div class="v4-t up"><b>{{ management.totals.decision_interventions }}</b><span>Decision interventions</span></div>
+            <div class="v4-t"><b>{{ management.totals.needs_intervention }}</b><span>Workflow attention</span></div>
+        </aside>
+    </section>
+    <section class="cm-grid">
+        <article class="cm-panel">
+            <p class="v4-plabel">Add existing case</p>
+            <p class="cm-muted">Attach a current Spark case to this cohort. The underlying <code>run_id</code> stays unchanged.</p>
+            <form class="cm-form js-json-form" data-endpoint="/api/vertex/cohorts/{{ management.cohort.cohort_id }}/cases">
+                <div class="cm-field">
+                    <label for="run-id">Unassigned Spark case</label>
+                    <select id="run-id" name="run_id" required>
+                        <option value="">Choose a case</option>
+                        {% for run in management.available_runs %}
+                        <option value="{{ run.run_id }}">{{ run.title }} / {{ run.team_name }} / {{ run.run_id }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button class="cm-btn" type="submit">Add case</button>
+                <p class="cm-status"></p>
+            </form>
+            {% if not management.available_runs %}
+            <div class="v4-empty" style="margin-top:12px">No unassigned Spark cases are available.</div>
+            {% endif %}
+        </article>
+        <article class="cm-panel">
+            <p class="v4-plabel">Add team membership</p>
+            <p class="cm-muted">Use this when a team belongs to the cohort but does not yet have a case ready to attach.</p>
+            <form class="cm-form js-json-form" data-endpoint="/api/vertex/cohorts/{{ management.cohort.cohort_id }}/members">
+                <div class="cm-field">
+                    <label for="team-id">Local team</label>
+                    <select id="team-id" name="team_id" required>
+                        <option value="">Choose a team</option>
+                        {% for team in management.teams %}
+                        <option value="{{ team.id }}">{{ team.team_name }} / team {{ team.id }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button class="cm-btn secondary" type="submit">Add team</button>
+                <p class="cm-status"></p>
+            </form>
+        </article>
+    </section>
+    <section class="cm-panel" id="intervention-radar">
+        <p class="v4-plabel">Intervention Radar</p>
+        <p class="cm-radar-note">Decision interventions are business-reasoning risks that need facilitator judgment. Workflow attention keeps the cohort honest, but it is not the differentiating signal.</p>
+        <div class="cm-stack">
+            {% for case in management.cases if case.needs_intervention %}
+            <div class="cm-intervention {% if case.has_decision_intervention %}is-decision{% endif %}">
+                <div>
+                    <strong>{{ case.case_title or case.title }}</strong>
+                    <p class="cm-muted">{{ case.team_name }} / {{ case.run_id }}</p>
+                </div>
+                {% if case.decision_interventions %}
+                <div class="cm-signal-grid">
+                    {% for reason in case.decision_interventions %}
+                    <div class="cm-signal is-decision">
+                        <span class="cm-chip decision">decision intervention</span>
+                        <strong>{{ reason.label }}</strong>
+                        <p>{{ reason.detail }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% if case.workflow_attention %}
+                <div>
+                    {% for reason in case.workflow_attention %}
+                    <span class="cm-chip workflow" title="{{ reason.detail }}">{{ reason.label }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div><a class="cm-chip" href="#case-{{ case.run_id }}">Open case</a></div>
+            </div>
+            {% else %}
+            <div class="v4-empty">No cases currently need facilitator intervention.</div>
+            {% endfor %}
+        </div>
+    </section>
+    <section class="cm-stack">
+        {% for case in management.cases %}
+        <article class="cm-case" id="case-{{ case.run_id }}">
+            <div class="cm-case-head">
+                <div>
+                    <p class="v4-plabel">{{ case.team_name }} / {{ case.run_id }}</p>
+                    <h2>{{ case.case_title or case.title }}</h2>
+                    <span class="cm-chip">{{ case.stage }}</span>
+                    <span class="cm-chip {% if case.baseline_locked_at %}ok{% else %}warn{% endif %}">{% if case.baseline_locked_at %}snapshot locked{% else %}baseline not locked{% endif %}</span>
+                    <span class="cm-chip">{{ case.open_comments | length }} open comments</span>
+                    {% if case.has_decision_intervention %}<span class="cm-chip decision">decision intervention</span>{% elif case.needs_intervention %}<span class="cm-chip workflow">workflow attention</span>{% else %}<span class="cm-chip ok">clear</span>{% endif %}
+                </div>
+                <div>
+                    <a class="cm-chip" href="/dashboard/vertex/brief?run_id={{ case.run_id }}">Brief</a>
+                    <a class="cm-chip" href="/dashboard/vertex/stamp?run_id={{ case.run_id }}">Stamp</a>
+                </div>
+            </div>
+            <section class="cm-grid">
+                <div>
+                    <p class="v4-plabel">Open comments</p>
+                    <div class="cm-comments">
+                        {% for comment in case.open_comments %}
+                        <div class="cm-comment">
+                            {{ comment.comment_text }}<br>
+                            <span class="cm-chip">{{ comment.artifact_type or 'general' }}</span><span class="cm-chip">{{ comment.author_email or comment.author_role }}</span>
+                            <form class="js-json-form" data-endpoint="/api/vertex/runs/{{ case.run_id }}/comments/{{ comment.id }}/resolve" style="display:inline">
+                                <button class="cm-chip" type="submit">Resolve</button>
+                                <span class="cm-status"></span>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div class="v4-empty">No open comments for this case.</div>
+                        {% endfor %}
+                    </div>
+                    {% if case.resolved_comments %}
+                    <p class="v4-plabel" style="margin-top:14px">Resolved comments</p>
+                    <div class="cm-comments">
+                        {% for comment in case.resolved_comments[:3] %}
+                        <div class="cm-comment is-resolved">{{ comment.comment_text }}<br><span class="cm-chip ok">resolved</span><span class="cm-chip">{{ comment.resolved_at }}</span></div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <form class="cm-form js-json-form" data-endpoint="/api/vertex/runs/{{ case.run_id }}/comments">
+                        <div class="cm-row">
+                            <div class="cm-field"><label>Attach to</label><select name="artifact_type"><option value="">General</option><option value="project_record">ProjectRecord</option><option value="problem_frame">ProblemFrame</option><option value="system_map">SystemMap</option><option value="predictive_hypothesis">PredictiveHypothesis</option><option value="financial_scenario">FinancialScenario</option><option value="decision_record">Stamp / DecisionRecord</option></select></div>
+                            <div class="cm-field"><label>&nbsp;</label><button class="cm-btn secondary" type="submit">Add comment</button></div>
+                        </div>
+                        <div class="cm-field"><label>Comment</label><textarea name="comment_text" required></textarea></div>
+                        <p class="cm-status"></p>
+                    </form>
+                </div>
+                <div>
+                    <p class="v4-plabel">Decision Quality rubric</p>
+                    <p class="cm-muted">Baseline {{ case.score_summary.baseline_avg or 'missing' }} / Post {{ case.score_summary.post_avg or 'missing' }} / Delta {{ case.score_summary.delta if case.score_summary.delta is not none else 'missing' }}</p>
+                    <table class="cm-score-table">
+                        <thead><tr><th>Stage</th><th>Total</th><th>Reviewer</th><th>Notes</th></tr></thead>
+                        <tbody>
+                            {% for score in case.scores %}
+                            <tr><td>{{ score.score_stage }}</td><td>{{ score.framing + score.system_awareness + score.evidence_quality + score.behavioral_logic + score.economic_coherence + score.decision_action }}/30</td><td>{{ score.reviewer_email or 'reviewer' }}</td><td>{{ score.notes or '' }}</td></tr>
+                            {% else %}
+                            <tr><td colspan="4">No rubric scores yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <form class="cm-form js-json-form" data-endpoint="/api/vertex/runs/{{ case.run_id }}/quality-scores">
+                        <div class="cm-row">
+                            <div class="cm-field"><label>Stage</label><select name="score_stage" required><option value="baseline">Baseline</option><option value="post">Post</option></select></div>
+                            <div class="cm-field"><label>Framing</label><select name="framing" required>{% for n in [1,2,3,4,5] %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></div>
+                        </div>
+                        <div class="cm-row">
+                            <div class="cm-field"><label>System awareness</label><select name="system_awareness" required>{% for n in [1,2,3,4,5] %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></div>
+                            <div class="cm-field"><label>Evidence quality</label><select name="evidence_quality" required>{% for n in [1,2,3,4,5] %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></div>
+                        </div>
+                        <div class="cm-row">
+                            <div class="cm-field"><label>Behavioral logic</label><select name="behavioral_logic" required>{% for n in [1,2,3,4,5] %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></div>
+                            <div class="cm-field"><label>Economic coherence</label><select name="economic_coherence" required>{% for n in [1,2,3,4,5] %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></div>
+                        </div>
+                        <div class="cm-row">
+                            <div class="cm-field"><label>Decision action</label><select name="decision_action" required>{% for n in [1,2,3,4,5] %}<option value="{{ n }}">{{ n }}</option>{% endfor %}</select></div>
+                            <div class="cm-field"><label>&nbsp;</label><button class="cm-btn" type="submit">Save score</button></div>
+                        </div>
+                        <div class="cm-field"><label>Notes</label><textarea name="notes"></textarea></div>
+                        <p class="cm-status"></p>
+                    </form>
+                </div>
+            </section>
+        </article>
+        {% else %}
+        <section class="v4-empty">No Spark cases are attached to this cohort yet. Add an existing case above.</section>
+        {% endfor %}
+    </section>
+</main>
+<script>
+(function () {
+    function payloadFrom(form) {
+        const payload = Object.fromEntries(new FormData(form).entries());
+        for (const key of ["framing", "system_awareness", "evidence_quality", "behavioral_logic", "economic_coherence", "decision_action", "team_id"]) {
+            if (payload[key]) payload[key] = Number(payload[key]);
+        }
+        return payload;
+    }
+
+    document.querySelectorAll(".js-json-form").forEach((form) => {
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const note = form.querySelector(".cm-status");
+            note.textContent = "Saving...";
+            try {
+                const response = await fetch(form.dataset.endpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payloadFrom(form))
+                });
+                const result = await response.json();
+                if (!response.ok || result.saved === false) throw new Error(result.detail || "Save failed");
+                note.textContent = "Saved. Refreshing view...";
+                window.location.reload();
+            } catch (error) {
+                note.textContent = error.message;
+            }
+        });
+    });
+}());
+</script>
+</body>
+</html>

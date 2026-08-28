@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html class="light" lang="en" data-theme="light" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Tangle | VERTEX 4D</title>
+    <link rel="icon" href="/favicon.ico">
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1946D1",
+                        "background-light": "#F4EBDC",
+                        "background-dark": "#181810",
+                        "vapor-grey": "#F3DFBF",
+                        "coral-text": "#C13521",
+
+                        "olive-text": "#5F6320",
+
+                        "cyber-lavender": "#E74530",
+                        "hyper-coral": "#E74530",
+                        "electric-mint": "#A4A760",
+                        "near-black": "#181810",
+                        "medium-grey": "#6E6660"
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        
+
+        .bg-dots {
+            background-image: linear-gradient(rgba(25, 70, 209, 0.09) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(25, 70, 209, 0.09) 1px, transparent 1px);
+            background-size: 16px 16px;
+        }
+
+        #system-map-svg line {
+            stroke: rgba(25, 70, 209, 0.36);
+            stroke-width: 2px;
+            transition: stroke 0.2s, stroke-width 0.2s;
+            cursor: pointer;
+        }
+
+        #system-map-svg line:hover {
+            stroke: #1946D1;
+            stroke-width: 4px;
+        }
+
+        .d3-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 1000;
+        }
+    </style>
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
+</head>
+
+<body class="srsly-module font-display bg-background-light text-near-black">
+{% include "_icon_sprite.html" %}
+<div class="min-h-screen lg:h-screen lg:overflow-hidden flex flex-col">
+    <header class="v4-bar shrink-0">
+        <a class="v4-brand" href="/dashboard/vertex/spark"><span class="v4-tile"><svg class="ic" aria-hidden="true"><use href="#i-vertex"/></svg></span><span><b>VERTEX 4D</b><i>Quest</i></span></a>
+        <span class="v4-runtag"><svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg> Tangle &middot; SystemMap</span>
+        <nav><a class="app-nav-link v4-navlink" data-run-link href="/dashboard/vertex/riddle">Back to Riddle</a><a class="app-nav-link v4-navlink" data-run-link href="/dashboard/vertex/gatekeeper">Gatekeeper</a></nav>
+    </header>
+    <main class="flex-1 min-h-0 flex flex-col">
+        <section class="v4-head shrink-0">
+            <div class="focusable">
+                <p class="v4-eyebrow"><s></s>Etapa 2 de 6 &middot; Tangle</p>
+                <h1 class="v4-h1">Make the system visible.<br><em>Then name the dependencies.</em></h1>
+                <p class="v4-lede">Tangle turns scattered context into stakeholders, relationships, bottlenecks and RACI signals for Gatekeeper. SynapMap remains the full Srsly Labs visual system tool.</p>
+                <div class="v4-next"><button class="btn primary" type="button" id="save-map-btn"><svg class="ic" aria-hidden="true"><use href="#i-save"/></svg> Save map</button><button class="btn ghost" type="button" id="delete-map-btn"><svg class="ic" aria-hidden="true"><use href="#i-trash"/></svg> Delete map</button><span class="v4-eta">&asymp; 10 min &middot; D3 map stays interactive</span></div>
+            </div>
+            <aside class="v4-tally"><div class="v4-t"><b>02</b><span>SystemMap stage</span></div><div class="v4-t up"><b>RACI</b><span>Matrix target</span></div><div class="v4-t"><b>35%</b><span>Confidence seed</span></div></aside>
+        </section>
+        {% with stage = 2 %}{% include "lab/_path_bar.html" %}{% endwith %}
+        {% with direction_key = 'synapmap' %}{% include "lab/_direction_strip.html" %}{% endwith %}
+        <section class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 gap-0 lg:overflow-hidden">
+            <aside class="lg:col-span-3 min-w-0 flex flex-col border-b lg:border-b-0 lg:border-r border-vapor-grey p-4">
+                <article class="v4-panel flex-1 min-h-0 flex flex-col p-0 overflow-hidden">
+                    <div class="px-4 py-4 border-b border-vapor-grey"><p class="v4-plabel" style="margin:0">System prompt</p></div>
+                    <div id="chat-container" class="flex-1 overflow-y-auto p-4">
+                        <div class="v4-item v4-hy"><span class="v4-sig"></span><p><b>Tangle</b><br>Describe your project. I will generate stakeholders, dependencies, bottlenecks and a RACI matrix.</p><span class="v4-chip">ready</span></div>
+                    </div>
+                    <div class="border-t border-vapor-grey p-3">
+                        <div id="status-message" class="mb-2 text-center text-xs"></div>
+                        <div class="relative">
+                            <input type="file" id="file-input" class="hidden" accept=".txt,.pdf,.ppt,.pptx,.doc,.docx,image/*,audio/*" />
+                            <textarea id="idea-input" class="w-full resize-none rounded-xl border-vapor-grey bg-vapor-grey p-3 pr-20 text-near-black text-sm placeholder:text-medium-grey focus:border-cyber-lavender focus:ring-2 focus:ring-cyber-lavender/50" placeholder="Describe your idea..." rows="3"></textarea>
+                            <div class="absolute bottom-2 right-2 flex gap-1">
+                                <button id="upload-btn" onclick="document.getElementById('file-input').click()" class="flex size-7 items-center justify-center rounded-lg bg-vapor-grey text-medium-grey transition-colors hover:bg-cyber-lavender/20 hover:text-coral-text"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg></button>
+                                <button id="analyze-btn" class="flex size-7 items-center justify-center rounded-lg bg-coral-text text-white transition-colors hover:bg-cyber-lavender/80"><svg class="ic" aria-hidden="true"><use href="#i-assist"/></svg></button>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </aside>
+            <section class="lg:col-span-6 min-w-0 relative bg-dots min-h-[420px] lg:min-h-0">
+                <div id="system-map-container" class="h-full w-full"><svg id="system-map-svg" class="h-full w-full"></svg><div id="d3-tooltip" class="d3-tooltip"></div></div>
+                <button id="reset-zoom-btn" class="absolute top-4 left-4 flex size-10 items-center justify-center rounded-lg bg-white border border-vapor-grey shadow-lg text-coral-text hover:bg-cyber-lavender/10" title="Reset Zoom"><svg class="ic" aria-hidden="true"><use href="#i-focus"/></svg></button>
+            </section>
+            <aside class="lg:col-span-3 min-w-0 flex flex-col gap-4 border-t lg:border-t-0 lg:border-l border-vapor-grey p-4 lg:overflow-y-auto">
+                <article class="v4-panel">
+                    <p class="v4-plabel">RACI Matrix</p>
+                    <div id="raci-container" class="text-xs"><div class="v4-empty">No matrix yet. Run the map to see who is responsible, accountable, consulted and informed.</div></div>
+                </article>
+                <article class="v4-panel is-strong">
+                    <p class="v4-plabel">System Analysis</p>
+                    <div id="insights-container" class="text-xs space-y-3"><div class="v4-empty">No analysis yet. Bottlenecks, risks, opportunities and conflicts will appear here after Tangle generates a system.</div></div>
+                </article>
+            </aside>
+        </section>
+    </main>
+</div>
+    <script>
+        // STATE
+        let currentAnalysis = null;
+        let conversationHistory = [];
+        let attachedFileContent = ""; // Store file content in memory
+
+        // ELEMENTS
+        const ideaInput = document.getElementById('idea-input');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const uploadBtn = document.getElementById('upload-btn');
+        const fileInput = document.getElementById('file-input');
+        const statusMessage = document.getElementById('status-message');
+        const saveMapBtn = document.getElementById('save-map-btn');
+        const deleteMapBtn = document.getElementById('delete-map-btn');
+        const resetZoomBtn = document.getElementById('reset-zoom-btn');
+        const tooltip = document.getElementById('d3-tooltip');
+        const chatContainer = document.getElementById('chat-container');
+
+        // EVENT LISTENERS
+        analyzeBtn.addEventListener('click', runAnalysis);
+        // uploadBtn click handled inline in HTML
+        fileInput.addEventListener('change', handleFileUpload);
+        saveMapBtn.addEventListener('click', saveCurrentMap);
+        deleteMapBtn.addEventListener('click', deleteCurrentMap);
+        resetZoomBtn.addEventListener('click', resetZoom);
+
+        ideaInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                runAnalysis();
+            }
+        });
+
+        // LOAD SAVED MAP
+        loadSavedMap();
+
+        function setStatus(msg, type = 'neutral') {
+            statusMessage.textContent = msg;
+            statusMessage.className = 'mb-2 text-center text-xs ' +
+                (type === 'error' ? 'text-coral-text font-semibold' :
+                    type === 'success' ? 'text-olive-text font-semibold' : 'text-medium-grey');
+        }
+
+        function addChatMessage(content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start gap-3 mt-3';
+
+            if (isUser) {
+                messageDiv.innerHTML = `
+            <div class="flex size-10 items-center justify-center rounded-full bg-primary/20 text-primary flex-shrink-0">
+                <svg class="ic" aria-hidden="true"><use href="#i-cohort"/></svg>
+            </div>
+            <div class="rounded-2xl rounded-tl-none bg-primary/10 p-3 overflow-hidden">
+                <p class="text-near-black text-xs whitespace-pre-wrap">${content}</p>
+            </div>
+        `;
+            } else {
+                messageDiv.innerHTML = `
+            <div class="flex size-10 items-center justify-center rounded-full bg-cyber-lavender/20 text-coral-text flex-shrink-0">
+                <svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg>
+            </div>
+            <div class="rounded-2xl rounded-tl-none bg-vapor-grey p-3">
+                <p class="font-bold text-near-black text-sm">Tangle</p>
+                <p class="text-medium-grey text-xs">${content}</p>
+            </div>
+        `;
+            }
+
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        async function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            setStatus('Uploading and processing file...', 'neutral');
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/process-file', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Error processing file');
+                }
+
+                const data = await response.json();
+
+                // Store content in memory, NOT in the textarea
+                attachedFileContent = data.content;
+
+                // Show success status with file name
+                setStatus(`Attached: ${data.filename}`, 'success');
+                ideaInput.placeholder = `Write instructions to analyze "${data.filename}"...`;
+                ideaInput.focus();
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                setStatus(`Error: ${error.message}`, 'error');
+                attachedFileContent = "";
+            }
+
+            fileInput.value = '';
+        }
+
+        async function runAnalysis() {
+            const userInput = ideaInput.value.trim();
+
+            // Allow analysis if there is attached content OR user input
+            if (!userInput && !attachedFileContent) {
+                setStatus('Please write something or upload a file', 'error');
+                return;
+            }
+
+            // Combine user input and attached file content
+            let fullContent = userInput;
+            let displayMessage = userInput;
+
+            if (attachedFileContent) {
+                fullContent += "\n\n[ATTACHED FILE CONTENT]:\n" + attachedFileContent;
+                displayMessage += userInput ? `\n(+ Attached file)` : `(Attached file analyzed)`;
+            }
+
+            // --- INCREMENTAL UPDATE LOGIC ---
+            let contextPrompt = "";
+            let taskInstruction = "Generate a system map from scratch.";
+
+            if (currentAnalysis) {
+                taskInstruction = "UPDATE and EXPAND the existing system map with the new input.";
+                contextPrompt = `
+\n\n[EXISTING SYSTEM STATE (JSON)]:
+${JSON.stringify(currentAnalysis)}
+
+[INSTRUCTION FOR UPDATE]:
+1. **MERGE** the [NEW INPUT] into the [EXISTING SYSTEM STATE].
+2. **KEEP** all existing nodes, edges, and RACI entries unless the new input explicitly contradicts them.
+3. **ADD** new nodes and connections found in the new input.
+4. **TRANSLATE** any existing Spanish content in the JSON to American English.
+5. **RETURN** the single, consolidated JSON object containing BOTH old and new data.
+`;
+            }
+
+            addChatMessage(displayMessage, true);
+            setStatus('Analyzing and merging...', 'neutral');
+            analyzeBtn.disabled = true;
+            ideaInput.value = '';
+            ideaInput.placeholder = "Describe your idea...";
+
+            // Clear attached content after sending
+            const contentToSend = `[NEW INPUT]:\n${fullContent}\n${contextPrompt}`;
+            attachedFileContent = "";
+
+            const systemPrompt = `You are Tangle, a VERTEX systems-thinking module.
+
+TASK: ${taskInstruction}
+
+OUTPUT REQUIREMENTS:
+1. **System Map**: Nodes (stakeholders, activities, decisions, systems) and connections (dependencies, information flow, resources).
+2. **RACI Matrix**: For key activities/decisions.
+3. **Analysis**: Bottlenecks, risks, opportunities, conflicts.
+4. **Language**: STRICTLY AMERICAN ENGLISH. Translate any non-English input or existing data.
+
+RESPONSE FORMAT (Strict JSON):
+{
+  "system_map": {
+    "nodes": [
+      {"id": "unique_id", "label": "Name (English)", "category": "stakeholder|activity|decision|system"}
+    ],
+    "edges": [
+      {"from": "source_id", "to": "target_id", "type": "dependency|information|resource", "label": "relationship (English)"}
+    ]
+  },
+  "raci_matrix": [
+    {"activity": "Activity Name", "responsible": ["Name"], "accountable": ["Name"], "consulted": ["Name"], "informed": ["Name"]}
+  ],
+  "insights": {
+    "bottlenecks": ["Description"],
+    "risks": ["Description"],
+    "opportunities": ["Description"],
+    "conflicts": ["Description"]
+  },
+  "summary": "Brief summary of changes/additions (in American English)"
+}
+
+RULES:
+- Ensure node IDs are consistent when merging.
+- Do not duplicate nodes (use the same ID if it refers to the same entity).
+- If updating, the output MUST include the FULL state (old + new).`;
+
+            conversationHistory.push({
+                role: 'user',
+                content: contentToSend
+            });
+
+            try {
+                const response = await fetch('/api/openai/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        model: 'gpt-4o',
+                        response_format: { type: "json_object" },
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            ...conversationHistory.slice(-6)
+                        ],
+                        temperature: 0.7
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('API Error:', response.status, errorText);
+                    throw new Error(`Error ${response.status}: ${errorText}`);
+                }
+
+                const data = await response.json();
+                const content = data.choices[0].message.content;
+                const cleanContent = content.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+
+                const analysis = JSON.parse(cleanContent);
+                currentAnalysis = analysis;
+
+                // Don't add full JSON to chat, just summary
+                conversationHistory.push({
+                    role: 'assistant',
+                    content: cleanContent
+                });
+
+                renderSystemMap(analysis.system_map);
+                renderRaciMatrix(analysis.raci_matrix);
+                renderInsights(analysis.insights);
+
+                addChatMessage(analysis.summary || 'Analysis updated.', false);
+                setStatus('Analysis updated', 'success');
+
+            } catch (error) {
+                console.error('Full error:', error);
+                setStatus(`Error: ${error.message}`, 'error');
+                addChatMessage(`Error analyzing: ${error.message}. Try again or load demo data.`, false);
+
+                // Offer demo data
+                setTimeout(() => {
+                    if (!currentAnalysis && confirm('Do you want to load demo data?')) {
+                        loadDemoData();
+                    }
+                }, 1000);
+            } finally {
+                analyzeBtn.disabled = false;
+            }
+        }
+
+        let currentTransform = null;
+
+        function renderSystemMap(data) {
+            if (!data || !data.nodes) return;
+
+            const container = d3.select('#system-map-svg');
+            container.selectAll('*').remove();
+
+            const width = document.getElementById('system-map-container').clientWidth;
+            const height = document.getElementById('system-map-container').clientHeight;
+
+            // PREPARE DATA FOR D3
+            // 1. Viability a Set of valid Node IDs for validation
+            const nodeIds = new Set(data.nodes.map(n => n.id));
+
+            // 2. Map nodes (shallow copy to avoid mutating original data)
+            const nodes = data.nodes.map(d => ({ ...d }));
+
+            // 3. Map edges: Convert 'from'/'to' to 'source'/'target' and validate
+            const edges = (data.edges || [])
+                .filter(edge => {
+                    if (!nodeIds.has(edge.from)) {
+                        console.warn(`Missing source node: ${edge.from}`);
+                        return false;
+                    }
+                    if (!nodeIds.has(edge.to)) {
+                        console.warn(`Missing target node: ${edge.to}`);
+                        return false;
+                    }
+                    return true;
+                })
+                .map(edge => ({
+                    ...edge,
+                    source: edge.from,
+                    target: edge.to
+                }));
+
+            const svg = container
+                .attr('width', width)
+                .attr('height', height);
+
+            const g = svg.append('g');
+
+            const zoom = d3.zoom()
+                .scaleExtent([0.1, 4])
+                .on('zoom', (event) => {
+                    currentTransform = event.transform;
+                    g.attr('transform', event.transform);
+                });
+
+            svg.call(zoom);
+
+            const simulation = d3.forceSimulation(nodes)
+                .force('link', d3.forceLink(edges)
+                    .id(d => d.id)
+                    .distance(120)
+                    .strength(0.5))
+                .force('charge', d3.forceManyBody().strength(-400))
+                .force('center', d3.forceCenter(width / 2, height / 2))
+                .force('collide', d3.forceCollide().radius(40));
+
+            const link = g.append('g')
+                .selectAll('line')
+                .data(edges)
+                .join('line')
+                .attr('stroke-width', 2)
+                .on('mouseover', function (event, d) {
+                    d3.select(this).attr('stroke', '#1946D1').attr('stroke-width', 4);
+                    tooltip.style.opacity = 1;
+                    tooltip.textContent = d.label || d.type;
+                    tooltip.style.left = (event.pageX + 10) + 'px';
+                    tooltip.style.top = (event.pageY - 10) + 'px';
+                })
+                .on('mouseout', function () {
+                    d3.select(this).attr('stroke', 'rgba(25, 70, 209, 0.36)').attr('stroke-width', 2);
+                    tooltip.style.opacity = 0;
+                });
+
+            const node = g.append('g')
+                .selectAll('g')
+                .data(nodes)
+                .join('g')
+                .call(d3.drag()
+                    .on('start', (e, d) => {
+                        if (!e.active) simulation.alphaTarget(0.3).restart();
+                        d.fx = d.x; d.fy = d.y;
+                    })
+                    .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
+                    .on('end', (e, d) => {
+                        if (!e.active) simulation.alphaTarget(0);
+                        d.fx = null; d.fy = null;
+                    }));
+
+            node.append('circle')
+                .attr('r', d => d.category === 'system' ? 24 : 18)
+                .attr('fill', d => {
+                    if (d.category === 'stakeholder') return '#E74530';
+                    if (d.category === 'system') return '#1946D1';
+                    if (d.category === 'decision') return '#A4A760';
+                    return '#181810';
+                })
+                .attr('stroke', 'var(--acttext)')
+                .attr('stroke-width', 3)
+                .style('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))');
+
+            node.append('text')
+                .text(d => d.label)
+                .attr('dy', 40)
+                .attr('text-anchor', 'middle')
+                .attr('fill', '#181810')
+                .style('font-size', '11px')
+                .style('font-weight', '600')
+                .style('text-shadow', '0 1px 2px rgba(255,255,255,0.8)');
+
+            simulation.on('tick', () => {
+                link
+                    .attr('x1', d => d.source.x)
+                    .attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x)
+                    .attr('y2', d => d.target.y);
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+        }
+
+        function resetZoom() {
+            const svg = d3.select('#system-map-svg');
+            const zoom = d3.zoom();
+            svg.transition().duration(750).call(zoom.transform, d3.zoomIdentity);
+            currentTransform = null;
+        }
+
+        function renderRaciMatrix(data) {
+            const container = document.getElementById('raci-container');
+            if (!data || !data.length) {
+                container.innerHTML = '<p class="text-center text-medium-grey">No data</p>';
+                return;
+            }
+
+            let html = '<div class="space-y-2">';
+            data.forEach(row => {
+                html += `<div class="border border-vapor-grey rounded-lg p-2">
+            <p class="font-bold text-near-black text-xs mb-1">${row.activity}</p>
+            <div class="grid grid-cols-2 gap-1 text-xs">
+                <div><span class="font-semibold text-primary">R:</span> ${(row.responsible || []).join(', ') || '-'}</div>
+                <div><span class="font-semibold text-coral-text">A:</span> ${(row.accountable || []).join(', ') || '-'}</div>
+                <div><span class="font-semibold text-olive-text">C:</span> ${(row.consulted || []).join(', ') || '-'}</div>
+                <div><span class="font-semibold text-medium-grey">I:</span> ${(row.informed || []).join(', ') || '-'}</div>
+            </div>
+        </div>`;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function renderInsights(insights) {
+            const container = document.getElementById('insights-container');
+            let html = '';
+
+            const addSection = (title, items, emoji, color) => {
+                if (!items || !items.length) return;
+                html += `<div class="border-l-4 ${color} pl-2">`;
+                html += `<h4 class="text-xs font-bold mb-1">${emoji} ${title}</h4>`;
+                html += '<ul class="space-y-1">';
+                items.forEach(item => html += `<li class="text-xs text-medium-grey">- ${item}</li>`);
+                html += '</ul></div>';
+            };
+
+            if (insights) {
+                addSection('Bottlenecks', insights.bottlenecks, '01', 'border-hyper-coral');
+                addSection('Risks', insights.risks, '02', 'border-yellow-500');
+                addSection('Opportunities', insights.opportunities, '03', 'border-electric-mint');
+                addSection('Conflicts', insights.conflicts, '04', 'border-primary');
+            }
+
+            container.innerHTML = html || '<p class="text-center text-medium-grey">No analysis</p>';
+        }
+
+
+        function getVertexRunId() {
+            return new URLSearchParams(window.location.search).get('run_id') || localStorage.getItem('vertex_current_run_id');
+        }
+
+        async function loadRunArtifact(artifactType) {
+            const runId = getVertexRunId();
+            if (!runId) return null;
+            const response = await fetch(`/api/vertex/runs/${encodeURIComponent(runId)}/artifacts/${artifactType}`);
+            if (!response.ok) return null;
+            const result = await response.json();
+            return result.artifact || null;
+        }
+
+        function safeId(value, fallback) {
+            return String(value || fallback).toLowerCase().replace(/[^a-z0-9_-]+/g, '_').replace(/^_+|_+$/g, '') || fallback;
+        }
+
+        function classificationItem(id, statement, evidenceId, classification = 'hypothesis', confidence = 0.45) {
+            return { id, statement: statement || 'Requires review', classification, confidence, evidence_refs: [evidenceId] };
+        }
+
+        function mapRole(category) {
+            if (category === 'stakeholder') return 'partner';
+            if (category === 'decision') return 'facilitator';
+            if (category === 'activity') return 'operator';
+            return 'partner';
+        }
+
+        function mapRelationshipType(type) {
+            if (type === 'information') return 'information_flow';
+            if (type === 'resource') return 'resource_flow';
+            if (type === 'decision') return 'approval';
+            return 'dependency';
+        }
+
+        function buildSystemMapArtifact(projectRecord, problemFrame) {
+            const runId = getVertexRunId();
+            const now = new Date().toISOString();
+            const evidenceId = `ev_synapmap_${safeId(runId, 'runless')}`;
+            const rawNodes = currentAnalysis?.system_map?.nodes || [];
+            const rawEdges = currentAnalysis?.system_map?.edges || [];
+            const nodes = rawNodes.length ? rawNodes : [{ id: 'primary_stakeholder', label: 'Primary stakeholder', category: 'stakeholder' }];
+            const stakeholders = nodes.map((node, index) => ({
+                stakeholder_id: safeId(node.id, `stakeholder_${index + 1}`),
+                label: node.label || node.id || `Stakeholder ${index + 1}`,
+                role: mapRole(node.category),
+                influence: 'medium',
+                interest: 'medium',
+                incentives: ['Needs explicit validation in the Quest run'],
+                evidence_refs: [evidenceId],
+                is_identifiable_person: false
+            }));
+            const stakeholderIds = new Set(stakeholders.map(item => item.stakeholder_id));
+            const relationships = (rawEdges.length ? rawEdges : [{ from: stakeholders[0].stakeholder_id, to: stakeholders[0].stakeholder_id, type: 'dependency', label: 'Relationship requires review' }]).map((edge, index) => {
+                const from = safeId(edge.from, stakeholders[0].stakeholder_id);
+                const to = safeId(edge.to, stakeholders[0].stakeholder_id);
+                return {
+                    relationship_id: `rel_synapmap_${index + 1}`,
+                    from_stakeholder_id: stakeholderIds.has(from) ? from : stakeholders[0].stakeholder_id,
+                    to_stakeholder_id: stakeholderIds.has(to) ? to : stakeholders[0].stakeholder_id,
+                    relationship_type: mapRelationshipType(edge.type),
+                    label: edge.label || edge.type || 'Relationship requires review',
+                    strength: 'medium',
+                    evidence_refs: [evidenceId]
+                };
+            });
+            const insights = currentAnalysis?.insights || {};
+            const tensions = (insights.conflicts?.length ? insights.conflicts : insights.risks?.length ? insights.risks : ['No explicit system tension recorded yet.']).slice(0, 6).map((item, index) => classificationItem(`ten_synapmap_${index + 1}`, item, evidenceId));
+            const dependencies = (insights.bottlenecks?.length ? insights.bottlenecks : rawEdges.map(edge => edge.label).filter(Boolean).length ? rawEdges.map(edge => edge.label).filter(Boolean) : ['Dependencies require review.']).slice(0, 8).map((item, index) => classificationItem(`dep_synapmap_${index + 1}`, item, evidenceId));
+            const unknowns = (insights.opportunities?.length ? insights.opportunities : ['Which stakeholder response most changes the decision?']).slice(0, 6).map((item, index) => ({ id: `unk_synapmap_${index + 1}`, statement: item, classification: 'unknown', confidence: 0, evidence_refs: [evidenceId] }));
+            const approvedAssumptions = (problemFrame?.assumptions || [{ assumption_id: 'asm_placeholder', statement: 'ProblemFrame assumptions are missing.', approved_for_predictive_processing: false, approved_for_financial_processing: false, approval_state: 'pending' }]).map((item) => ({
+                assumption_id: item.assumption_id,
+                source_artifact_id: problemFrame?.artifact_id || 'missing_upstream_problem_frame',
+                statement: item.statement,
+                approved_for_predictive_processing: Boolean(item.approved_for_predictive_processing),
+                approved_for_financial_processing: Boolean(item.approved_for_financial_processing),
+                approval_state: item.approval_state || 'pending'
+            }));
+            return {
+                schema_version: '1.0.0',
+                artifact_type: 'system_map',
+                artifact_id: `system_map_${safeId(runId, Date.now())}`,
+                project_id: projectRecord?.project_id || problemFrame?.project_id || `project_${safeId(runId, 'runless')}`,
+                created_at: now,
+                created_by_role: 'synapmap',
+                status: 'draft',
+                provenance: { source_kind: 'user_supplied', source_label: 'Tangle generated system map', ip_owner: 'Paola Hintze', external_components_used: [], notes: 'Mapped from Tangle D3/RACI analysis into a SystemMap draft.' },
+                human_approval: { required: true, state: 'pending', approved_by_role: 'facilitator', approved_at: now, notes: 'Pending facilitator review.' },
+                validation_errors: [],
+                preceding_artifacts: { project_record_id: projectRecord?.artifact_id || 'missing_upstream_project_record', problem_frame_id: problemFrame?.artifact_id || 'missing_upstream_problem_frame' },
+                stakeholders,
+                relationships,
+                tensions,
+                dependencies,
+                evidence_references: [{ evidence_id: evidenceId, label: 'Tangle session output', source_type: 'synthetic_observation', classification: 'hypothesis', contains_personal_data: false, evidence_context: 'synthetic_fixture' }],
+                unknowns,
+                system_boundaries: { included: ['Current mapped stakeholder system'], excluded: ['Unmapped external market'], time_horizon: 'pilot decision window', geography: 'team-defined geography' },
+                approved_assumptions: approvedAssumptions,
+                revision: 1,
+                updated_at: now
+            };
+        }
+
+        async function saveSystemMapArtifactToRun() {
+            const runId = getVertexRunId();
+            if (!runId) return false;
+            const projectRecord = await loadRunArtifact('project_record');
+            const problemFrame = await loadRunArtifact('problem_frame');
+            const artifact = buildSystemMapArtifact(projectRecord, problemFrame);
+            const response = await fetch(`/api/vertex/runs/${encodeURIComponent(runId)}/artifacts/system_map/save`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(artifact)
+            });
+            const result = await response.json();
+            if (!response.ok || !result.saved) {
+                setStatus(`SystemMap not saved to run: ${((result.errors || [])[0] || {}).message || result.detail || response.statusText}`, 'error');
+                return false;
+            }
+            setStatus(`SystemMap saved to ${runId}`, 'success');
+            return true;
+        }
+        async function saveCurrentMap() {
+            if (!currentAnalysis) {
+                setStatus('No map to save', 'error');
+                return;
+            }
+
+            const mapData = {
+                analysis: currentAnalysis,
+                history: conversationHistory,
+                timestamp: new Date().toISOString()
+            };
+
+            localStorage.setItem('synapmap_current', JSON.stringify(mapData));
+            setStatus('Map saved locally', 'success');
+            await saveSystemMapArtifactToRun();
+            setTimeout(() => setStatus(''), 2000);
+        }
+
+        function deleteCurrentMap() {
+            if (confirm('Are you sure you want to delete the current map?')) {
+                localStorage.removeItem('synapmap_current');
+                currentAnalysis = null;
+                conversationHistory = [];
+                d3.select('#system-map-svg').selectAll('*').remove();
+                document.getElementById('raci-container').innerHTML = '<p class="text-center text-medium-grey">No data</p>';
+                document.getElementById('insights-container').innerHTML = '<p class="text-center text-medium-grey">No analysis</p>';
+                document.getElementById('chat-container').innerHTML = `
+                    <div class="flex items-start gap-3">
+                        <div class="flex size-10 items-center justify-center rounded-full bg-cyber-lavender/20 text-coral-text flex-shrink-0">
+                            <svg class="ic" aria-hidden="true"><use href="#i-synapmap"/></svg>
+                        </div>
+                        <div class="rounded-2xl rounded-tl-none bg-vapor-grey p-3">
+                            <p class="font-bold text-near-black text-sm">Tangle</p>
+                            <p class="text-medium-grey text-xs">Describe your project. I will generate a system map with stakeholders, dependencies, bottlenecks, and a RACI matrix.</p>
+                        </div>
+                    </div>`;
+                setStatus('Map deleted', 'success');
+            }
+        }
+
+        function loadSavedMap() {
+            const saved = localStorage.getItem('synapmap_current');
+            if (!saved) return;
+
+            try {
+                const mapData = JSON.parse(saved);
+                currentAnalysis = mapData.analysis;
+                conversationHistory = mapData.history || [];
+
+                renderSystemMap(currentAnalysis.system_map);
+                renderRaciMatrix(currentAnalysis.raci_matrix);
+                renderInsights(currentAnalysis.insights);
+
+                setStatus(`Map loaded`, 'success');
+            } catch (e) {
+                console.error('Error loading map:', e);
+            }
+        }
+
+        function loadDemoData() {
+            const demoAnalysis = {
+                system_map: {
+                    nodes: [
+                        { id: "ceo", label: "CEO (Sarah)", category: "stakeholder" },
+                        { id: "cto", label: "CTO (Mike)", category: "stakeholder" },
+                        { id: "designer", label: "Designer (Lisa)", category: "stakeholder" },
+                        { id: "tech_stack", label: "Tech Stack", category: "decision" },
+                        { id: "mvp", label: "MVP", category: "activity" },
+                        { id: "funding", label: "Funding", category: "system" },
+                        { id: "users", label: "Early Users", category: "stakeholder" }
+                    ],
+                    edges: [
+                        { from: "ceo", to: "tech_stack", type: "decision", label: "Approves" },
+                        { from: "cto", to: "tech_stack", type: "decision", label: "Defines" },
+                        { from: "tech_stack", to: "mvp", type: "dependency", label: "Blocks" },
+                        { from: "designer", to: "mvp", type: "resource", label: "Designs" },
+                        { from: "funding", to: "mvp", type: "resource", label: "Funds" },
+                        { from: "mvp", to: "users", type: "information", label: "Validates" }
+                    ]
+                },
+                raci_matrix: [
+                    { activity: "Tech Stack Definition", responsible: ["Mike"], accountable: ["Sarah"], consulted: ["Lisa"], informed: ["Team"] },
+                    { activity: "MVP Development", responsible: ["Mike"], accountable: ["Sarah"], consulted: ["Lisa"], informed: ["Investors"] },
+                    { activity: "Funding Search", responsible: ["Sarah"], accountable: ["Sarah"], consulted: ["Mike"], informed: ["Team"] }
+                ],
+                insights: {
+                    bottlenecks: ["Tech stack decision is blocking MVP development"],
+                    risks: ["Funding not confirmed yet", "Critical dependency on CTO"],
+                    opportunities: ["Early user validation can improve product"],
+                    conflicts: []
+                },
+                summary: "Demo project: Delivery App with 7 nodes and 6 key dependencies."
+            };
+
+            currentAnalysis = demoAnalysis;
+            renderSystemMap(demoAnalysis.system_map);
+            renderRaciMatrix(demoAnalysis.raci_matrix);
+            renderInsights(demoAnalysis.insights);
+            addChatMessage(demoAnalysis.summary, false);
+            setStatus('Demo data loaded', 'success');
+        }
+    </script>
+
+</body>
+
+</html>

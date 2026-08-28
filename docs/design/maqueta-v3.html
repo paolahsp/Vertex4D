@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<title>VERTEX 4D — propuesta v3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --primary:#5b13ec; --lav:#B2A4FF; --coral:#FF6B6B; --mint:#66FFB2;
+  --d:"Bricolage Grotesque",Georgia,serif;
+  --u:"Manrope","Helvetica Neue",Arial,sans-serif;
+  --m:"JetBrains Mono",ui-monospace,monospace;
+}
+/* DARK — foreground softened to ~13:1 instead of pure white at 18.6:1,
+   which is what causes halation over a full working day. */
+[data-theme="dark"]{
+  --bg:#161022; --bg2:#0f0a1a;
+  --glass:rgba(178,164,255,.07); --glass2:rgba(178,164,255,.11);
+  --edge:rgba(178,164,255,.20); --edge2:rgba(178,164,255,.32);
+  --fg:#E4DFF2; --fg2:#A79CC4; --fg3:#8A80A6;
+  --act:#B2A4FF;                 /* action reads as lavender on dark */
+  --actfill:#5b13ec; --acttext:#fff;
+  --track:rgba(178,164,255,.14);
+}
+/* LIGHT — accents keep their exact hue but only ever as fills,
+   because mint/coral/lavender cannot carry text on a light ground. */
+[data-theme="light"]{
+  --bg:#f6f6f8; --bg2:#ececf1;
+  --glass:rgba(255,255,255,.72); --glass2:rgba(255,255,255,.92);
+  --edge:rgba(26,26,26,.10); --edge2:rgba(91,19,236,.28);
+  --fg:#1A1A1A; --fg2:#55505f; --fg3:#6B6B73;
+  --act:#5b13ec;
+  --actfill:#5b13ec; --acttext:#fff;
+  --track:rgba(26,26,26,.09);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg2);font-family:var(--u);color:var(--fg);
+  -webkit-font-smoothing:antialiased;transition:background .25s}
+
+.sheet{width:880px;margin:0 auto;background:var(--bg);position:relative;overflow:hidden;
+  transition:background .25s}
+/* a quiet ground: one soft wash + a hairline grid. no radial glow blobs. */
+.sheet::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    repeating-linear-gradient(to right, var(--edge) 0 1px, transparent 1px 88px),
+    repeating-linear-gradient(to bottom, var(--edge) 0 1px, transparent 1px 88px);
+  opacity:.30}
+.sheet > *{position:relative;z-index:1}
+
+/* ---------- bar ---------- */
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:14px 28px;border-bottom:1px solid var(--edge)}
+.brandbit{display:flex;align-items:center;gap:11px}
+.tile{width:30px;height:30px;border-radius:9px;background:var(--actfill);color:#fff;
+  display:grid;place-items:center;font-family:var(--m);font-size:12px;font-weight:700}
+.brandbit b{font-family:var(--d);font-size:15px;font-weight:800;letter-spacing:-.2px}
+.brandbit i{display:block;font-family:var(--m);font-size:9px;font-style:normal;
+  color:var(--fg3);letter-spacing:.9px;margin-top:1px}
+.runtag{font-family:var(--m);font-size:10.5px;color:var(--fg2);
+  padding:6px 11px;border:1px solid var(--edge);border-radius:8px;background:var(--glass)}
+.runtag em{font-style:normal;color:var(--mint)}
+[data-theme="light"] .runtag em{color:#0a7346}
+.toggle{display:flex;border:1px solid var(--edge);border-radius:9px;overflow:hidden;
+  background:var(--glass)}
+.toggle button{border:0;cursor:pointer;background:transparent;color:var(--fg3);
+  font-family:var(--m);font-size:10px;padding:7px 11px;letter-spacing:.6px}
+.toggle button[aria-pressed="true"]{background:var(--actfill);color:#fff}
+
+/* ---------- head ---------- */
+.head{padding:36px 28px 30px;display:grid;grid-template-columns:1fr 232px;gap:34px;
+  align-items:end;border-bottom:1px solid var(--edge)}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--m);
+  font-size:10.5px;color:var(--fg2);margin-bottom:15px}
+.eyebrow s{text-decoration:none;width:20px;height:2px;background:var(--mint);border-radius:2px}
+[data-theme="light"] .eyebrow s{background:var(--primary)}
+h1{font-family:var(--d);font-size:47px;line-height:1.03;font-weight:800;letter-spacing:-1.4px;
+  max-width:520px}
+h1 em{font-style:normal;color:var(--act)}
+.lede{margin-top:15px;font-size:14.5px;line-height:1.68;color:var(--fg2);max-width:470px;
+  letter-spacing:0}
+.acts{display:flex;gap:9px;margin-top:22px}
+.b1,.b2{font-family:var(--u);font-size:13.5px;font-weight:600;padding:11px 18px;
+  border-radius:10px;cursor:pointer;border:1px solid transparent}
+.b1{background:var(--actfill);color:var(--acttext)}
+.b2{background:var(--glass);border-color:var(--edge);color:var(--fg)}
+
+.tally{display:grid;gap:8px}
+.t{background:var(--glass);border:1px solid var(--edge);border-radius:12px;
+  padding:13px 14px;backdrop-filter:blur(14px)}
+.t b{font-family:var(--d);font-size:26px;font-weight:800;letter-spacing:-.9px;display:block;
+  line-height:1}
+.t span{font-size:11px;color:var(--fg2);display:block;margin-top:5px}
+.t.up b{color:var(--mint)} [data-theme="light"] .t.up b{color:#0a7346}
+
+/* ---------- path ---------- */
+.path{padding:26px 28px 30px;border-bottom:1px solid var(--edge)}
+.rowcap{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:20px}
+.rowcap h2{font-family:var(--d);font-size:17px;font-weight:600;letter-spacing:-.2px}
+.rowcap p{font-family:var(--m);font-size:10px;color:var(--fg3)}
+.track{position:relative;height:2px;background:var(--track);border-radius:2px;margin:0 22px 0}
+.track i{position:absolute;left:0;top:0;bottom:0;width:75%;border-radius:2px;
+  background:linear-gradient(90deg,var(--mint),var(--lav))}
+[data-theme="light"] .track i{background:linear-gradient(90deg,#0d8a53,var(--primary))}
+.stations{display:grid;grid-template-columns:repeat(6,1fr);margin-top:-7px}
+.st{display:flex;flex-direction:column;align-items:center;text-align:center;padding:0 4px}
+.knob{width:13px;height:13px;border-radius:50%;background:var(--bg);
+  border:2px solid var(--track);margin-bottom:12px}
+.st.ok .knob{background:var(--mint);border-color:var(--mint)}
+[data-theme="light"] .st.ok .knob{background:#0d8a53;border-color:#0d8a53}
+.st.now .knob{background:var(--actfill);border-color:var(--act);
+  box-shadow:0 0 0 5px color-mix(in srgb, var(--act) 22%, transparent)}
+.st h3{font-family:var(--d);font-size:15px;font-weight:600;letter-spacing:-.2px}
+.st span{font-family:var(--m);font-size:9.5px;color:var(--fg3);margin-top:4px;display:block}
+.st.now h3{color:var(--act)}
+.st.wait h3,.st.wait span{color:var(--fg3)}
+
+/* ---------- body ---------- */
+.cols{display:grid;grid-template-columns:1fr 306px;gap:14px;padding:26px 28px 0}
+.panel{background:var(--glass);border:1px solid var(--edge);border-radius:16px;padding:20px;
+  backdrop-filter:blur(18px) saturate(1.1)}
+.plabel{font-family:var(--m);font-size:10px;color:var(--fg3);margin-bottom:15px}
+.ask{font-family:var(--d);font-size:20px;font-weight:600;letter-spacing:-.3px;
+  margin-bottom:16px;line-height:1.25}
+
+.item{display:grid;grid-template-columns:4px 1fr auto;gap:13px;align-items:center;
+  padding:12px 0;border-top:1px solid var(--edge)}
+.item .sig{width:4px;height:100%;min-height:30px;border-radius:3px}
+.item p{font-size:13.5px;line-height:1.55;color:var(--fg)}
+.chip{font-family:var(--m);font-size:9.5px;padding:5px 9px;border-radius:7px;white-space:nowrap;
+  font-weight:500}
+.ev .sig{background:var(--mint)} .ev .chip{background:color-mix(in srgb,var(--mint) 22%,transparent);color:var(--mint)}
+.hy .sig{background:var(--lav)}  .hy .chip{background:color-mix(in srgb,var(--lav) 22%,transparent);color:var(--lav)}
+.rk .sig{background:var(--coral)}.rk .chip{background:color-mix(in srgb,var(--coral) 22%,transparent);color:var(--coral)}
+[data-theme="light"] .ev .chip{background:#66FFB2;color:#0c3d26}
+[data-theme="light"] .hy .chip{background:#B2A4FF;color:#241a52}
+[data-theme="light"] .rk .chip{background:#FF6B6B;color:#4d1414}
+
+/* reading */
+.num{font-family:var(--d);font-size:66px;font-weight:800;letter-spacing:-3px;line-height:.9}
+.num u{text-decoration:none;font-size:16px;font-weight:500;color:var(--fg3);letter-spacing:0}
+.shift{display:inline-flex;align-items:center;gap:7px;margin-top:12px;font-size:12.5px;
+  color:var(--fg2);background:var(--glass2);border:1px solid var(--edge);
+  padding:7px 11px;border-radius:9px}
+.shift b{color:var(--fg);font-weight:600}
+.meters{margin-top:20px;display:grid;gap:13px}
+.meter .lbl{display:flex;justify-content:space-between;font-size:12px;color:var(--fg2);
+  margin-bottom:6px}
+.meter .lbl b{color:var(--fg);font-weight:600;font-family:var(--m);font-size:11px}
+.mt{height:7px;border-radius:6px;background:var(--track);overflow:hidden}
+.mt i{display:block;height:100%;border-radius:6px}
+
+/* verdict */
+.verdict{margin:14px 28px 28px;border:1px solid var(--edge2);border-radius:16px;
+  background:var(--glass2);backdrop-filter:blur(18px);display:grid;
+  grid-template-columns:206px 1fr;overflow:hidden}
+.vl{padding:20px;background:var(--actfill);color:#fff}
+.vl span{font-family:var(--m);font-size:10px;opacity:.82}
+.vl h2{font-family:var(--d);font-size:30px;font-weight:800;letter-spacing:-.9px;
+  line-height:1.02;margin-top:8px}
+.vr{padding:20px 22px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.vr h4{font-family:var(--m);font-size:10px;margin-bottom:7px}
+.vr p{font-size:12.5px;line-height:1.6;color:var(--fg2)}
+.h-si h4{color:var(--mint)} .h-no h4{color:var(--coral)} .h-md h4{color:var(--act)}
+[data-theme="light"] .h-si h4{color:#0a7346}
+[data-theme="light"] .h-no h4{color:#b02a2a}
+.foot{grid-column:1/-1;border-top:1px solid var(--edge);padding-top:13px;margin-top:2px;
+  display:flex;justify-content:space-between;font-family:var(--m);font-size:10px;color:var(--fg3)}
+.foot b{color:var(--coral);font-weight:500}
+[data-theme="light"] .foot b{color:#b02a2a}
+
+.note{width:880px;margin:0 auto 26px;padding:16px 28px 20px;background:var(--bg2);
+  color:var(--fg2);font-size:12px;line-height:1.85}
+.note b{color:var(--act)}
+</style>
+</head>
+<body>
+
+<div class="sheet">
+  <div class="bar">
+    <div class="brandbit">
+      <span class="tile">V4</span>
+      <span><b>VERTEX 4D</b><i>SRSLY LABS</i></span>
+    </div>
+    <span class="runtag">run_cfc529218eb0 · Recircle · <em>midiendo</em></span>
+    <div class="toggle" role="group" aria-label="Tema">
+      <button type="button" data-set="dark" aria-pressed="true">Oscuro</button>
+      <button type="button" data-set="light" aria-pressed="false">Claro</button>
+    </div>
+  </div>
+
+  <div class="head">
+    <div>
+      <p class="eyebrow"><s></s>Etapa 05 de 06 · Billie</p>
+      <h1>Tu idea ya tiene sistema.<br>Ahora <em>que hable el dinero.</em></h1>
+      <p class="lede">Cinco supuestos aprobados llegaron hasta aquí. Billie no juzga la idea: la mide.
+        Precio, margen, punto de equilibrio — y qué necesita para sobrevivir.</p>
+      <div class="acts"><button class="b1">Continuar con Billie</button><button class="b2">Ver la cadena</button></div>
+    </div>
+    <div class="tally">
+      <div class="t"><b>5 / 6</b><span>Etapas cerradas</span></div>
+      <div class="t up"><b>+7</b><span>Stakeholders que no habías visto</span></div>
+      <div class="t"><b>12 / 20</b><span>Contrastes de IA usados</span></div>
+    </div>
+  </div>
+
+  <div class="path">
+    <div class="rowcap"><h2>Golden Path</h2><p>problema · sistema · comportamiento · números · decisión</p></div>
+    <div class="track"><i></i></div>
+    <div class="stations">
+      <div class="st ok"><span class="knob"></span><h3>Alex</h3><span>ProblemFrame</span></div>
+      <div class="st ok"><span class="knob"></span><h3>SynapMap</h3><span>SystemMap</span></div>
+      <div class="st ok"><span class="knob"></span><h3>Aprobación</h3><span>5 supuestos</span></div>
+      <div class="st ok"><span class="knob"></span><h3>D-Predict</h3><span>Hipótesis</span></div>
+      <div class="st now"><span class="knob"></span><h3>Billie</h3><span>midiendo ahora</span></div>
+      <div class="st wait"><span class="knob"></span><h3>Decisión</h3><span>requiere firma</span></div>
+    </div>
+  </div>
+
+  <div class="cols">
+    <div class="panel">
+      <p class="plabel">Registro de supuestos</p>
+      <p class="ask">¿Cuáles estás dispuesta a apostarle recursos?</p>
+      <div class="item ev"><span class="sig"></span><p>Los cafés pagan una cuota por uso, no una suscripción.</p><span class="chip">evidencia</span></div>
+      <div class="item ev"><span class="sig"></span><p>El lavado compartido baja el costo unitario un 40%.</p><span class="chip">evidencia</span></div>
+      <div class="item rk"><span class="sig"></span><p>El cliente devuelve el envase en menos de 48 horas.</p><span class="chip">sin evidencia</span></div>
+      <div class="item hy"><span class="sig"></span><p>Tres de cinco cafés siguen después del piloto.</p><span class="chip">hipótesis</span></div>
+      <div class="item hy"><span class="sig"></span><p>El mostrador no ve el envase como carga extra.</p><span class="chip">hipótesis</span></div>
+    </div>
+
+    <div class="panel">
+      <p class="plabel">Lectura · precio por uso</p>
+      <p class="num">0.45<u> EUR</u></p>
+      <p class="shift">Tu intuición decía <b>0.20</b></p>
+      <div class="meters">
+        <div class="meter"><div class="lbl"><span>Margen de contribución</span><b>62%</b></div>
+          <div class="mt"><i style="width:62%;background:var(--mint)"></i></div></div>
+        <div class="meter"><div class="lbl"><span>Punto de equilibrio</span><b>mes 14</b></div>
+          <div class="mt"><i style="width:47%;background:var(--lav)"></i></div></div>
+        <div class="meter"><div class="lbl"><span>Colchón de caja</span><b>ajustado</b></div>
+          <div class="mt"><i style="width:26%;background:var(--coral)"></i></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <div class="vl"><span>Decisión sugerida</span><h2>Piloto acotado</h2></div>
+    <div class="vr">
+      <div class="h-si"><h4>por qué sí</h4><p>El margen aguanta si el lavado se comparte entre los cinco cafés.</p></div>
+      <div class="h-no"><h4>pero</h4><p>La devolución en 48 h no tiene una sola evidencia detrás.</p></div>
+      <div class="h-md"><h4>qué medir</h4><p>Tasa de retorno real, por café y por semana, durante seis meses.</p></div>
+      <div class="foot"><span>Cadena completa · 6 artefactos ligados</span><span>Pendiente de firma · <b>facilitador</b></span></div>
+    </div>
+  </div>
+</div>
+
+<p class="note">
+  <b>Legibilidad para jornada larga</b> — cuerpo en Manrope 13,5–14,5 px con interlineado 1,6, sin mayúsculas ni tracking abierto.
+  El mono queda solo para IDs, cifras y etiquetas cortas, que es donde gana.<br>
+  <b>Fondo oscuro suavizado</b> — el texto no es blanco puro (18,6:1, produce halación) sino #E4DFF2, alrededor de 13:1.
+  Cómodo sostenido, y sigue pasando AA de sobra.<br>
+  <b>Glass con intención</b> — vidrio y desenfoque conservados, pero sin blobs de glow, sin texto en degradado y sin retícula de tarjetas iguales.<br>
+  <b>Los dos temas son de primera clase</b> — el toggle arriba a la derecha funciona. En claro los acentos pasan a ser relleno,
+  porque mint, coral y lavender no pueden cargar texto sobre fondo claro.
+</p>
+
+<script>
+  const root = document.documentElement;
+  document.querySelectorAll('.toggle button').forEach(b => {
+    b.addEventListener('click', () => {
+      root.setAttribute('data-theme', b.dataset.set);
+      document.querySelectorAll('.toggle button').forEach(x =>
+        x.setAttribute('aria-pressed', String(x === b)));
+    });
+  });
+</script>
+</body>
+</html>

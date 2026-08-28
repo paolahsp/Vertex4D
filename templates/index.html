@@ -1,20 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 
 <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Vertex 4D by Srsly Labs</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Inter:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        paper: "#F4EBDC",
+                        paper: "var(--bg)",
                         ink: "#181810",
                         cobalt: "#1946D1",
                         coral: "#E74530",
@@ -22,17 +19,19 @@
                     },
                     fontFamily: {
                         sans: ["Inter", "Arial", "sans-serif"],
-                        serif: ["Source Serif 4", "Georgia", "serif"],
-                        mono: ["Space Mono", "Courier New", "monospace"]
+                        serif: ["Bricolage Grotesque", "sans-serif"],
+                        mono: ["Space Mono", var(--font-mono), "monospace"]
                     }
                 }
             }
         }
     </script>
-    <link rel="stylesheet" href="/static/css/vertex4d.css">
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
 </head>
 
 <body class="bg-paper text-ink">
+{% include "_icon_sprite.html" %}
     <div class="site-shell">
         <header class="site-nav">
             <a class="brand-lockup" href="/">
@@ -46,7 +45,7 @@
                 <a href="#services">Services</a>
             </nav>
             <div class="site-actions">
-                <a class="button ghost-button" href="/register">Create Profile</a>
+                <a class="button ghost-button" href="/register">Viability Profile</a>
                 <a class="button primary-button" href="/login">Client Login</a>
             </div>
         </header>
@@ -59,7 +58,7 @@
                     <p class="hero-lede">A strategy lab for mapping emotional, contextual, systemic, and framing signals before a decision becomes expensive.</p>
                     <div class="hero-actions">
                         <a class="button primary-button" href="/login">Access Profile</a>
-                        <a class="button ghost-button" href="/register">Create Profile</a>
+                        <a class="button ghost-button" href="/register">Viability Profile</a>
                     </div>
                 </div>
 
@@ -156,9 +155,9 @@
                             <img src="/static/brand/section-illustrations/design.svg" alt="">
                         </div>
                         <div>
-                            <p class="eyebrow">Create</p>
+                            <p class="eyebrow">Pricing</p>
                             <h3>Billie</h3>
-                            <p>Brand, content, and narrative direction shaped from the strategy layer.</p>
+                            <p>Pricing, cash runway, and financial scenario logic shaped from the evidence layer.</p>
                         </div>
                     </article>
                 </div>

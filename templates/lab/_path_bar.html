@@ -1,0 +1,35 @@
+{# Shared Quest axis. Included with {% with stage = N %} (1..6). #}
+{% set stations = [
+  ('Riddle',     'ProblemFrame', '/dashboard/vertex/riddle'),
+  ('Tangle',     'SystemMap',    '/dashboard/vertex/tangle'),
+  ('Gatekeeper', 'Assumptions',  '/dashboard/vertex/gatekeeper'),
+  ('Ripple',     'Hypothesis',   '/dashboard/vertex/ripple'),
+  ('Ledger',     'Numbers',      '/dashboard/vertex/ledger'),
+  ('Stamp',      'Record',       '/dashboard/vertex/stamp')
+] %}
+{% set stage = stage | default(1) %}
+<section class="v4-path">
+  <div class="v4-rowcap">
+    <h2>Quest</h2>
+    <p>problem / system / behavior / numbers / decision</p>
+  </div>
+  <div class="v4-evidence-gate" aria-label="Evidence Gate">
+    <span class="v4-gate-chip is-evidence">what I know</span>
+    <span class="v4-gate-chip is-hypothesis">what I assume</span>
+    <span class="v4-gate-chip is-risk">what still needs evidence</span>
+  </div>
+  <div class="v4-track"><i style="--fill: {{ ((stage - 1) / 5 * 100) | round(1) }}%"></i></div>
+  <nav class="v4-stations" aria-label="Quest stages">
+    {% for name, artifact, href in stations %}
+      {% set n = loop.index %}
+      {% set state = 'ok' if n < stage else ('now' if n == stage else 'wait') %}
+      <a class="v4-st {{ state }}" href="{{ href }}" data-run-link
+         {% if state == 'now' %}aria-current="step"{% endif %}
+         title="Stage {{ n }} of 6 - {{ name }}">
+        <span class="v4-knob"></span>
+        <h3>{{ name }}</h3>
+        <span>{% if state == 'now' %}you are here{% elif state == 'ok' %}{{ artifact }}{% else %}{{ artifact }}{% endif %}</span>
+      </a>
+    {% endfor %}
+  </nav>
+</section>

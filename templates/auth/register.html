@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html class="light" lang="en" data-theme="{{ (user.get('prefs') or {}).get('theme', 'dark') if user is defined and user else 'dark' }}" data-motion="{{ (user.get('prefs') or {}).get('motion', 'full') if user is defined and user else 'full' }}" data-focus="{{ (user.get('prefs') or {}).get('focus', 'off') if user is defined and user else 'off' }}">
 
 <head>
     <meta charset="utf-8" />
@@ -7,11 +7,8 @@
     <title>Create Profile | Vertex 4D</title>
     <link rel="icon" href="/favicon.ico">
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com" rel="preconnect" />
-    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
-    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Work+Sans:wght@400;500;600;700;900&display=swap" rel="stylesheet" />
     <style type="text/tailwindcss">
-        @import url('https://api.fontshare.com/v2/css?f[]=clash-display@700&display=swap');
+        
         
         .noise-texture {
             position: relative;
@@ -45,18 +42,20 @@
                         "background-dark": "#181810",
                     },
                     fontFamily: {
-                        "display": ["Work Sans", "sans-serif"],
-                        "heading": ["Libre Baskerville", "Georgia", "serif"],
+                        "display": ["Inter", "sans-serif"],
+                        "heading": ["Bricolage Grotesque", "sans-serif"],
                     },
                 },
             },
         }
     </script>
-    <link rel="stylesheet" href="/static/css/vertex4d.css">
+    <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
 </head>
 
 <body
     class="auth-shell font-display bg-gray-50 text-gray-900 noise-texture min-h-screen flex items-center justify-center relative overflow-x-hidden py-12">
+{% include "_icon_sprite.html" %}
 
     <div class="relative z-10 w-full max-w-2xl px-4">
         <div class="text-center mb-8">
@@ -123,7 +122,20 @@
                     <!-- Members -->
                     <div class="sm:col-span-6 pt-4 border-t border-gray-200">
                         <h3 class="text-lg font-medium leading-6 text-gray-900">Team Members</h3>
-                        <p class="mt-1 text-sm text-gray-500">Add up to 3 members.</p>
+                        <p class="mt-1 text-sm text-gray-500">Add up to 3 members. The facilitator role is granted by the program, not chosen here: it can sign Stamps and read every team's run in the cohort dashboard.</p>
+                    </div>
+
+                    <!-- Program authorization for elevated roles -->
+                    <div class="sm:col-span-6">
+                        <label for="facilitator_invite_code" class="block text-sm font-medium text-gray-700 ml-1">Program invite code
+                            <span class="text-gray-400 font-normal">(only if registering a facilitator)</span></label>
+                        <div class="mt-1">
+                            <input type="text" name="facilitator_invite_code" id="facilitator_invite_code"
+                                autocomplete="off"
+                                placeholder="Leave blank for a founder-only team"
+                                class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                        <p class="mt-1 text-xs text-gray-500">A facilitator must be on the program allowlist or supply the cohort invite code. Without it, registration is refused rather than quietly downgraded.</p>
                     </div>
 
                     <!-- Member 1 -->
@@ -141,6 +153,16 @@
                         <div class="mt-1">
                             <input type="email" name="member1_email" id="member1_email" required
                                 class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                    </div>
+                    <div class="sm:col-span-6">
+                        <label for="member1_role" class="block text-sm font-medium text-gray-700 ml-1">Member 1 Role</label>
+                        <div class="mt-1">
+                            <select name="member1_role" id="member1_role" class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                                <option value="founder" selected>Founder</option>
+                                <option value="facilitator">Facilitator</option>
+                                <option value="admin">Admin</option>
+                            </select>
                         </div>
                     </div>
 
@@ -161,6 +183,16 @@
                                 class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
                         </div>
                     </div>
+                    <div class="sm:col-span-6">
+                        <label for="member2_role" class="block text-sm font-medium text-gray-700 ml-1">Member 2 Role</label>
+                        <div class="mt-1">
+                            <select name="member2_role" id="member2_role" class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                                <option value="founder" selected>Founder</option>
+                                <option value="facilitator">Facilitator</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                    </div>
 
                     <!-- Member 3 -->
                     <div class="sm:col-span-3">
@@ -177,6 +209,16 @@
                         <div class="mt-1">
                             <input type="email" name="member3_email" id="member3_email"
                                 class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                        </div>
+                    </div>
+                    <div class="sm:col-span-6">
+                        <label for="member3_role" class="block text-sm font-medium text-gray-700 ml-1">Member 3 Role</label>
+                        <div class="mt-1">
+                            <select name="member3_role" id="member3_role" class="block w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 shadow-sm focus:border-primary focus:ring-primary sm:text-sm transition-all hover:bg-white focus:bg-white">
+                                <option value="founder" selected>Founder</option>
+                                <option value="facilitator">Facilitator</option>
+                                <option value="admin">Admin</option>
+                            </select>
                         </div>
                     </div>
                 </div>

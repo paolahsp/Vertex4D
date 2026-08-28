@@ -1,0 +1,614 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "artifact_type",
+    "artifact_id",
+    "project_id",
+    "created_at",
+    "created_by_role",
+    "status",
+    "provenance",
+    "human_approval",
+    "validation_errors",
+    "preceding_artifacts",
+    "approved_assumption_references",
+    "currency",
+    "scenario_name",
+    "time_horizon",
+    "pricing_assumptions",
+    "cost_assumptions",
+    "volume_assumptions",
+    "revenue_projection",
+    "cost_projection",
+    "cash_requirement",
+    "sustainability_indicators",
+    "sensitivity_notes",
+    "uncertainty",
+    "approval_state",
+    "revision",
+    "updated_at"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "artifact_type": {
+      "type": "string",
+      "const": "financial_scenario"
+    },
+    "artifact_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "project_id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9_-]*$"
+    },
+    "created_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    },
+    "created_by_role": {
+      "type": "string",
+      "enum": [
+        "founder",
+        "facilitator",
+        "admin",
+        "system",
+        "alex",
+        "synapmap",
+        "d_predict",
+        "finops"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending_review",
+        "approved",
+        "rejected",
+        "superseded"
+      ]
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source_kind",
+        "source_label",
+        "ip_owner",
+        "external_components_used",
+        "notes"
+      ],
+      "properties": {
+        "source_kind": {
+          "type": "string",
+          "enum": [
+            "synthetic_fixture",
+            "user_supplied",
+            "imported",
+            "system_generated"
+          ]
+        },
+        "source_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "ip_owner": {
+          "type": "string",
+          "minLength": 1
+        },
+        "external_components_used": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "human_approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "required",
+        "state",
+        "approved_by_role",
+        "approved_at",
+        "notes"
+      ],
+      "properties": {
+        "required": {
+          "type": "boolean"
+        },
+        "state": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "approved",
+            "rejected"
+          ]
+        },
+        "approved_by_role": {
+          "type": "string",
+          "enum": [
+            "founder",
+            "facilitator",
+            "admin"
+          ]
+        },
+        "approved_at": {
+          "type": "string",
+          "minLength": 1,
+          "format": "date-time"
+        },
+        "notes": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "validation_errors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "preceding_artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "project_record_id",
+        "problem_frame_id",
+        "system_map_id"
+      ],
+      "properties": {
+        "project_record_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "problem_frame_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "system_map_id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        }
+      }
+    },
+    "approved_assumption_references": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "currency": {
+      "type": "string",
+      "enum": [
+        "EUR",
+        "USD",
+        "MXN",
+        "GBP"
+      ]
+    },
+    "scenario_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "time_horizon": {
+      "type": "string",
+      "minLength": 1
+    },
+    "pricing_assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assumption_id",
+          "label",
+          "value",
+          "unit",
+          "is_fixture_value",
+          "source_assumption_ref"
+        ],
+        "properties": {
+          "assumption_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "is_fixture_value": {
+            "type": "boolean"
+          },
+          "source_assumption_ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "cost_assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assumption_id",
+          "label",
+          "value",
+          "unit",
+          "is_fixture_value",
+          "source_assumption_ref"
+        ],
+        "properties": {
+          "assumption_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "is_fixture_value": {
+            "type": "boolean"
+          },
+          "source_assumption_ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "volume_assumptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "assumption_id",
+          "label",
+          "value",
+          "unit",
+          "is_fixture_value",
+          "source_assumption_ref"
+        ],
+        "properties": {
+          "assumption_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "value": {
+            "type": "integer"
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "is_fixture_value": {
+            "type": "boolean"
+          },
+          "source_assumption_ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "revenue_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "is_fixture_value",
+        "classification",
+        "calculation_note"
+      ],
+      "properties": {
+        "value": {
+          "type": "integer"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "is_fixture_value": {
+          "type": "boolean"
+        },
+        "classification": {
+          "type": "string",
+          "enum": [
+            "fact",
+            "inference",
+            "hypothesis",
+            "unknown",
+            "predictive_hypothesis"
+          ]
+        },
+        "calculation_note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "cost_projection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "is_fixture_value",
+        "classification",
+        "calculation_note"
+      ],
+      "properties": {
+        "value": {
+          "type": "integer"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "is_fixture_value": {
+          "type": "boolean"
+        },
+        "classification": {
+          "type": "string",
+          "enum": [
+            "fact",
+            "inference",
+            "hypothesis",
+            "unknown",
+            "predictive_hypothesis"
+          ]
+        },
+        "calculation_note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "cash_requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "unit",
+        "is_fixture_value",
+        "classification",
+        "calculation_note"
+      ],
+      "properties": {
+        "value": {
+          "type": "integer"
+        },
+        "unit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "is_fixture_value": {
+          "type": "boolean"
+        },
+        "classification": {
+          "type": "string",
+          "enum": [
+            "fact",
+            "inference",
+            "hypothesis",
+            "unknown",
+            "predictive_hypothesis"
+          ]
+        },
+        "calculation_note": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "sustainability_indicators": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "indicator_id",
+          "statement",
+          "classification",
+          "confidence"
+        ],
+        "properties": {
+          "indicator_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "sensitivity_notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "note_id",
+          "statement",
+          "classification"
+        ],
+        "properties": {
+          "note_id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9_-]*$"
+          },
+          "statement": {
+            "type": "string",
+            "minLength": 1
+          },
+          "classification": {
+            "type": "string",
+            "enum": [
+              "fact",
+              "inference",
+              "hypothesis",
+              "unknown",
+              "predictive_hypothesis"
+            ]
+          }
+        }
+      },
+      "minItems": 1
+    },
+    "uncertainty": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "level",
+        "drivers",
+        "unknowns_preserved"
+      ],
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "drivers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "unknowns_preserved": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "approval_state": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "approved_for_system_mapping",
+        "approved_for_decision_record",
+        "approved_for_financial_processing",
+        "pending_founder_review",
+        "pending_financial_review"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "updated_at": {
+      "type": "string",
+      "minLength": 1,
+      "format": "date-time"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://vertex4d.local/contracts/v1/financial-scenario.schema.json",
+  "title": "VERTEX 4D financial_scenario v1",
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "approved"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "human_approval": {
+            "properties": {
+              "state": {
+                "const": "approved"
+              },
+              "approved_by_role": {
+                "type": "string"
+              },
+              "approved_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print Brief | VERTEX 4D</title>
+    <style>
+        :root { color: #18181b; background: #fff; font-family: Arial, Helvetica, sans-serif; }
+        body { background: #fff; color: #18181b; margin: 0; }
+        .page { margin: 0 auto; max-width: 980px; padding: 28px; }
+        .topbar { align-items: center; border-bottom: 2px solid #18181b; display: flex; gap: 16px; justify-content: space-between; padding-bottom: 14px; }
+        .brand { font-size: 13px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+        .actions { display: flex; gap: 8px; }
+        button, .link { background: #18181b; border: 0; border-radius: 6px; color: #fff; cursor: pointer; font: 700 13px/1 Arial, sans-serif; padding: 10px 12px; text-decoration: none; }
+        h1 { font-size: 32px; line-height: 1.05; margin: 22px 0 8px; }
+        h2 { border-bottom: 1px solid #d4d4d8; font-size: 17px; margin: 28px 0 10px; padding-bottom: 6px; }
+        h3 { font-size: 13px; margin: 14px 0 5px; }
+        p, li, td, th { font-size: 12.5px; line-height: 1.45; }
+        .meta, .grid { display: grid; gap: 10px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .box { border: 1px solid #d4d4d8; border-radius: 8px; padding: 10px; }
+        .box b { display: block; font-size: 11px; letter-spacing: .03em; margin-bottom: 4px; text-transform: uppercase; }
+        .verdict { background: #f4f4f5; border-left: 5px solid #18181b; margin-top: 18px; padding: 12px 14px; }
+        ul { margin: 0; padding-left: 18px; }
+        table { border-collapse: collapse; page-break-inside: avoid; width: 100%; }
+        th, td { border: 1px solid #d4d4d8; padding: 8px; text-align: left; vertical-align: top; }
+        th { background: #f4f4f5; font-size: 11px; text-transform: uppercase; }
+        .small { color: #52525b; font-size: 11.5px; }
+        .disclaimer { border: 1px solid #71717a; margin-top: 24px; padding: 10px; }
+        .section { page-break-inside: avoid; }
+        @media print {
+            @page { margin: 16mm; }
+            .no-print { display: none !important; }
+            .page { max-width: none; padding: 0; }
+            body { color: #000; }
+            a { color: #000; text-decoration: none; }
+        }
+    </style>
+</head>
+<body>
+<main class="page">
+    <header class="topbar">
+        <div>
+            <div class="brand">VERTEX 4D Brief</div>
+            <div class="small">Generated {{ generated_at }}</div>
+        </div>
+        <div class="actions no-print">
+            <button type="button" onclick="window.print()">Print / Save PDF</button>
+            <a class="link" href="/dashboard/lab/decision-memo?run_id={{ run_id }}">Back</a>
+        </div>
+    </header>
+
+    <h1>{{ memo.case_title }}</h1>
+    <section class="meta">
+        <div class="box"><b>Run ID</b>{{ memo.run_id }}</div>
+        <div class="box"><b>Team</b>{{ memo.team_name or 'missing' }}</div>
+        <div class="box"><b>Cohort</b>{{ memo.cohort_name or memo.cohort_id or 'missing' }}</div>
+        <div class="box"><b>Baseline</b>{{ memo.baseline_status }}{% if memo.baseline_locked_at %}<br>{{ memo.baseline_locked_at }}{% endif %}</div>
+        <div class="box"><b>Initial decision</b>{{ memo.initial_baseline_decision }}</div>
+        <div class="box"><b>Approval</b>{{ memo.facilitator_approval_state }}</div>
+    </section>
+
+    <section class="verdict section">
+        <h2>What Changed?</h2>
+        <table>
+            <thead><tr><th>Baseline</th><th>Reviewed decision</th><th>Why it changed</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <b>{{ memo.what_changed.baseline_decision }}</b><br>
+                        Price: {{ memo.what_changed.baseline_price }}<br>
+                        Stakeholders: {{ memo.what_changed.baseline_stakeholders }}
+                    </td>
+                    <td>
+                        <b>{{ memo.what_changed.reviewed_decision }}</b><br>
+                        Price: {{ memo.what_changed.reviewed_price }}<br>
+                        Stakeholders: {{ memo.what_changed.reviewed_stakeholders }}
+                    </td>
+                    <td>{{ memo.what_changed.why_changed | join(', ') }}</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="small">This memo documents decision quality and traceability. It does not predict startup success.</p>
+    </section>
+
+    <section class="grid section">
+        <div class="box"><b>Problem statement</b>{{ memo.problem_statement }}</div>
+        <div class="box"><b>Pricing / financial insight</b>{{ memo.pricing_financial_insight }}</div>
+        <div class="box"><b>Next experiment</b>{{ memo.next_experiment.statement or 'missing' }}</div>
+    </section>
+
+    <section class="section">
+        <h2>Stakeholder System</h2>
+        {% if memo.key_stakeholders %}
+        <ul>{% for stakeholder in memo.key_stakeholders %}<li>{{ stakeholder }}</li>{% endfor %}</ul>
+        {% else %}
+        <p>missing</p>
+        {% endif %}
+    </section>
+
+    <section class="section">
+        <h2>Adoption / Resistance Hypothesis</h2>
+        <p>{{ memo.key_adoption_resistance_hypothesis }}</p>
+    </section>
+
+    <section class="section">
+        <h2>QBI Lite Reading</h2>
+        <table>
+            <thead><tr><th>Signal</th><th>Statement</th><th>Classification</th></tr></thead>
+            <tbody>
+                {% for item in memo.qbi_reading_summary %}
+                <tr><td>{{ item.label }}</td><td>{{ item.statement }}</td><td>{{ item.classification }}</td></tr>
+                {% else %}
+                <tr><td colspan="3">Missing QBI reading.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <p class="small">QBI lite preserves competing interpretations and context risk. It is not direct evidence or a full formal QBI model.</p>
+    </section>
+
+    <section class="section">
+        <h2>Evidence Supporting The Decision</h2>
+        <table>
+            <thead><tr><th>Evidence ID</th><th>Summary</th><th>Source artifact</th></tr></thead>
+            <tbody>
+                {% for item in memo.evidence_supporting_decision %}
+                <tr><td>{{ item.evidence_id }}</td><td>{{ item.summary }}</td><td>{{ item.source_artifact_id or 'missing' }}</td></tr>
+                {% else %}
+                <tr><td colspan="3">Missing saved Stamp evidence.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <h2>Risks And Unknowns Remaining</h2>
+        <table>
+            <thead><tr><th>ID</th><th>Statement</th><th>Classification</th></tr></thead>
+            <tbody>
+                {% for item in memo.risks_unknowns_remaining %}
+                <tr><td>{{ item.id or 'missing' }}</td><td>{{ item.statement }}</td><td>{{ item.classification }}</td></tr>
+                {% else %}
+                <tr><td colspan="3">No saved risks or unknowns yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="section">
+        <h2>Comments Summary</h2>
+        <div class="grid">
+            <div class="box"><b>Total comments</b>{{ memo.comment_count }}</div>
+            <div class="box"><b>Open comments</b>{{ memo.open_comments | length }}</div>
+            <div class="box"><b>Resolved comments</b>{{ memo.resolved_comments | length }}</div>
+        </div>
+        {% if memo.open_comments %}
+        <h3>Open</h3>
+        <ul>{% for comment in memo.open_comments %}<li>{{ comment.comment_text }} ({{ comment.artifact_type or 'general' }})</li>{% endfor %}</ul>
+        {% endif %}
+        {% if memo.resolved_comments %}
+        <h3>Resolved</h3>
+        <ul>{% for comment in memo.resolved_comments %}<li>{{ comment.comment_text }} ({{ comment.resolved_at or 'resolved' }})</li>{% endfor %}</ul>
+        {% endif %}
+    </section>
+
+    <section class="section">
+        <h2>Artifact Traceability IDs</h2>
+        <table>
+            <thead><tr><th>Artifact</th><th>ID</th></tr></thead>
+            <tbody>
+                {% for label, artifact_id in memo.artifact_ids.items() %}
+                <tr><td>{{ label }}</td><td>{{ artifact_id or 'missing' }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <section class="disclaimer">
+        <b>Method and disclaimer.</b>
+        VERTEX records baseline intuition, artifact traceability, facilitator review state, and final decision evidence where available. Missing data is labelled as missing. This document is not a startup success prediction, validation guarantee, investment recommendation, or substitute for buyer due diligence.
+    </section>
+</main>
+</body>
+</html>

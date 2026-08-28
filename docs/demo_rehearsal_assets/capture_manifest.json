@@ -1,0 +1,65 @@
+[
+  {
+    "title": "Login",
+    "description": "Open the live local app and prepare facilitator authentication.",
+    "result": "Login page loaded correctly.",
+    "screenshot": "docs\\demo_rehearsal_assets\\01-login.png",
+    "url": "http://127.0.0.1:8010/login"
+  },
+  {
+    "title": "Facilitator dashboard",
+    "description": "Open the program-level dashboard after facilitator login.",
+    "result": "Dashboard renders cohort metrics, Decision Case counts, locked snapshots and open comments.",
+    "screenshot": "docs\\demo_rehearsal_assets\\02-facilitator-dashboard.png",
+    "url": "http://127.0.0.1:8010/dashboard/facilitator"
+  },
+  {
+    "title": "Cohort case room",
+    "description": "Open the seeded demo cohort case room.",
+    "result": "Cohort totals, add-case controls and intervention queue are visible.",
+    "screenshot": "docs\\demo_rehearsal_assets\\03-cohort-case-room.png",
+    "url": "http://127.0.0.1:8010/dashboard/facilitator/cohorts/cohort_83a643a003"
+  },
+  {
+    "title": "Intervention queue",
+    "description": "Focus the cohort page on the intervention queue.",
+    "result": "SkillBridge and ClinicFlow appear as honest intervention needs with reasons.",
+    "screenshot": "docs\\demo_rehearsal_assets\\04-intervention-queue.png",
+    "url": "http://127.0.0.1:8010/dashboard/facilitator/cohorts/cohort_83a643a003"
+  },
+  {
+    "title": "Case comments and rubric gap",
+    "description": "Open the case that needs facilitator intervention.",
+    "result": "Open comment and missing post score are visible on the case.",
+    "screenshot": "docs\\demo_rehearsal_assets\\05-intervention-case-comments.png",
+    "url": "http://127.0.0.1:8010/dashboard/facilitator/cohorts/cohort_83a643a003"
+  },
+  {
+    "title": "Decision Memo",
+    "description": "Open the economics-changed Decision Memo.",
+    "result": "Memo shows initial decision context, final decision, pricing insight and artifact traceability.",
+    "screenshot": "docs\\demo_rehearsal_assets\\06-decision-memo.png",
+    "url": "http://127.0.0.1:8010/dashboard/lab/decision-memo?run_id=run_demo_economics_changed"
+  },
+  {
+    "title": "Decision Memo print view",
+    "description": "Open print-friendly Decision Memo artifact.",
+    "result": "White print view includes generated timestamp, run/team/cohort identifiers, traceability IDs and no-overclaim disclaimer.",
+    "screenshot": "docs\\demo_rehearsal_assets\\07-decision-memo-print.png",
+    "url": "http://127.0.0.1:8010/dashboard/lab/decision-memo/print?run_id=run_demo_economics_changed"
+  },
+  {
+    "title": "Cohort Outcome Report",
+    "description": "Open the cohort-level institutional report.",
+    "result": "Report summarizes completion, baselines, DecisionRecords, stakeholder/price/decision changes and intervention needs.",
+    "screenshot": "docs\\demo_rehearsal_assets\\08-outcome-report.png",
+    "url": "http://127.0.0.1:8010/dashboard/facilitator/cohorts/cohort_83a643a003/outcome-report"
+  },
+  {
+    "title": "Outcome Report print view",
+    "description": "Open print-friendly Cohort Outcome Report artifact.",
+    "result": "White print view includes cohort identifiers, case table, missing data labels, methodology and no-overclaim disclaimer.",
+    "screenshot": "docs\\demo_rehearsal_assets\\09-outcome-report-print.png",
+    "url": "http://127.0.0.1:8010/dashboard/facilitator/cohorts/cohort_83a643a003/outcome-report/print"
+  }
+]
