@@ -362,11 +362,11 @@
       });
       const result = await response.json();
       if (!response.ok || !result.valid) {
-        const message = (result.errors && result.errors[0] && result.errors[0].message) || result.detail || "Stamp did not validate";
+        const message = (result.errors && result.errors[0] && result.errors[0].message) || result.detail || "Stamp did not pass the contract check";
         throw new Error(message);
       }
       renderDraft(result.artifact || draft);
-      status.textContent = "Stamp created and validated.";
+      status.textContent = "Stamp draft created and ready for review.";
       status.className = "copy status-ok";
     } catch (error) {
       status.textContent = error.message;

@@ -377,11 +377,11 @@
       });
       const result = await response.json();
       if (!response.ok || !result.valid) {
-        const message = (result.errors && result.errors[0] && result.errors[0].message) || result.detail || "PredictiveHypothesis did not validate";
+        const message = (result.errors && result.errors[0] && result.errors[0].message) || result.detail || "PredictiveHypothesis did not pass the contract check";
         throw new Error(message);
       }
       renderDraft(result.artifact || draft);
-      status.textContent = "PredictiveHypothesis created and validated as a bounded hypothesis.";
+      status.textContent = "PredictiveHypothesis draft created and checked as a bounded hypothesis.";
       status.className = "copy status-ok";
     } catch (error) {
       status.textContent = error.message;
@@ -410,7 +410,7 @@
       status.className = "copy status-ok";
       $("contract-badge").textContent = "Saved";
       $("contract-badge").className = "badge ok";
-      $("contract-status").textContent = "Artifact saved to the active run with contract validation.";
+      $("contract-status").textContent = "Artifact saved to the active run; contract check passed.";
     } catch (error) {
       status.textContent = error.message;
       status.className = "copy status-bad";
