@@ -67,15 +67,110 @@
             transition: opacity 0.2s;
             z-index: 1000;
         }
+
     </style>
     <link rel="stylesheet" href="/static/css/vertex4d.css?v={{ asset_v }}">
+    <style>
+        @media (max-width: 767px) {
+            .synapmap-shell {
+                flex-direction: column !important;
+                height: auto !important;
+                min-height: 100vh;
+                overflow: visible !important;
+            }
+
+            .synapmap-rail {
+                align-items: center !important;
+                border-bottom: 1px solid #E6E7EC !important;
+                border-right: 0 !important;
+                display: grid !important;
+                gap: 0.75rem !important;
+                grid-template-columns: auto minmax(0, 1fr) auto !important;
+                justify-content: space-between !important;
+                min-height: 0 !important;
+                padding: 0.75rem 1rem !important;
+                width: 100% !important;
+            }
+
+            .synapmap-rail nav,
+            .synapmap-rail-actions {
+                display: flex !important;
+                flex-direction: row !important;
+                gap: 0.5rem !important;
+            }
+
+            .synapmap-rail nav {
+                justify-content: center !important;
+                max-width: 100% !important;
+                overflow-x: auto;
+                padding-bottom: 0.125rem;
+            }
+
+            .synapmap-rail .classic-mark {
+                margin-top: 0 !important;
+            }
+
+            body.srsly-classic .synapmap-rail .classic-nav-item {
+                height: 2.5rem !important;
+                min-height: 2.5rem !important;
+                width: 2.5rem !important;
+            }
+
+            .synapmap-rail-actions {
+                margin-top: 0 !important;
+            }
+
+            .synapmap-main,
+            .synapmap-workspace {
+                overflow: visible !important;
+            }
+
+            .synapmap-main {
+                min-height: 0;
+                width: 100%;
+            }
+
+            .synapmap-topbar {
+                padding: 0.85rem 1rem;
+            }
+
+            .synapmap-workspace {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                min-height: 0;
+            }
+
+            .synapmap-chat-panel,
+            .synapmap-canvas-panel,
+            .synapmap-insights-panel {
+                min-width: 0;
+            }
+
+            .synapmap-chat-panel > div {
+                min-height: 360px;
+            }
+
+            .synapmap-chat-panel #chat-container {
+                max-height: 360px;
+            }
+
+            .synapmap-canvas-panel,
+            #system-map-container {
+                min-height: 460px;
+            }
+
+            .synapmap-insights-panel {
+                overflow: visible;
+            }
+        }
+    </style>
     <script src="/static/js/prefs.js?v={{ asset_v }}" defer></script>
 </head>
 
 <body class="srsly-classic font-display bg-background-light text-near-black">
 {% include "_icon_sprite.html" %}
-<div class="flex h-screen overflow-hidden">
-    <aside class="classic-sidebar classic-rail-sidebar flex flex-col items-center gap-6 border-r border-vapor-grey bg-vapor-grey/50 p-3">
+<div class="synapmap-shell flex h-screen overflow-hidden">
+    <aside class="synapmap-rail classic-sidebar classic-rail-sidebar flex flex-col items-center gap-6 border-r border-vapor-grey bg-vapor-grey/50 p-3">
         <a class="classic-mark mt-1" href="/dashboard/lab" aria-label="Srsly Labs Lab">
             <svg class="ic" aria-hidden="true"><use href="#i-lab"/></svg>
         </a>
@@ -90,7 +185,7 @@
                 <svg class="ic" aria-hidden="true"><use href="#i-billie"/></svg>
             </a>
         </nav>
-        <div class="mt-auto flex flex-col items-center gap-4">
+        <div class="synapmap-rail-actions mt-auto flex flex-col items-center gap-4">
             <button id="save-map-btn" class="classic-nav-item !h-14 !w-14 !justify-center !p-0" type="button" title="Save map" aria-label="Save map">
                 <svg class="ic" aria-hidden="true"><use href="#i-save"/></svg>
             </button>
@@ -99,8 +194,8 @@
             </button>
         </div>
     </aside>
-    <main class="classic-main flex min-w-0 flex-1 flex-col overflow-hidden bg-background-light">
-        <header class="classic-topbar flex items-center justify-between border-b border-vapor-grey bg-background-light/80 px-6 py-3 backdrop-blur-sm lg:px-10">
+    <main class="synapmap-main classic-main flex min-w-0 flex-1 flex-col overflow-hidden bg-background-light">
+        <header class="synapmap-topbar classic-topbar flex items-center justify-between border-b border-vapor-grey bg-background-light/80 px-6 py-3 backdrop-blur-sm lg:px-10">
             <div class="classic-breadcrumb flex items-center gap-2 text-sm">
                 <a class="hover:text-primary" href="/dashboard/lab">Srsly Labs Lab</a>
                 <span>/</span>
@@ -122,8 +217,8 @@
                 </div>
             </div>
         </header>
-        <section class="grid min-h-0 flex-1 grid-cols-1 overflow-hidden lg:grid-cols-12">
-            <aside class="min-w-0 border-b border-vapor-grey bg-white lg:col-span-3 lg:border-b-0 lg:border-r">
+        <section class="synapmap-workspace grid min-h-0 flex-1 grid-cols-1 overflow-hidden lg:grid-cols-12">
+            <aside class="synapmap-chat-panel min-w-0 border-b border-vapor-grey bg-white lg:col-span-3 lg:border-b-0 lg:border-r">
                 <div class="flex h-full min-h-0 flex-col">
                     <div id="chat-container" class="flex-1 overflow-y-auto p-5">
                         <div class="flex items-start gap-3">
@@ -149,11 +244,11 @@
                     </div>
                 </div>
             </aside>
-            <section class="relative min-h-[420px] min-w-0 bg-dots lg:col-span-6 lg:min-h-0">
+            <section class="synapmap-canvas-panel relative min-h-[420px] min-w-0 bg-dots lg:col-span-6 lg:min-h-0">
                 <div id="system-map-container" class="h-full w-full"><svg id="system-map-svg" class="h-full w-full"></svg><div id="d3-tooltip" class="d3-tooltip"></div></div>
                 <button id="reset-zoom-btn" class="absolute left-4 top-4 flex size-10 items-center justify-center rounded-lg border border-vapor-grey bg-white text-primary shadow-lg hover:bg-cyber-lavender/10" title="Reset Zoom"><svg class="ic" aria-hidden="true"><use href="#i-focus"/></svg></button>
             </section>
-            <aside class="min-w-0 overflow-y-auto border-t border-vapor-grey bg-white lg:col-span-3 lg:border-l lg:border-t-0">
+            <aside class="synapmap-insights-panel min-w-0 overflow-y-auto border-t border-vapor-grey bg-white lg:col-span-3 lg:border-l lg:border-t-0">
                 <section class="border-b border-vapor-grey p-4">
                     <p class="classic-muted text-xs font-bold uppercase tracking-[0.14em]">RACI Matrix</p>
                     <div id="raci-container" class="mt-3 text-xs"><div class="text-center text-medium-grey">No matrix yet. Run the map to see who is responsible, accountable, consulted and informed.</div></div>
