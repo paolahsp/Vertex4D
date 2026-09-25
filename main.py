@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse, RedirectResponse, JSONResponse
 from starlette.middleware.sessions import SessionMiddleware
 import uvicorn
+import logging
 import os
 import database
 import httpx
@@ -11,11 +12,26 @@ import io
 from pypdf import PdfReader
 from docx import Document
 
+logger = logging.getLogger(__name__)
+
 app = FastAPI(title="Vertex 4D", description="Private 4D client profile portal")
 
-# Add Session Middleware
-SESSION_SECRET = os.getenv("VERTEX4D_SESSION_SECRET", "vertex4d-secret-key-change-me")
-app.add_middleware(SessionMiddleware, secret_key=SESSION_SECRET)
+# A predictable fallback would allow forged sessions, so fail closed.
+SESSION_SECRET = os.getenv("VERTEX4D_SESSION_SECRET")
+if not SESSION_SECRET or len(SESSION_SECRET) < 32:
+    raise RuntimeError(
+        "VERTEX4D_SESSION_SECRET must be configured with at least 32 characters"
+    )
+
+app.add_middleware(
+    SessionMiddleware,
+    secret_key=SESSION_SECRET,
+    same_site="lax",
+    https_only=os.getenv("VERTEX4D_SECURE_COOKIES", "false").lower() == "true",
+)
+
+MAX_UPLOAD_BYTES = int(os.getenv("VERTEX4D_MAX_UPLOAD_BYTES", str(10 * 1024 * 1024)))
+ALLOWED_UPLOAD_EXTENSIONS = {".pdf", ".docx", ".txt", ".md"}
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -57,6 +73,14 @@ async def register(
     challenge_desc: str = Form(None),
     photo_url: str = Form(None)
 ):
+    if len(password) < 12:
+        return templates.TemplateResponse(
+            request,
+            "auth/register.html",
+            {"error": "Password must contain at least 12 characters."},
+            status_code=400,
+        )
+
     # Collect members
     members = [{"name": member1_name, "email": member1_email}]
     if member2_name and member2_email:
@@ -80,7 +104,7 @@ async def login_page(request: Request):
 
 @app.post("/login")
 async def login(request: Request, email: str = Form(...), password: str = Form(...)):
-    success, message, team_data = database.verify_login(email.strip(), password.strip())
+    success, message, team_data = database.verify_login(email.strip(), password)
     
     if success:
         request.session["user"] = team_data
@@ -197,16 +221,23 @@ async def openai_proxy(
             )
             
             if response.status_code != 200:
+                logger.warning("OpenAI request failed with status %s", response.status_code)
                 raise HTTPException(
-                    status_code=response.status_code,
-                    detail=f"OpenAI API error: {response.text}"
+                    status_code=502,
+                    detail="AI service request failed"
                 )
-            
+
             return response.json()
+    except HTTPException:
+        raise
     except httpx.TimeoutException:
-        raise HTTPException(status_code=504, detail="OpenAI API timeout")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=504, detail="AI service timed out")
+    except httpx.RequestError:
+        logger.exception("Unable to reach OpenAI")
+        raise HTTPException(status_code=502, detail="AI service is unavailable")
+    except Exception:
+        logger.exception("Unexpected OpenAI proxy failure")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.post("/api/alex/chat")
 async def alex_proxy(
@@ -236,16 +267,23 @@ async def alex_proxy(
             )
             
             if response.status_code != 200:
+                logger.warning("OpenAI request failed with status %s", response.status_code)
                 raise HTTPException(
-                    status_code=response.status_code,
-                    detail=f"OpenAI API error: {response.text}"
+                    status_code=502,
+                    detail="AI service request failed"
                 )
-            
+
             return response.json()
+    except HTTPException:
+        raise
     except httpx.TimeoutException:
-        raise HTTPException(status_code=504, detail="OpenAI API timeout")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=504, detail="AI service timed out")
+    except httpx.RequestError:
+        logger.exception("Unable to reach OpenAI")
+        raise HTTPException(status_code=502, detail="AI service is unavailable")
+    except Exception:
+        logger.exception("Unexpected OpenAI proxy failure")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.post("/api/process-file")
 async def process_file(file: UploadFile = File(...), user: dict = Depends(get_current_user)):
@@ -253,40 +291,45 @@ async def process_file(file: UploadFile = File(...), user: dict = Depends(get_cu
         raise HTTPException(status_code=401, detail="Not authenticated")
     
     content = ""
-    filename = file.filename.lower()
-    
+    filename = (file.filename or "").lower()
+    extension = os.path.splitext(filename)[1]
+
+    if extension not in ALLOWED_UPLOAD_EXTENSIONS:
+        return JSONResponse(
+            status_code=400,
+            content={"error": "Unsupported file type. Please upload PDF, DOCX, TXT, or MD."},
+        )
+
     try:
-        contents = await file.read()
+        contents = await file.read(MAX_UPLOAD_BYTES + 1)
+        if len(contents) > MAX_UPLOAD_BYTES:
+            return JSONResponse(
+                status_code=413,
+                content={"error": "File is too large."},
+            )
+
         file_obj = io.BytesIO(contents)
-        
-        if filename.endswith('.pdf'):
+
+        if extension == ".pdf":
             reader = PdfReader(file_obj)
             for page in reader.pages:
-                content += page.extract_text() + "\n"
-                
-        elif filename.endswith('.docx'):
+                content += (page.extract_text() or "") + "\n"
+
+        elif extension == ".docx":
             doc = Document(file_obj)
             for para in doc.paragraphs:
                 content += para.text + "\n"
-                
-        elif filename.endswith('.txt') or filename.endswith('.md'):
-            content = contents.decode('utf-8')
-            
+
         else:
-            # Fallback for other text-based files
-            try:
-                content = contents.decode('utf-8')
-            except:
-                return JSONResponse(
-                    status_code=400, 
-                    content={"error": "Unsupported file type. Please upload PDF, DOCX, or TXT."}
-                )
-                
+            content = contents.decode("utf-8")
+
         return {"filename": file.filename, "content": content.strip()}
-        
-    except Exception as e:
-        print(f"Error processing file: {e}")
-        return JSONResponse(status_code=500, content={"error": f"Error processing file: {str(e)}"})
+
+    except (UnicodeDecodeError, ValueError):
+        return JSONResponse(status_code=400, content={"error": "The file could not be read."})
+    except Exception:
+        logger.exception("Error processing uploaded file")
+        return JSONResponse(status_code=500, content={"error": "Unable to process the file."})
 
 
 if __name__ == "__main__":
