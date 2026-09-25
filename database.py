@@ -2,7 +2,11 @@
 import sqlite3
 from datetime import datetime
 import hashlib
+import hmac
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 DATABASE_PATH = os.getenv("VERTEX4D_DATABASE_PATH", "vertex4d.db")
 
@@ -44,8 +48,45 @@ def init_database():
     conn.close()
 
 def hash_password(password: str) -> str:
-    """Hash password using SHA-256"""
-    return hashlib.sha256(password.encode()).hexdigest()
+    """Hash a password with a unique salt using scrypt."""
+    salt = os.urandom(16)
+    n, r, p = 2**14, 8, 1
+    derived_key = hashlib.scrypt(
+        password.encode("utf-8"),
+        salt=salt,
+        n=n,
+        r=r,
+        p=p,
+        dklen=32,
+    )
+    return f"scrypt${n}${r}${p}${salt.hex()}${derived_key.hex()}"
+
+
+def verify_password(password: str, stored_hash: str) -> tuple[bool, bool]:
+    """Return (is_valid, needs_rehash), supporting legacy SHA-256 hashes."""
+    if stored_hash.startswith("scrypt$"):
+        try:
+            _, n, r, p, salt_hex, expected_hex = stored_hash.split("$", 5)
+            actual = hashlib.scrypt(
+                password.encode("utf-8"),
+                salt=bytes.fromhex(salt_hex),
+                n=int(n),
+                r=int(r),
+                p=int(p),
+                dklen=len(bytes.fromhex(expected_hex)),
+            )
+            return hmac.compare_digest(actual.hex(), expected_hex), False
+        except (ValueError, TypeError):
+            logger.warning("Invalid password hash format")
+            return False, False
+
+    # Migrate existing unsalted SHA-256 hashes after a successful login.
+    if len(stored_hash) == 64:
+        legacy_hash = hashlib.sha256(password.encode("utf-8")).hexdigest()
+        is_valid = hmac.compare_digest(legacy_hash, stored_hash)
+        return is_valid, is_valid
+
+    return False, False
 
 def create_team(team_name: str, password: str, members: list, challenge_desc: str = None, photo_url: str = None) -> tuple:
     """
@@ -89,8 +130,9 @@ def create_team(team_name: str, password: str, members: list, challenge_desc: st
         conn.close()
         return (True, "Team created successfully", team_id)
     
-    except Exception as e:
-        return (False, f"Error: {str(e)}", None)
+    except Exception:
+        logger.exception("Unable to create team")
+        return (False, "Unable to create team. Please try again.", None)
 
 def verify_login(email: str, password: str) -> tuple:
     """
@@ -115,11 +157,18 @@ def verify_login(email: str, password: str) -> tuple:
         cursor.execute("SELECT id, team_name, password_hash, challenge_desc, photo_url FROM teams WHERE id = ?", (team_id,))
         team = cursor.fetchone()
         
-        password_hash = hash_password(password)
-        if team['password_hash'] != password_hash:
+        is_valid, needs_rehash = verify_password(password, team['password_hash'])
+        if not is_valid:
             conn.close()
             return (False, "Incorrect password", None)
-        
+
+        if needs_rehash:
+            cursor.execute(
+                "UPDATE teams SET password_hash = ? WHERE id = ?",
+                (hash_password(password), team_id),
+            )
+            conn.commit()
+
         # Get all team members
         cursor.execute("SELECT name, email FROM team_members WHERE team_id = ?", (team_id,))
         members = [dict(row) for row in cursor.fetchall()]
@@ -136,8 +185,9 @@ def verify_login(email: str, password: str) -> tuple:
         
         return (True, "Client Login successful", team_data)
     
-    except Exception as e:
-        return (False, f"Error: {str(e)}", None)
+    except Exception:
+        logger.exception("Unable to verify login")
+        return (False, "Unable to sign in. Please try again.", None)
 
 def get_team_by_id(team_id: int) -> dict:
     """
